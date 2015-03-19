@@ -113,7 +113,7 @@ namespace Loogn.OrmLite
 
         public static List<T> Select<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
         {
-            return SelectOriginal<T>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
+            return SelectOriginal<T>(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Select), ORM.DictionaryToParams(parameters));
         }
 
         public static List<dynamic> Select(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
@@ -250,7 +250,7 @@ namespace Loogn.OrmLite
 
         public static T Single<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
         {
-            return SingleOriginal<T>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
+            return SingleOriginal<T>(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Single), ORM.DictionaryToParams(parameters));
         }
 
         public static dynamic Single(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
@@ -358,9 +358,9 @@ namespace Loogn.OrmLite
             return CountOriginal(dbTrans, CommandType.Text, "SELECT COUNT(0) FROM [" + table + "]");
         }
 
-        public static long Count(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+        public static long Count<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
         {
-            return CountOriginal(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
+            return CountOriginal(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Count), ORM.DictionaryToParams(parameters));
         }
 
         public static long CountWhere<T>(this SqlTransaction dbTrans, string name, object value)

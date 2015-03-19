@@ -234,7 +234,7 @@ namespace Loogn.OrmLite
                 for (int i = 0, len = props.Length; i < len; i++)
                 {
                     var prop = props[i];
-                    ps[i] = new SqlParameter("@" + prop.Name, prop.GetValue(anonType));
+                    ps[i] = new SqlParameter("@" + prop.Name, prop.GetValue(anonType, null));
                 }
                 return ps;
             }
@@ -304,11 +304,39 @@ namespace Loogn.OrmLite
             return dict;
         }
 
+        public static string FullPartSql<T>(string sql, PartSqlType type)
+        {
+            sql = sql.TrimStart();
+            if (sql.StartsWith("SELECT"))
+            {
+                return sql;
+            }
+            var tableName = typeof(T).GetCachedTableName();
+            StringBuilder sb = new StringBuilder(sql.Length + 50);
+            switch (type)
+            {
+                case PartSqlType.Select:
+                    return sb.AppendFormat("SELECT * FROM [{0}] where {1}", tableName, sql).ToString();
+                case PartSqlType.Single:
+                    return sb.AppendFormat("SELECT TOP 1 * FROM [{0}] where {1}", tableName, sql).ToString();
+                case PartSqlType.Count:
+                    return sb.AppendFormat("SELECT COUNT(0) FROM [{0}] where {1}", tableName, sql).ToString();
+                default:
+                    return sql;
+            }
+        }
     }
     internal class MyTuple<T1, T2>
     {
         public T1 Item1 { get; set; }
         public T2 Item2 { get; set; }
+    }
+
+    internal enum PartSqlType
+    {
+        Select,
+        Single,
+        Count
     }
 
 }

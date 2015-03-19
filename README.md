@@ -1,1 +1,3 @@
 #OrmLite
+前段时间写过DataAccess，以为不会再在这方面下功夫了!
+But ......

@@ -35,7 +35,7 @@ namespace ConsoleApplication1
                 ////或
                 //var list = db.Select<Person>("select * from Person where ID>@id", DictBuilder.Assign("id", 23));
 
-
+                
                 //var list = db.SelectWhere<Person>("name", "loogn");
                 ////select * from Person where name='loogn'
 

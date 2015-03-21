@@ -8,8 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 //All Copy OrmLiteReaderApi.cs
 
-//SqlTransaction---->SqlTransaction
-//dbTrans ---->  dbTrans
+//SqlConnection---->SqlTransaction
+//dbConn ---->  dbTrans
 namespace Loogn.OrmLite
 {
     public static partial class OrmLiteReadApi
@@ -111,14 +111,34 @@ namespace Loogn.OrmLite
             return SelectOriginal<T>(dbTrans, CommandType.Text, "SELECT * FROM [" + table + "]");
         }
 
-        public static List<T> Select<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+        public static List<T> Select<T>(this SqlTransaction dbTrans, string sql)
+        {
+            return SelectOriginal<T>(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Select), null);
+        }
+
+        public static List<T> Select<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
             return SelectOriginal<T>(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Select), ORM.DictionaryToParams(parameters));
         }
 
-        public static List<dynamic> Select(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+        public static List<T> Select<T>(this SqlTransaction dbTrans, string sql, object parameters)
+        {
+            return SelectOriginal<T>(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Select), ORM.AnonTypeToParams(parameters));
+        }
+
+        public static List<dynamic> Select(this SqlTransaction dbTrans, string sql)
+        {
+            return SelectOriginal(dbTrans, CommandType.Text, sql, null);
+        }
+
+        public static List<dynamic> Select(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
             return SelectOriginal(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
+        }
+
+        public static List<dynamic> Select(this SqlTransaction dbTrans, string sql, object parameters)
+        {
+            return SelectOriginal(dbTrans, CommandType.Text, sql, ORM.AnonTypeToParams(parameters));
         }
 
         public static List<T> SelectWhere<T>(this SqlTransaction dbTrans, string name, object value)
@@ -134,6 +154,15 @@ namespace Loogn.OrmLite
             var tableName = typeof(T).GetCachedTableName();
             sqlbuilder.AppendFormat("SELECT * FROM [{0}]", tableName);
             var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
+            return SelectOriginal<T>(dbTrans, CommandType.Text, sqlbuilder.ToString(), ps);
+        }
+
+        public static List<T> SelectWhere<T>(this SqlTransaction dbTrans, object conditions)
+        {
+            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
+            var tableName = typeof(T).GetCachedTableName();
+            sqlbuilder.AppendFormat("SELECT * FROM [{0}]", tableName);
+            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
             return SelectOriginal<T>(dbTrans, CommandType.Text, sqlbuilder.ToString(), ps);
         }
 
@@ -248,14 +277,38 @@ namespace Loogn.OrmLite
             return SingleOriginal<T>(dbTrans, CommandType.Text, sqlbuilder.ToString(), ps);
         }
 
-        public static T Single<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+        public static T Single<T>(this SqlTransaction dbTrans, object conditions)
+        {
+            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
+            var tableName = typeof(T).GetCachedTableName();
+            sqlbuilder.AppendFormat("SELECT  TOP 1 * FROM [{0}]", tableName);
+            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
+            return SingleOriginal<T>(dbTrans, CommandType.Text, sqlbuilder.ToString(), ps);
+        }
+
+        public static T Single<T>(this SqlTransaction dbTrans, string sql)
+        {
+            return SingleOriginal<T>(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Single), null);
+        }
+
+        public static T Single<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
             return SingleOriginal<T>(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Single), ORM.DictionaryToParams(parameters));
         }
 
-        public static dynamic Single(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+        public static dynamic Single(this SqlTransaction dbTrans, string sql)
+        {
+            return SingleOriginal(dbTrans, CommandType.Text, sql, null);
+        }
+
+        public static dynamic Single(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
             return SingleOriginal(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
+        }
+
+        public static dynamic Single(this SqlTransaction dbTrans, string sql, object parameters)
+        {
+            return SingleOriginal(dbTrans, CommandType.Text, sql, ORM.AnonTypeToParams(parameters));
         }
 
         public static T SingleFmt<T>(this SqlTransaction dbTrans, string sqlFormat, params object[] parameters)
@@ -290,12 +343,32 @@ namespace Loogn.OrmLite
             return SingleOriginal<T>(dbTrans, CommandType.Text, sqlbuilder.ToString(), ps);
         }
 
+        public static T SingleWhere<T>(this SqlTransaction dbTrans, object conditions)
+        {
+            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
+            var tableName = typeof(T).GetCachedTableName();
+            sqlbuilder.AppendFormat("SELECT TOP 1 * FROM [{0}]", tableName);
+            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
+            return SingleOriginal<T>(dbTrans, CommandType.Text, sqlbuilder.ToString(), ps);
+        }
+
         #endregion
 
         #region Scalar
-        public static T Scalar<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+
+        public static T Scalar<T>(this SqlTransaction dbTrans, string sql)
+        {
+            return ScalarOriginal<T>(dbTrans, CommandType.Text, sql, null);
+        }
+
+        public static T Scalar<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
             return ScalarOriginal<T>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
+        }
+
+        public static T Scalar<T>(this SqlTransaction dbTrans, string sql, object parameters)
+        {
+            return ScalarOriginal<T>(dbTrans, CommandType.Text, sql, ORM.AnonTypeToParams(parameters));
         }
 
         public static T ScalarFmt<T>(this SqlTransaction dbTrans, string sqlFormat, params object[] parameters)
@@ -306,9 +379,20 @@ namespace Loogn.OrmLite
         #endregion
 
         #region Column
-        public static List<T> Column<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+
+        public static List<T> Column<T>(this SqlTransaction dbTrans, string sql)
+        {
+            return ColumnOriginal<T>(dbTrans, CommandType.Text, sql, null);
+        }
+
+        public static List<T> Column<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
             return ColumnOriginal<T>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
+        }
+
+        public static List<T> Column<T>(this SqlTransaction dbTrans, string sql, object parameters)
+        {
+            return ColumnOriginal<T>(dbTrans, CommandType.Text, sql, ORM.AnonTypeToParams(parameters));
         }
 
         public static List<T> ColumnFmt<T>(this SqlTransaction dbTrans, string sqlFormat, params object[] parameters)
@@ -316,10 +400,19 @@ namespace Loogn.OrmLite
             return ColumnOriginal<T>(dbTrans, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
+        public static HashSet<T> ColumnDistinct<T>(this SqlTransaction dbTrans, string sql)
+        {
+            return ColumnDistinctOriginal<T>(dbTrans, CommandType.Text, sql);
+        }
 
-        public static HashSet<T> ColumnDistinct<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+        public static HashSet<T> ColumnDistinct<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
             return ColumnDistinctOriginal<T>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
+        }
+
+        public static HashSet<T> ColumnDistinct<T>(this SqlTransaction dbTrans, string sql, object parameters)
+        {
+            return ColumnDistinctOriginal<T>(dbTrans, CommandType.Text, sql, ORM.AnonTypeToParams(parameters));
         }
 
         public static HashSet<T> ColumnDistinctFmt<T>(this SqlTransaction dbTrans, string sqlFormat, params object[] parameters)
@@ -330,9 +423,17 @@ namespace Loogn.OrmLite
         #endregion
 
         #region Lookup Dictionary
-        public static Dictionary<K, List<V>> Lookup<K, V>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+        public static Dictionary<K, List<V>> Lookup<K, V>(this SqlTransaction dbTrans, string sql)
+        {
+            return LookupOriginal<K, V>(dbTrans, CommandType.Text, sql, null);
+        }
+        public static Dictionary<K, List<V>> Lookup<K, V>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
             return LookupOriginal<K, V>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
+        }
+        public static Dictionary<K, List<V>> Lookup<K, V>(this SqlTransaction dbTrans, string sql, object parameters)
+        {
+            return LookupOriginal<K, V>(dbTrans, CommandType.Text, sql, ORM.AnonTypeToParams(parameters));
         }
 
         public static Dictionary<K, List<V>> LookupFmt<K, V>(this SqlTransaction dbTrans, string sqlFormat, params object[] parameters)
@@ -340,9 +441,17 @@ namespace Loogn.OrmLite
             return LookupOriginal<K, V>(dbTrans, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
-        public static Dictionary<K, V> Dictionary<K, V>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+        public static Dictionary<K, V> Dictionary<K, V>(this SqlTransaction dbTrans, string sql)
+        {
+            return DictionaryOriginal<K, V>(dbTrans, CommandType.Text, sql, null);
+        }
+        public static Dictionary<K, V> Dictionary<K, V>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
             return DictionaryOriginal<K, V>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
+        }
+        public static Dictionary<K, V> Dictionary<K, V>(this SqlTransaction dbTrans, string sql, object parameters)
+        {
+            return DictionaryOriginal<K, V>(dbTrans, CommandType.Text, sql, ORM.AnonTypeToParams(parameters));
         }
 
         public static Dictionary<K, V> DictionaryFmt<K, V>(this SqlTransaction dbTrans, string sqlFormat, params object[] parameters)
@@ -358,9 +467,17 @@ namespace Loogn.OrmLite
             return CountOriginal(dbTrans, CommandType.Text, "SELECT COUNT(0) FROM [" + table + "]");
         }
 
-        public static long Count<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters = null)
+        public static long Count<T>(this SqlTransaction dbTrans, string sql)
+        {
+            return CountOriginal(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Count), null);
+        }
+        public static long Count<T>(this SqlTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
             return CountOriginal(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Count), ORM.DictionaryToParams(parameters));
+        }
+        public static long Count<T>(this SqlTransaction dbTrans, string sql, object parameters)
+        {
+            return CountOriginal(dbTrans, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Count), ORM.AnonTypeToParams(parameters));
         }
 
         public static long CountWhere<T>(this SqlTransaction dbTrans, string name, object value)
@@ -378,6 +495,16 @@ namespace Loogn.OrmLite
             var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
             return CountOriginal(dbTrans, CommandType.Text, sqlbuilder.ToString(), ps);
         }
+
+        public static long CountWhere<T>(this SqlTransaction dbTrans, object conditions)
+        {
+            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
+            var tableName = typeof(T).GetCachedTableName();
+            sqlbuilder.AppendFormat("SELECT COUNT(0) FROM [{0}]", tableName);
+            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
+            return CountOriginal(dbTrans, CommandType.Text, sqlbuilder.ToString(), ps);
+        }
+
 
         public static long CountFmt(this SqlTransaction dbTrans, string sqlFormat, params object[] parameters)
         {

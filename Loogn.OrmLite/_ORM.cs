@@ -241,6 +241,26 @@ namespace Loogn.OrmLite
             return null;
         }
 
+        public static SqlParameter[] AnonTypeToParams(object anonType, StringBuilder appendWhere)
+        {
+            var props = anonType.GetType().GetCachedProperties();
+
+            if (props.Length>0)
+            {
+                SqlParameter[] ps = new SqlParameter[props.Length];
+                int i = 0;
+                appendWhere.Append(" where ");
+                foreach (var prop in props)
+                {
+                    ps[i++] = new SqlParameter("@" + prop.Name, prop.GetValue(anonType, null));
+                    appendWhere.AppendFormat(" [{0}]=@{0} and ", prop.Name);
+                }
+                appendWhere.Length -= 4;
+                return ps;
+            }
+            return null;
+        }
+
         public static SqlParameter[] DictionaryToParams(Dictionary<string, object> dict)
         {
             if (dict != null)
@@ -325,6 +345,7 @@ namespace Loogn.OrmLite
                     return sql;
             }
         }
+
     }
     internal class MyTuple<T1, T2>
     {

@@ -43,7 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DictBuilder.cs" />
-    <Compile Include="_ORM.cs" />
+    <Compile Include="OrmLiteParamsApi.cs" />
+    <Compile Include="ORM.cs" />
     <Compile Include="OrmLite.cs" />
     <Compile Include="OrmLiteFieldAttribute.cs" />
     <Compile Include="OrmLitePageFactor.cs" />

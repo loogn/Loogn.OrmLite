@@ -17,10 +17,15 @@ namespace Loogn.OrmLite
             cmd.Transaction = dbTrans;
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.CommandText = name;
-            var ps = ORM.AnonTypeToParams(inParams);
+            if (inParams != null)
+            {
+                var ps = ORM.AnonTypeToParams(inParams);
+                cmd.Parameters.AddRange(ps);
+            }
             if (excludeDefaults)
             {
                 cmd.ExecuteNonQuery();
+                cmd.Parameters.Clear();
             }
             return cmd;
         }
@@ -95,6 +100,79 @@ namespace Loogn.OrmLite
                     sbParams.AppendFormat("@{0},", fieldName);
                     ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
                 }
+            }
+            if (ps.Count == 0)
+            {
+                throw new ArgumentException("model里没有字段，无法插入");
+            }
+            sbsql.Remove(sbsql.Length - 1, 1);
+            sbParams.Remove(sbParams.Length - 1, 1);
+            sbsql.Append(sbParams.ToString());
+            sbsql.Append(")");
+
+            if (selectIdentity)
+            {
+                sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
+                var identity = ExecuteScalar(dbTrans, CommandType.Text, sbsql.ToString(), ps.ToArray());
+                return Convert.ToInt64(identity);
+            }
+            else
+            {
+                var raw = ExecuteNonQuery(dbTrans, CommandType.Text, sbsql.ToString(), ps.ToArray());
+                return raw;
+            }
+        }
+
+        public static long Insert(this SqlTransaction dbTrans, string table, Dictionary<string, object> fields, bool selectIdentity = false)
+        {
+            StringBuilder sbsql = new StringBuilder(100);
+            sbsql.AppendFormat("insert into [{0}] (", table);
+            StringBuilder sbParams = new StringBuilder(") values (");
+            var ps = new List<SqlParameter>();
+            foreach (var field in fields)
+            {
+                sbsql.AppendFormat("[{0}],", field.Key);
+                sbParams.AppendFormat("@{0},", field.Key);
+                ps.Add(new SqlParameter("@" + field.Key, field.Value));
+            }
+            if (ps.Count == 0)
+            {
+                throw new ArgumentException("fields里没有字段，无法插入");
+            }
+            sbsql.Remove(sbsql.Length - 1, 1);
+            sbParams.Remove(sbParams.Length - 1, 1);
+            sbsql.Append(sbParams.ToString());
+            sbsql.Append(")");
+
+            if (selectIdentity)
+            {
+                sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
+                var identity = ExecuteScalar(dbTrans, CommandType.Text, sbsql.ToString(), ps.ToArray());
+                return Convert.ToInt64(identity);
+            }
+            else
+            {
+                var raw = ExecuteNonQuery(dbTrans, CommandType.Text, sbsql.ToString(), ps.ToArray());
+                return raw;
+            }
+        }
+
+        public static long Insert(this SqlTransaction dbTrans, string table, object anonType, bool selectIdentity = false)
+        {
+            var type = anonType.GetType();
+            var propertys = type.GetCachedProperties();
+
+            StringBuilder sbsql = new StringBuilder(100);
+            sbsql.AppendFormat("insert into [{0}] (", table);
+            StringBuilder sbParams = new StringBuilder(") values (");
+            var ps = new List<SqlParameter>();
+            foreach (var property in propertys)
+            {
+                var fieldName = property.Name;
+                var val = property.GetValue(anonType, null);
+                sbsql.AppendFormat("[{0}],", fieldName);
+                sbParams.AppendFormat("@{0},", fieldName);
+                ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
             }
             if (ps.Count == 0)
             {

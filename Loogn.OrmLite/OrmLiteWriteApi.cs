@@ -13,15 +13,22 @@ namespace Loogn.OrmLite
     {
         public static SqlCommand Proc(this SqlConnection dbConn, string name, object inParams = null, bool excludeDefaults = false)
         {
+            
             var cmd = dbConn.CreateCommand();
-
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.CommandText = name;
-            var ps = ORM.AnonTypeToParams(inParams);
+            if (inParams != null)
+            {
+                var ps = ORM.AnonTypeToParams(inParams);
+                cmd.Parameters.AddRange(ps);
+            }
             if (excludeDefaults)
             {
+                dbConn.Open();
                 cmd.ExecuteNonQuery();
+                cmd.Parameters.Clear();
             }
+            dbConn.Open();
             return cmd;
         }
 
@@ -118,6 +125,45 @@ namespace Loogn.OrmLite
             }
         }
 
+        public static long Insert(this SqlConnection dbConn, string table, object anonType, bool selectIdentity = false)
+        {
+            var type = anonType.GetType();
+            var propertys = type.GetCachedProperties();
+
+            StringBuilder sbsql = new StringBuilder(100);
+            sbsql.AppendFormat("insert into [{0}] (", table);
+            StringBuilder sbParams = new StringBuilder(") values (");
+            var ps = new List<SqlParameter>();
+            foreach (var property in propertys)
+            {
+                var fieldName = property.Name;
+                var val = property.GetValue(anonType, null);
+                sbsql.AppendFormat("[{0}],", fieldName);
+                sbParams.AppendFormat("@{0},", fieldName);
+                ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+            }
+            if (ps.Count == 0)
+            {
+                throw new ArgumentException("model里没有字段，无法插入");
+            }
+            sbsql.Remove(sbsql.Length - 1, 1);
+            sbParams.Remove(sbParams.Length - 1, 1);
+            sbsql.Append(sbParams.ToString());
+            sbsql.Append(")");
+
+            if (selectIdentity)
+            {
+                sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
+                var identity = ExecuteScalar(dbConn, CommandType.Text, sbsql.ToString(), ps.ToArray());
+                return Convert.ToInt64(identity);
+            }
+            else
+            {
+                var raw = ExecuteNonQuery(dbConn, CommandType.Text, sbsql.ToString(), ps.ToArray());
+                return raw;
+            }
+        }
+
         private static int InsertTrans<T>(this SqlConnection dbConn, T obj, SqlTransaction trans)
         {
             var type = typeof(T);
@@ -179,9 +225,67 @@ namespace Loogn.OrmLite
             return raw;
         }
 
-        public static void Insert<T>(this SqlConnection dbConn, params T[] objs)
+        private static int InsertTrans(this SqlConnection dbConn, string table, object anonType, SqlTransaction trans)
         {
-            InsertAll<T>(dbConn, objs);
+            var type = anonType.GetType();
+            var propertys = type.GetCachedProperties();
+            StringBuilder sbsql = new StringBuilder(100);
+            sbsql.AppendFormat("insert into [{0}] (", table);
+            StringBuilder sbParams = new StringBuilder(") values (");
+            var ps = new List<SqlParameter>();
+            foreach (var property in propertys)
+            {
+                var fieldName = property.Name;
+                var val = property.GetValue(anonType, null);
+                sbsql.AppendFormat("[{0}],", fieldName);
+                sbParams.AppendFormat("@{0},", fieldName);
+                ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+            }
+            if (ps.Count == 0)
+            {
+                throw new ArgumentException("model里没有字段，无法插入");
+            }
+            sbsql.Remove(sbsql.Length - 1, 1);
+            sbParams.Remove(sbParams.Length - 1, 1);
+            sbsql.Append(sbParams.ToString());
+            sbsql.Append(")");
+            var raw = ExecuteNonQuery(trans, CommandType.Text, sbsql.ToString(), ps.ToArray());
+            return raw;
+        }
+
+        public static void InsertAll(this SqlConnection dbConn, string table,  IEnumerable objs)
+        {
+            if (objs != null)
+            {
+                dbConn.Open();
+                var trans = dbConn.BeginTransaction();
+                try
+                {
+                    foreach (var obj in objs)
+                    {
+                        var rowCount = InsertTrans(dbConn, table, obj, trans);
+                        if (rowCount == 0)
+                        {
+                            trans.Rollback();
+                            break;
+                        }
+                    }
+                    trans.Commit();
+                }
+                catch (Exception exp)
+                {
+                    trans.Rollback();
+                }
+                finally
+                {
+                    trans.Dispose();
+                }
+            }
+        }
+
+        public static void Insert(this SqlConnection dbConn,string table, params object[] objs)
+        {
+            InsertAll(dbConn, table, objs);
         }
 
         public static void InsertAll<T>(this SqlConnection dbConn, IEnumerable<T> objs)
@@ -212,6 +316,11 @@ namespace Loogn.OrmLite
                     trans.Dispose();
                 }
             }
+        }
+
+        public static void Insert<T>(this SqlConnection dbConn, params T[] objs)
+        {
+            InsertAll<T>(dbConn, objs);
         }
 
         public static int Update<T>(this SqlConnection dbConn, T obj, bool includeDefaults = false)

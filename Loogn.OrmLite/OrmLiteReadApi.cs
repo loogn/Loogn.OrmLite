@@ -12,6 +12,10 @@ namespace Loogn.OrmLite
     public  static  partial class OrmLiteReadApi
     {
         #region Original Function
+        public static SqlDataReader ExecuteReader(this SqlConnection dbConn, CommandType commandType, string commandText, params SqlParameter[] ps)
+        {
+            return SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps);
+        }
 
         public static List<T> SelectOriginal<T>(this SqlConnection dbConn, CommandType commandType, string commandText, params SqlParameter[] ps)
         {

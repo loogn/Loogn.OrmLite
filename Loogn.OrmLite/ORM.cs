@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
-    internal static class ORM
+    public static class ORM
     {
         public static T ReaderToObject<T>(SqlDataReader reader)
         {
@@ -324,7 +324,7 @@ namespace Loogn.OrmLite
             return dict;
         }
 
-        public static string FullPartSql<T>(string sql, PartSqlType type)
+        internal static string FullPartSql<T>(string sql, PartSqlType type)
         {
             sql = sql.TrimStart();
             if (sql.StartsWith("SELECT"))

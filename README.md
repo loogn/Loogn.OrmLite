@@ -5,3 +5,5 @@ Loogn.OrmLite是一个简单、高效的SqlServer数据库访问组件！
 
 
 # API
+
+[http://www.loogn.net/blog/article.aspx?id=44](http://www.loogn.net/blog/article.aspx?id=44)

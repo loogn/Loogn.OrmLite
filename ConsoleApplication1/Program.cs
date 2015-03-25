@@ -27,6 +27,20 @@ namespace ConsoleApplication1
             OrmLite.SetDefaultConnectionString("server=.;uid=sa;pwd=123456;database=test");
             using (var db = OrmLite.Open())
             {
+                db.Open();
+                var trans = db.BeginTransaction();
+                try
+                {
+                    trans.Delete("ID=23");
+                    trans.Insert<Person>(new Person { Name = "loogn", AddDate = DateTime.Now });
+                    trans.Update<Person>(new Person { ID = 22, Name = "abc" });
+                    trans.Commit();
+                }
+                catch
+                {
+                    trans.Rollback();
+                }
+                
                 List<Person> list1 = db.Select<Person>();
                 //select * from Person
 
@@ -95,13 +109,59 @@ namespace ConsoleApplication1
                 //得到以type为Key，id集合为value的字典，即type和id为一对多关系
 
                 /************************************************************************************/
+
+                long rowcount = db.Insert<Person>(new Person { Name = "loogn" });
+                //返回影响行数
+
+                long newid = db.Insert<Person>(new Person { Name = "loogn" }, true);
+                //返回新的自增编号
+
+                db.Insert<Person>(
+                    new Person { Name = "loogn1" , AddDate=DateTime.Now},
+                    new Person { Name = "loogn2", AddDate = DateTime.Now },
+                    new Person { Name = "loogn2", AddDate = DateTime.Now });
+                //事务批量插入
+
+                List<Person> plist = new List<Person>() { 
+                    new Person { Name = "loogn1" , AddDate=DateTime.Now},
+                    new Person { Name = "loogn2", AddDate = DateTime.Now },
+                    new Person { Name = "loogn2", AddDate = DateTime.Now }
+                };
+                db.InsertAll<Person>(plist);
+                //事务批量插入
+
+                /************************************************************************************/
+
+                db.Update<Person>(new Person { ID = 23, Name = "loogn" });
+                //update person set name=@name where id=23
+
+
+                db.Update<Person>(DictBuilder.Assign("$age", "age+1"), "ID=@id", DictBuilder.Assign("id", 23));
+                //update Person set age=age+1 where id=@id
+
+                /************************************************************************************/
+
+                db.Delete<Person>();
+                //delete from Person
+
+                db.Delete<Person>(DictBuilder.Assign("id", 23).Assign("name","loogn"));
+                //delete from person where id=@id and name=@name
+
+                db.DeleteById<Person>(23);
+                //delete from person where id=23
+
+                db.DeleteById<Person>("loogn", "name");
+                //delete from person where name=@name
+
+                db.DeleteByIds<Person>(new int[] { 1, 2, 3 });
+                //delete from person where id in (1,2,3);
+
+                db.DeleteByIds<Person>(new string[] { "a", "b", "c" }, "name");
+                //delete from person where name in ('a','b','c');
+
                 
 
-                List<object> list = new List<object> {
-                    new { Name = "222222222211", AddDate = DateTime.Now },
-                    new { Name = "名2222222222222222222字22", AddDate = DateTime.Now }
-               };
-                db.InsertAll("person", list);
+
 
                 //var s= db.Insert("Person", new { Name = "名字sdfsdf", AddDate = DateTime.Now },true);
 

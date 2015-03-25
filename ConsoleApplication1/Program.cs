@@ -27,6 +27,85 @@ namespace ConsoleApplication1
             OrmLite.SetDefaultConnectionString("server=.;uid=sa;pwd=123456;database=test");
             using (var db = OrmLite.Open())
             {
+                List<Person> list1 = db.Select<Person>();
+                //select * from Person
+
+                List<Person> list2 = db.Select<Person>("ID>3");
+                //select * from Person where ID>3
+
+                List<Person> list3 = db.Select<Person>("ID>@id", new { id = 3 });
+                List<Person> list4 = db.Select<Person>("ID>@id", DictBuilder.Assign("id", 3));
+                //select * from Person Where ID>@id
+
+                List<Person> list5 = db.Select<Person>("select top 10 ID,Name from Person");
+                //select top 10 ID,Name from Person
+
+                List<Person> list6 = db.Select<Person>("select top 10 ID,Name from Person where ID>@id", new { id = 3 });
+                List<Person> list7 = db.Select<Person>("select top 10 ID,Name from Person where ID>@id", DictBuilder.Assign("id", 3));
+                //select top 10 ID,Name from Person where ID>@id
+
+
+                List<Person> list8 = db.SelectWhere<Person>(new { ID = 23, Name = "loogn" });
+                List<Person> list9 = db.SelectWhere<Person>(DictBuilder.Assign("ID", 23).Assign("Name", "loogn"));
+                //select * from Person where id=@ID and name=@Name
+
+                List<Person> list10 = db.SelectWhere<Person>("Name", "loogn");
+                //select * from Person where Name=@Name
+
+                List<Person> list11 = db.SelectFmt<Person>("select * from Person where ID={0}", 23);
+                //select * from Person where ID=23;
+
+                List<Person> list12 = db.SelectByIds<Person>(new int[] { 1, 2, 3 });
+                //select * from Person where id in (1,2,3);
+
+                db.SelectByIds<Person>(new string[] { "a", "b", "c" }, "name");
+                //select * from Person where name in ('a','b','c');
+
+                /************************************************************************************/
+
+                //db.Single的AIP和db.Select相似
+
+                /************************************************************************************/
+
+                //db.Scalar的AIP和db.Select相似
+
+                /************************************************************************************/
+
+                //db.Count的AIP和db.Select相似
+
+                /************************************************************************************/
+
+                List<string> col1 = db.Column<string>("select name from Person");
+                List<string> col2 = db.Column<string>("select name from Person where ID=@id", new { id = 23 });
+                List<string> col3 = db.Column<string>("select name from Person where ID=@id", DictBuilder.Assign("ID", 23));
+                //得到name的List集合
+
+
+                HashSet<int> set1 = db.ColumnDistinct<int>("select distinct(id) from Person");
+                HashSet<int> set2 = db.ColumnDistinct<int>("select distinct(id) from Person where name=@n", new { n = "loogn" });
+                HashSet<int> set3 = db.ColumnDistinct<int>("select distinct(id) from Person where name=@n", DictBuilder.Assign("n", "loogn"));
+                //得到ID的不重复集合
+
+                /************************************************************************************/
+
+                Dictionary<int, string> dict1 = db.Dictionary<int, string>("select id,name from Person where id>2");
+                //得到以id为Key,name为value的字典
+
+                Dictionary<int, List<int>> dict2 = db.Lookup<int, int>("select type,id from Person where id>2");
+                //得到以type为Key，id集合为value的字典，即type和id为一对多关系
+
+                /************************************************************************************/
+                
+
+                List<object> list = new List<object> {
+                    new { Name = "222222222211", AddDate = DateTime.Now },
+                    new { Name = "名2222222222222222222字22", AddDate = DateTime.Now }
+               };
+                db.InsertAll("person", list);
+
+                //var s= db.Insert("Person", new { Name = "名字sdfsdf", AddDate = DateTime.Now },true);
+
+
                 //var list = db.Select("select * from Person");//返回List<dynamic>
 
                 //var list = db.Select<Person>();//select * from Person
@@ -35,7 +114,7 @@ namespace ConsoleApplication1
                 ////或
                 //var list = db.Select<Person>("select * from Person where ID>@id", DictBuilder.Assign("id", 23));
 
-                
+
                 //var list = db.SelectWhere<Person>("name", "loogn");
                 ////select * from Person where name='loogn'
 

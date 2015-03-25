@@ -257,7 +257,7 @@ namespace Loogn.OrmLite
         {
             if (objs != null)
             {
-                dbConn.Open();
+                if (dbConn.State != ConnectionState.Open) dbConn.Open();
                 var trans = dbConn.BeginTransaction();
                 try
                 {
@@ -292,7 +292,7 @@ namespace Loogn.OrmLite
         {
             if (objs != null)
             {
-                dbConn.Open();
+                if (dbConn.State != ConnectionState.Open) dbConn.Open();
                 var trans = dbConn.BeginTransaction();
                 try
                 {
@@ -555,7 +555,7 @@ namespace Loogn.OrmLite
             return ExecuteNonQuery(dbConn, CommandType.Text, string.Format("DELETE FROM [{0}] WHERE [{1}]=@{1}", typeof(T).GetCachedTableName(), idField), sp);
         }
 
-        public static int DeleteByIds<T>(this SqlConnection dbConn, IEnumerable idValues)
+        public static int DeleteByIds<T>(this SqlConnection dbConn, IEnumerable idValues,string idFields="ID")
         {
             if (idValues == null) return 0;
             bool any = false;
@@ -574,7 +574,7 @@ namespace Loogn.OrmLite
                     }
                     var table = typeof(T).GetCachedTableName();
                     sql = new StringBuilder(50);
-                    sql.AppendFormat("DELETE from [{0}] where [{1}] in (", table, OrmLite.KeyFieldName);
+                    sql.AppendFormat("DELETE from [{0}] where [{1}] in (", table, idFields);
                 }
                 if (needQuot)
                 {

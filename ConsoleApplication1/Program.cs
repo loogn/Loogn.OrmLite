@@ -248,5 +248,10 @@ namespace ConsoleApplication1
                 Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}", person.ID, person.Name, person.Sex, person.Age, person.Money, person.AddDate);
             }
         }
+
+        static void FFF()
+        {
+            Console.WriteLine("Hello World");
+        }
     }
 }

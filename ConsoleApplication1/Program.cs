@@ -249,10 +249,5 @@ namespace ConsoleApplication1
             }
         }
 
-        static void FFF()
-        {
-            Console.WriteLine("Hello World");
-            Console.WriteLine("FixBug");
-        }
     }
 }

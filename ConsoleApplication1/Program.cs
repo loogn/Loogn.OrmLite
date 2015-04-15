@@ -24,14 +24,18 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
-            OrmLite.SetDefaultConnectionString("server=.;uid=sa;pwd=123456;database=test");
+            
+            OrmLite.DefaultConnectionString = "server=.;uid=sa;pwd=123456;database=test";
+            OrmLite.WriteSqlLog = true;
             using (var db = OrmLite.Open())
             {
+                
                 db.Open();
                 var trans = db.BeginTransaction();
                 try
                 {
-                    trans.Delete("ID=23");
+                    trans.Delete("delete from person where  ID=23");
+                    
                     trans.Insert<Person>(new Person { Name = "loogn", AddDate = DateTime.Now });
                     trans.Update<Person>(new Person { ID = 22, Name = "abc" });
                     trans.Commit();
@@ -40,6 +44,7 @@ namespace ConsoleApplication1
                 {
                     trans.Rollback();
                 }
+                return;
                 
                 List<Person> list1 = db.Select<Person>();
                 //select * from Person

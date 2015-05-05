@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // 特性集控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Loogn.OrmLite")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("超级高效简单的MSSqlServer数据访问组件")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Loogn")]
 [assembly: AssemblyProduct("Loogn.OrmLite")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]

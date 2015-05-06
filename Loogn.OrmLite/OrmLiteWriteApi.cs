@@ -66,7 +66,7 @@ namespace Loogn.OrmLite
             var ps = new List<SqlParameter>();
             foreach (var property in propertys)
             {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute), false).FirstOrDefault();
+                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
                 if (property.Name.Equals("ID", StringComparison.OrdinalIgnoreCase))
                 {
                     if (fieldAttr == null || (!fieldAttr.InsertRequire))
@@ -176,7 +176,7 @@ namespace Loogn.OrmLite
             var ps = new List<SqlParameter>();
             foreach (var property in propertys)
             {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute), false).FirstOrDefault();
+                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
                 if (property.Name.Equals("ID", StringComparison.OrdinalIgnoreCase))
                 {
                     if (fieldAttr == null || (!fieldAttr.InsertRequire))
@@ -334,7 +334,7 @@ namespace Loogn.OrmLite
             var ps = new List<SqlParameter>();
             foreach (var property in propertys)
             {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute), false).FirstOrDefault();
+                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
                 if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
                 {
                     var val = property.GetValue(obj, null);
@@ -413,7 +413,7 @@ namespace Loogn.OrmLite
             var ps = new List<SqlParameter>();
             foreach (var property in propertys)
             {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute), false).FirstOrDefault();
+                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
                 if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
                 {
                     var fieldName = property.Name;

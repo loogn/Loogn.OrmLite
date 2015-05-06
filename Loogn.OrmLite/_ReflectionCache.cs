@@ -9,83 +9,63 @@ namespace Loogn.OrmLite
 {
     internal static class ReflectionCache
     {
-        static Dictionary<string, object> Dict = new Dictionary<string, object>();
-
-        public static object[] GetCustomAttributes_Cache(this Type type, Type attributeType, bool inherit)
-        {
-            return GetCache<object[]>(type.FullName + "_attrs_" + attributeType.FullName, () =>
-            {
-                return type.GetCustomAttributes(attributeType, inherit);
-            });
-        }
-
-        public static object[] GetCustomAttributes_Cache(this Type type, bool inherit)
-        {
-            return GetCache(type.FullName + "_attrs", () =>
-            {
-                return type.GetCustomAttributes(inherit);
-            });
-        }
-
+        static Dictionary<Type, string> TableNamesDict = new Dictionary<Type, string>();
+        static Dictionary<Type, PropertyInfo[]> PropertysDict = new Dictionary<Type, PropertyInfo[]>();
+        static Dictionary<MemberInfo, object[]> CustomAttributesDict = new Dictionary<MemberInfo, object[]>();
         public static string GetCachedTableName(this Type type)
         {
-            return GetCache(type.FullName + "_tn", () =>
+            string tableName;
+            if (TableNamesDict.TryGetValue(type, out tableName))
             {
-                var table = "";
-                if (type.Name.EndsWith("Info"))
+                return tableName;
+            }
+            if (type.Name.EndsWith("Info", StringComparison.OrdinalIgnoreCase))
+            {
+                tableName = type.Name.Substring(0, type.Name.Length - 4);
+            }
+            else if (type.Name.EndsWith("Model", StringComparison.OrdinalIgnoreCase))
+            {
+                tableName = type.Name.Substring(0, type.Name.Length - 5);
+            }
+            else
+            {
+                var tableAttr = type.GetCustomAttributes(typeof(OrmLiteTableAttribute), true).FirstOrDefault() as OrmLiteTableAttribute;
+                if (tableAttr != null && tableAttr.Name != null && tableAttr.Name.Length > 0)
                 {
-                    table = type.Name.Substring(0, type.Name.Length - 4);
+                    tableName = tableAttr.Name;
                 }
                 else
                 {
-                    var tableAttr = (OrmLiteTableAttribute)type.GetCustomAttributes(typeof(OrmLiteTableAttribute), true).FirstOrDefault();
-                    if (tableAttr != null && tableAttr.Name != null && tableAttr.Name.Length > 0)
-                    {
-                        table = tableAttr.Name;
-                    }
-                    else
-                    {
-                        table = type.Name;
-                    }
+                    tableName = type.Name;
                 }
-                return table;
-            });
+            }
+            TableNamesDict[type] = tableName;
+            return tableName;
+
         }
 
         public static PropertyInfo[] GetCachedProperties(this Type type)
         {
-            return GetCache(type.FullName + "_props", () =>
+            PropertyInfo[] value;
+            if (PropertysDict.TryGetValue(type, out value))
             {
-                return type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            });
-        }
-
-        public static object[] GetCachedCustomAttributes(this MemberInfo member, Type attributeType, bool inherit)
-        {
-            return GetCache(member.DeclaringType.FullName + "." + member.Name + "_attrs_" + attributeType.FullName, () =>
-            {
-                return member.GetCustomAttributes(attributeType, inherit);
-            });
-        }
-
-        public static object[] GetCachedCustomAttributes(this MemberInfo member)
-        {
-            return GetCache(member.DeclaringType.FullName + "." + member.Name + "_attrs", () =>
-            {
-                return member.GetCustomAttributes(true);
-            });
-        }
-
-        private static T GetCache<T>(string key, Func<T> get)
-        {
-            object cval;
-            if (Dict.TryGetValue(key, out cval))
-            {
-                return (T)cval;
+                return value;
             }
-            var val = get();
-            Dict[key] = val;
-            return val;
+            value = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            PropertysDict[type] = value;
+            return value;
+        }
+
+        public static object[] GetCachedCustomAttributes(this MemberInfo member, Type attributeType)
+        {
+            object[] value;
+            if (CustomAttributesDict.TryGetValue(member, out value))
+            {
+                return value;
+            }
+            value = member.GetCustomAttributes(attributeType, false);
+            CustomAttributesDict[member] = value;
+            return value;
         }
     }
 }

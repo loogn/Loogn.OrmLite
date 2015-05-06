@@ -60,9 +60,9 @@ namespace Loogn.OrmLite
             var table = type.GetCachedTableName();
             var propertys = type.GetCachedProperties();
 
-            StringBuilder sbsql = new StringBuilder(100);
+            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             sbsql.AppendFormat("insert into [{0}] (", table);
-            StringBuilder sbParams = new StringBuilder(") values (");
+            StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
             var ps = new List<SqlParameter>();
             foreach (var property in propertys)
             {
@@ -130,9 +130,9 @@ namespace Loogn.OrmLite
             var type = anonType.GetType();
             var propertys = type.GetCachedProperties();
 
-            StringBuilder sbsql = new StringBuilder(100);
+            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             sbsql.AppendFormat("insert into [{0}] (", table);
-            StringBuilder sbParams = new StringBuilder(") values (");
+            StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
             var ps = new List<SqlParameter>();
             foreach (var property in propertys)
             {
@@ -170,9 +170,9 @@ namespace Loogn.OrmLite
             var table = type.GetCachedTableName();
             var propertys = type.GetCachedProperties();
 
-            StringBuilder sbsql = new StringBuilder(100);
+            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             sbsql.AppendFormat("insert into [{0}] (", table);
-            StringBuilder sbParams = new StringBuilder(") values (");
+            StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
             var ps = new List<SqlParameter>();
             foreach (var property in propertys)
             {
@@ -229,9 +229,9 @@ namespace Loogn.OrmLite
         {
             var type = anonType.GetType();
             var propertys = type.GetCachedProperties();
-            StringBuilder sbsql = new StringBuilder(100);
+            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             sbsql.AppendFormat("insert into [{0}] (", table);
-            StringBuilder sbParams = new StringBuilder(") values (");
+            StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
             var ps = new List<SqlParameter>();
             foreach (var property in propertys)
             {
@@ -275,6 +275,7 @@ namespace Loogn.OrmLite
                 catch (Exception exp)
                 {
                     trans.Rollback();
+                    throw exp;
                 }
                 finally
                 {
@@ -328,7 +329,7 @@ namespace Loogn.OrmLite
             var type = typeof(T);
             var table = type.GetCachedTableName();
             var propertys = type.GetCachedProperties();
-            StringBuilder sbsql = new StringBuilder(100);
+            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             sbsql.AppendFormat("update [{0}] set ", table);
             string condition = null;
             var ps = new List<SqlParameter>();
@@ -407,7 +408,7 @@ namespace Loogn.OrmLite
             var type = typeof(T);
             var table = type.GetCachedTableName();
             var propertys = type.GetCachedProperties();
-            StringBuilder sbsql = new StringBuilder(100);
+            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             sbsql.AppendFormat("update [{0}] set ", table);
             string condition = null;
             var ps = new List<SqlParameter>();
@@ -542,7 +543,7 @@ namespace Loogn.OrmLite
 
         public static int Delete<T>(this SqlConnection dbConn, Dictionary<string, object> conditions)
         {
-            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
+            StringBuilder sqlbuilder = new StringBuilder(200);
             var tableName = typeof(T).GetCachedTableName();
             sqlbuilder.AppendFormat("DELETE FROM [{0}]", tableName);
             var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
@@ -573,7 +574,7 @@ namespace Loogn.OrmLite
                         needQuot = true;
                     }
                     var table = typeof(T).GetCachedTableName();
-                    sql = new StringBuilder(50);
+                    sql = new StringBuilder(200);
                     sql.AppendFormat("DELETE from [{0}] where [{1}] in (", table, idFields);
                 }
                 if (needQuot)

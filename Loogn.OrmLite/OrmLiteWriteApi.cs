@@ -311,6 +311,7 @@ namespace Loogn.OrmLite
                 catch (Exception exp)
                 {
                     trans.Rollback();
+                    throw exp;
                 }
                 finally
                 {
@@ -486,9 +487,8 @@ namespace Loogn.OrmLite
                 }
                 catch (Exception exp)
                 {
-                    Console.WriteLine(exp.Message);
-                    row = 0;
                     trans.Rollback();
+                    throw exp;
                 }
                 finally
                 {

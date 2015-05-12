@@ -108,23 +108,22 @@ namespace Loogn.OrmLite
         #region Select
         public static List<T> Select<T>(this SqlConnection dbConn)
         {
-            var table = typeof(T).GetCachedTableName();
-            return SelectOriginal<T>(dbConn, CommandType.Text, "SELECT * FROM [" + table + "]");
+            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.Select<T>());
         }
 
         public static List<T> Select<T>(this SqlConnection dbConn, string sql)
         {
-            return SelectOriginal<T>(dbConn, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Select), null);
+            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Select), null);
         }
 
         public static List<T> Select<T>(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters)
         {
-            return SelectOriginal<T>(dbConn, CommandType.Text, ORM.FullPartSql<T>( sql, PartSqlType.Select), ORM.DictionaryToParams(parameters));
+            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Select), ORM.DictionaryToParams(parameters));
         }
 
         public static List<T> Select<T>(this SqlConnection dbConn, string sql, object parameters)
         {
-            return SelectOriginal<T>(dbConn, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Select), ORM.AnonTypeToParams(parameters));
+            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Select), ORM.AnonTypeToParams(parameters));
         }
 
         public static List<dynamic> Select(this SqlConnection dbConn, string sql)
@@ -144,27 +143,20 @@ namespace Loogn.OrmLite
 
         public static List<T> SelectWhere<T>(this SqlConnection dbConn, string name, object value)
         {
-            var table = typeof(T).GetCachedTableName();
-            SqlParameter p = new SqlParameter("@" + name, value);
-            return SelectOriginal<T>(dbConn, CommandType.Text, string.Format("Select * from [{0}] where [{1}]=@{1}", table, name), p);
+            var tuple = SqlCmd.SelectWhere<T>(name, value);
+            return SelectOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         public static List<T> SelectWhere<T>(this SqlConnection dbConn, Dictionary<string, object> conditions)
         {
-            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT * FROM [{0}]", tableName);
-            var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
-            return SelectOriginal<T>(dbConn, CommandType.Text, sqlbuilder.ToString(), ps);
+            var tuple = SqlCmd.SelectWhere<T>(conditions);
+            return SelectOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         public static List<T> SelectWhere<T>(this SqlConnection dbConn, object  conditions)
         {
-            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT * FROM [{0}]", tableName);
-            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
-            return SelectOriginal<T>(dbConn, CommandType.Text, sqlbuilder.ToString(), ps);
+            var tuple = SqlCmd.SelectWhere<T>(conditions);
+            return SelectOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         public static List<T> SelectFmt<T>(this SqlConnection dbConn, string sqlFormat, params object[] parameters)
@@ -177,45 +169,11 @@ namespace Loogn.OrmLite
             return SelectOriginal(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
-        public static List<T> SelectByIds<T>(this SqlConnection dbConn, IEnumerable idValues, string idField = "ID")
+        public static List<T> SelectByIds<T>(this SqlConnection dbConn, IEnumerable idValues, string idField = OrmLite.KeyName)
         {
-            if (idValues == null) return new List<T>();
-            bool any = false;
-            var needQuot = false;
-            StringBuilder sql = null;
-            var enumerator = idValues.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                if (!any)
-                {
-                    any = true;
-                    var idType = enumerator.Current.GetType();
-                    if (idType == typeof(string) || idType == typeof(DateTime))
-                    {
-                        needQuot = true;
-                    }
-                    var table = typeof(T).GetCachedTableName();
-                    sql = new StringBuilder(50);
-                    sql.AppendFormat("Select * from [{0}] where [{1}] in (", table, idField);
-                }
-                if (needQuot)
-                {
-                    sql.AppendFormat("'{0}',", enumerator.Current);
-                }
-                else
-                {
-                    sql.AppendFormat("{0},", enumerator.Current);
-                }
-            }
-            if (!any)
-            {
-                return new List<T>();
-            }
-            else
-            {
-                sql.Replace(',', ')', sql.Length - 1, 1);
-                return SelectOriginal<T>(dbConn, CommandType.Text, sql.ToString());
-            }
+            var sql = SqlCmd.SelectByIds<T>(idValues, idField);
+            if (sql == null) return new List<T>();
+            return SelectOriginal<T>(dbConn, CommandType.Text, sql);
         }
 
         public static List<T> SelectPage<T>(this SqlConnection dbConn, OrmLitePageFactor factor, out long totalCount)
@@ -271,30 +229,24 @@ namespace Loogn.OrmLite
 
         public static T Single<T>(this SqlConnection dbConn, Dictionary<string, object> conditions)
         {
-            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT  TOP 1 * FROM [{0}]", tableName);
-            var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
-            return SingleOriginal<T>(dbConn, CommandType.Text, sqlbuilder.ToString(), ps);
+            var tuple = SqlCmd.Single<T>(conditions);
+            return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         public static T Single<T>(this SqlConnection dbConn, object conditions)
         {
-            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT  TOP 1 * FROM [{0}]", tableName);
-            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
-            return SingleOriginal<T>(dbConn, CommandType.Text, sqlbuilder.ToString(), ps);
+            var tuple = SqlCmd.Single<T>(conditions);
+            return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         public static T Single<T>(this SqlConnection dbConn, string sql)
         {
-            return SingleOriginal<T>(dbConn, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Single), null);
+            return SingleOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Single), null);
         }
 
         public static T Single<T>(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters )
         {
-            return SingleOriginal<T>(dbConn, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Single), ORM.DictionaryToParams(parameters));
+            return SingleOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Single), ORM.DictionaryToParams(parameters));
         }
 
         public static dynamic Single(this SqlConnection dbConn, string sql)
@@ -322,35 +274,28 @@ namespace Loogn.OrmLite
             return SingleOriginal(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
-        public static T SingleById<T>(this SqlConnection dbConn, object idValue, string idField = "ID")
+        public static T SingleById<T>(this SqlConnection dbConn, object idValue, string idField = OrmLite.KeyName)
         {
-            SqlParameter sp = new SqlParameter("@" + idField, idValue);
-            return SingleOriginal<T>(dbConn, CommandType.Text, string.Format("SELECT TOP 1 * FROM [{0}] WHERE [{1}]=@{1}", typeof(T).GetCachedTableName(), idField), sp);
+            var tuple = SqlCmd.SingleById<T>(idValue, idField);
+            return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         public static T SingleWhere<T>(this SqlConnection dbConn, string name, object value)
         {
-            var table = typeof(T).GetCachedTableName();
-            SqlParameter p = new SqlParameter("@" + name, value);
-            return SingleOriginal<T>(dbConn, CommandType.Text, string.Format("SELECT TOP 1 * FROM [{0}] WHERE [{1}]=@{1}", table, name), p);
+            var tuple = SqlCmd.SingleWhere<T>(name, value);
+            return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         public static T SingleWhere<T>(this SqlConnection dbConn, Dictionary<string, object> conditions)
         {
-            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT TOP 1 * FROM [{0}]", tableName);
-            var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
-            return SingleOriginal<T>(dbConn, CommandType.Text, sqlbuilder.ToString(), ps);
+            var tuple = SqlCmd.SingleWhere<T>(conditions);
+            return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         public static T SingleWhere<T>(this SqlConnection dbConn, object conditions)
         {
-            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT TOP 1 * FROM [{0}]", tableName);
-            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
-            return SingleOriginal<T>(dbConn, CommandType.Text, sqlbuilder.ToString(), ps);
+            var tuple = SqlCmd.SingleWhere<T>(conditions);
+            return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         #endregion
@@ -464,46 +409,38 @@ namespace Loogn.OrmLite
         #region Count
         public static long Count<T>(this SqlConnection dbConn)
         {
-            var table = typeof(T).GetCachedTableName();
-            return CountOriginal(dbConn, CommandType.Text, "SELECT COUNT(0) FROM [" + table + "]");
+            return CountOriginal(dbConn, CommandType.Text, SqlCmd.Count<T>());
         }
 
         public static long Count<T>(this SqlConnection dbConn, string sql)
         {
-            return CountOriginal(dbConn, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Count), null);
+            return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), null);
         }
         public static long Count<T>(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters)
         {
-            return CountOriginal(dbConn, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Count), ORM.DictionaryToParams(parameters));
+            return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), ORM.DictionaryToParams(parameters));
         }
         public static long Count<T>(this SqlConnection dbConn, string sql, object parameters)
         {
-            return CountOriginal(dbConn, CommandType.Text, ORM.FullPartSql<T>(sql, PartSqlType.Count), ORM.AnonTypeToParams(parameters));
+            return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), ORM.AnonTypeToParams(parameters));
         }
 
         public static long CountWhere<T>(this SqlConnection dbConn, string name, object value)
         {
-            var table = typeof(T).GetCachedTableName();
-            SqlParameter p = new SqlParameter("@" + name, value);
-            return CountOriginal(dbConn, CommandType.Text, string.Format("SELECT COUNT(0) FROM [{0}] WHERE [{1}]=@{1}", table, name), p);
+            var tuple = SqlCmd.CountWhere<T>(name, value);
+            return CountOriginal(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         public static long CountWhere<T>(this SqlConnection dbConn, Dictionary<string, object> conditions)
         {
-            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT COUNT(0) FROM [{0}]", tableName);
-            var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
-            return CountOriginal(dbConn, CommandType.Text, sqlbuilder.ToString(), ps);
+            var tuple = SqlCmd.CountWhere<T>(conditions);
+            return CountOriginal(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
         public static long CountWhere<T>(this SqlConnection dbConn,object conditions)
         {
-            StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT COUNT(0) FROM [{0}]", tableName);
-            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
-            return CountOriginal(dbConn, CommandType.Text, sqlbuilder.ToString(), ps);
+            var tuple = SqlCmd.CountWhere<T>(conditions);
+            return CountOriginal(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
 

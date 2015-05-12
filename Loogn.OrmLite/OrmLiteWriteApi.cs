@@ -13,7 +13,6 @@ namespace Loogn.OrmLite
     {
         public static SqlCommand Proc(this SqlConnection dbConn, string name, object inParams = null, bool excludeDefaults = false)
         {
-            
             var cmd = dbConn.CreateCommand();
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.CommandText = name;
@@ -22,13 +21,12 @@ namespace Loogn.OrmLite
                 var ps = ORM.AnonTypeToParams(inParams);
                 cmd.Parameters.AddRange(ps);
             }
+            dbConn.Open();
             if (excludeDefaults)
             {
-                dbConn.Open();
                 cmd.ExecuteNonQuery();
                 cmd.Parameters.Clear();
             }
-            dbConn.Open();
             return cmd;
         }
 
@@ -56,203 +54,54 @@ namespace Loogn.OrmLite
 
         public static long Insert<T>(this SqlConnection dbConn, T obj, bool selectIdentity = false)
         {
-            var type = typeof(T);
-            var table = type.GetCachedTableName();
-            var propertys = type.GetCachedProperties();
-
-            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("insert into [{0}] (", table);
-            StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
-            var ps = new List<SqlParameter>();
-            foreach (var property in propertys)
-            {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
-                if (property.Name.Equals("ID", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (fieldAttr == null || (!fieldAttr.InsertRequire))
-                    {
-                        continue;
-                    }
-                }
-
-                if (fieldAttr == null || (!fieldAttr.InsertIgnore && !fieldAttr.Ignore))
-                {
-                    var fieldName = property.Name;
-
-                    if (fieldAttr != null && fieldAttr.Name != null && fieldAttr.Name.Length > 0)
-                    {
-                        fieldName = fieldAttr.Name;
-                    }
-                    var val = property.GetValue(obj, null);
-                    if (val == null)
-                    {
-                        if (property.PropertyType == typeof(string))
-                        {
-                            val = string.Empty;
-                        }
-                    }
-                    else
-                    {
-                        if (property.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
-                        {
-                            val = DateTime.Now;
-                        }
-                    }
-                    sbsql.AppendFormat("[{0}],", fieldName);
-                    sbParams.AppendFormat("@{0},", fieldName);
-                    ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
-                }
-            }
-            if (ps.Count == 0)
-            {
-                throw new ArgumentException("model里没有字段，无法插入");
-            }
-            sbsql.Remove(sbsql.Length - 1, 1);
-            sbParams.Remove(sbParams.Length - 1, 1);
-            sbsql.Append(sbParams.ToString());
-            sbsql.Append(")");
-
+            var tuple = SqlCmd.Insert<T>(obj, selectIdentity);
             if (selectIdentity)
             {
-                sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
-                var identity = ExecuteScalar(dbConn, CommandType.Text, sbsql.ToString(), ps.ToArray());
+                var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
                 return Convert.ToInt64(identity);
             }
             else
             {
-                var raw = ExecuteNonQuery(dbConn, CommandType.Text, sbsql.ToString(), ps.ToArray());
+                var raw = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+                return raw;
+            }
+        }
+
+        public static long Insert(this SqlConnection dbConn, string table, Dictionary<string, object> fields, bool selectIdentity = false)
+        {
+            var tuple = SqlCmd.Insert(table, fields, selectIdentity);
+            if (selectIdentity)
+            {
+                var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+                return Convert.ToInt64(identity);
+            }
+            else
+            {
+                var raw = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
                 return raw;
             }
         }
 
         public static long Insert(this SqlConnection dbConn, string table, object anonType, bool selectIdentity = false)
         {
-            var type = anonType.GetType();
-            var propertys = type.GetCachedProperties();
-
-            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("insert into [{0}] (", table);
-            StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
-            var ps = new List<SqlParameter>();
-            foreach (var property in propertys)
-            {
-                var fieldName = property.Name;
-                var val = property.GetValue(anonType, null);
-                sbsql.AppendFormat("[{0}],", fieldName);
-                sbParams.AppendFormat("@{0},", fieldName);
-                ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
-            }
-            if (ps.Count == 0)
-            {
-                throw new ArgumentException("model里没有字段，无法插入");
-            }
-            sbsql.Remove(sbsql.Length - 1, 1);
-            sbParams.Remove(sbParams.Length - 1, 1);
-            sbsql.Append(sbParams.ToString());
-            sbsql.Append(")");
-
+            var tuple = SqlCmd.Insert(table, anonType, selectIdentity);
             if (selectIdentity)
             {
-                sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
-                var identity = ExecuteScalar(dbConn, CommandType.Text, sbsql.ToString(), ps.ToArray());
+                var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
                 return Convert.ToInt64(identity);
             }
             else
             {
-                var raw = ExecuteNonQuery(dbConn, CommandType.Text, sbsql.ToString(), ps.ToArray());
+                var raw = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
                 return raw;
             }
         }
 
-        private static int InsertTrans<T>(this SqlConnection dbConn, T obj, SqlTransaction trans)
+
+        public static void Insert(this SqlConnection dbConn, string table, params object[] objs)
         {
-            var type = typeof(T);
-            var table = type.GetCachedTableName();
-            var propertys = type.GetCachedProperties();
-
-            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("insert into [{0}] (", table);
-            StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
-            var ps = new List<SqlParameter>();
-            foreach (var property in propertys)
-            {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
-                if (property.Name.Equals("ID", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (fieldAttr == null || (!fieldAttr.InsertRequire))
-                    {
-                        continue;
-                    }
-                }
-                if (fieldAttr == null || (!fieldAttr.InsertIgnore && !fieldAttr.Ignore))
-                {
-                    var fieldName = property.Name;
-
-                    if (fieldAttr != null && fieldAttr.Name != null && fieldAttr.Name.Length > 0)
-                    {
-                        fieldName = fieldAttr.Name;
-                    }
-                    var val = property.GetValue(obj, null);
-                    if (val == null)
-                    {
-                        if (property.PropertyType == typeof(string))
-                        {
-                            val = string.Empty;
-                        }
-                    }
-                    else
-                    {
-                        if (property.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
-                        {
-                            //val = System.Data.SqlTypes.SqlDateTime.MinValue.Value;
-                            val = DateTime.Now;
-                        }
-                    }
-                    sbsql.AppendFormat("[{0}],", fieldName);
-                    sbParams.AppendFormat("@{0},", fieldName);
-                    ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
-                }
-            }
-            if (ps.Count == 0)
-            {
-                throw new ArgumentException("model里没有字段，无法插入");
-            }
-            sbsql.Remove(sbsql.Length - 1, 1);
-            sbParams.Remove(sbParams.Length - 1, 1);
-            sbsql.Append(sbParams.ToString());
-            sbsql.Append(")");
-            var raw = ExecuteNonQuery(trans, CommandType.Text, sbsql.ToString(), ps.ToArray());
-            return raw;
+            InsertAll(dbConn, table, objs);
         }
-
-        private static int InsertTrans(this SqlConnection dbConn, string table, object anonType, SqlTransaction trans)
-        {
-            var type = anonType.GetType();
-            var propertys = type.GetCachedProperties();
-            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("insert into [{0}] (", table);
-            StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
-            var ps = new List<SqlParameter>();
-            foreach (var property in propertys)
-            {
-                var fieldName = property.Name;
-                var val = property.GetValue(anonType, null);
-                sbsql.AppendFormat("[{0}],", fieldName);
-                sbParams.AppendFormat("@{0},", fieldName);
-                ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
-            }
-            if (ps.Count == 0)
-            {
-                throw new ArgumentException("model里没有字段，无法插入");
-            }
-            sbsql.Remove(sbsql.Length - 1, 1);
-            sbParams.Remove(sbParams.Length - 1, 1);
-            sbsql.Append(sbParams.ToString());
-            sbsql.Append(")");
-            var raw = ExecuteNonQuery(trans, CommandType.Text, sbsql.ToString(), ps.ToArray());
-            return raw;
-        }
-
         public static void InsertAll(this SqlConnection dbConn, string table,  IEnumerable objs)
         {
             if (objs != null)
@@ -263,43 +112,7 @@ namespace Loogn.OrmLite
                 {
                     foreach (var obj in objs)
                     {
-                        var rowCount = InsertTrans(dbConn, table, obj, trans);
-                        if (rowCount == 0)
-                        {
-                            trans.Rollback();
-                            break;
-                        }
-                    }
-                    trans.Commit();
-                }
-                catch (Exception exp)
-                {
-                    trans.Rollback();
-                    throw exp;
-                }
-                finally
-                {
-                    trans.Dispose();
-                }
-            }
-        }
-
-        public static void Insert(this SqlConnection dbConn,string table, params object[] objs)
-        {
-            InsertAll(dbConn, table, objs);
-        }
-
-        public static void InsertAll<T>(this SqlConnection dbConn, IEnumerable<T> objs)
-        {
-            if (objs != null)
-            {
-                if (dbConn.State != ConnectionState.Open) dbConn.Open();
-                var trans = dbConn.BeginTransaction();
-                try
-                {
-                    foreach (var obj in objs)
-                    {
-                        var rowCount = InsertTrans<T>(dbConn, obj, trans);
+                        var rowCount = InsertTrans(trans, table, obj);
                         if (rowCount == 0)
                         {
                             trans.Rollback();
@@ -325,136 +138,41 @@ namespace Loogn.OrmLite
             InsertAll<T>(dbConn, objs);
         }
 
-        public static int Update<T>(this SqlConnection dbConn, T obj, bool includeDefaults = false)
+        public static void InsertAll<T>(this SqlConnection dbConn, IEnumerable<T> objs)
         {
-            var type = typeof(T);
-            var table = type.GetCachedTableName();
-            var propertys = type.GetCachedProperties();
-            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("update [{0}] set ", table);
-            string condition = null;
-            var ps = new List<SqlParameter>();
-            foreach (var property in propertys)
+            if (objs != null)
             {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
-                if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
+                if (dbConn.State != ConnectionState.Open) dbConn.Open();
+                var trans = dbConn.BeginTransaction();
+                try
                 {
-                    var val = property.GetValue(obj, null);
-                    if (includeDefaults) //需要初始化
+                    foreach (var obj in objs)
                     {
-                        if (val == null)
+                        var rowCount = InsertTrans<T>(trans, obj);
+                        if (rowCount == 0)
                         {
-                            if (property.PropertyType == typeof(string))
-                            {
-                                val = string.Empty;
-                            }
+                            trans.Rollback();
+                            break;
                         }
                     }
-                    else
-                    {
-                        if (val == null)
-                        {
-                            //string nullable
-                            continue;   
-                        }
-                        else
-                        {
-                            if (property.PropertyType == typeof(byte) ||
-                                property.PropertyType == typeof(int) ||
-                                property.PropertyType == typeof(long) ||
-                                property.PropertyType == typeof(float) ||
-                                property.PropertyType == typeof(double) ||
-                                property.PropertyType == typeof(Decimal))
-                            {
-                                if (Convert.ToInt32(val) == 0)
-                                {
-                                    continue;
-                                }
-                            }
-                            else if (property.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
-                            {
-                                continue;
-                            }
-                        }
-                    }
-                    var fieldName = property.Name;
-                    if (fieldAttr != null && fieldAttr.Name != null && fieldAttr.Name.Length > 0)
-                    {
-                        fieldName = fieldAttr.Name;
-                    }
-                    if (fieldName.Equals("ID", StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
-                    {
-                        condition = string.Format("[{0}] = @{0}", fieldName);
-                    }
-                    else
-                    {
-                        sbsql.AppendFormat("[{0}] = @{0},", fieldName);
-                    }
-                    ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+                    trans.Commit();
+                }
+                catch (Exception exp)
+                {
+                    trans.Rollback();
+                    throw exp;
+                }
+                finally
+                {
+                    trans.Dispose();
                 }
             }
-            if (ps.Count == 0)
-            {
-                throw new ArgumentException("model里没有字段，无法修改");
-            }
-            sbsql.Remove(sbsql.Length - 1, 1);
-            sbsql.AppendFormat(" where ");
-            sbsql.Append(condition);
-            int c = ExecuteNonQuery(dbConn, CommandType.Text, sbsql.ToString(), ps.ToArray());
-            return c;
         }
 
-        private static int UpdateTrans<T>(this SqlConnection dbConn, T obj, SqlTransaction trans)
+        public static int Update<T>(this SqlConnection dbConn, T obj, bool includeDefaults = false)
         {
-            var type = typeof(T);
-            var table = type.GetCachedTableName();
-            var propertys = type.GetCachedProperties();
-            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("update [{0}] set ", table);
-            string condition = null;
-            var ps = new List<SqlParameter>();
-            foreach (var property in propertys)
-            {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
-                if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
-                {
-                    var fieldName = property.Name;
-                    if (fieldAttr != null && fieldAttr.Name != null && fieldAttr.Name.Length > 0)
-                    {
-                        fieldName = fieldAttr.Name;
-                    }
-
-                    var val = property.GetValue(obj, null);
-                    if (val == null)
-                    {
-                        if (property.PropertyType == typeof(string))
-                        {
-                            continue;
-                        }
-                    }
-                    if (property.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
-                    {
-                        continue;
-                    }
-                    if (fieldName.Equals("ID", StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
-                    {
-                        condition = string.Format("[{0}] = @{0}", fieldName);
-                    }
-                    else
-                    {
-                        sbsql.AppendFormat("[{0}] = @{0},", fieldName);
-                    }
-                    ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
-                }
-            }
-            if (ps.Count == 0)
-            {
-                throw new ArgumentException("model里没有字段，无法修改");
-            }
-            sbsql.Remove(sbsql.Length - 1, 1);
-            sbsql.AppendFormat(" where ");
-            sbsql.Append(condition);
-            int c = ExecuteNonQuery(trans, CommandType.Text, sbsql.ToString(), ps.ToArray());
+            var tuple = SqlCmd.Update<T>(obj, includeDefaults);
+            int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;
         }
 
@@ -474,7 +192,7 @@ namespace Loogn.OrmLite
                 {
                     foreach (var obj in objs)
                     {
-                        var rowCount = UpdateTrans<T>(dbConn, obj, trans);
+                        var rowCount = UpdateTrans<T>(trans, obj);
                         if (rowCount == 0)
                         {
                             trans.Rollback();
@@ -500,39 +218,9 @@ namespace Loogn.OrmLite
 
         public static int Update<T>(this SqlConnection dbConn, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
         {
-            var table = typeof(T).GetCachedTableName();
-            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("update [{0}] set ", table);
-            var ps = new List<SqlParameter>();
-            var nofield = true;
-            foreach (var field in updateFields)
-            {
-                if (field.Key.StartsWith("$") || field.Key.StartsWith("_"))
-                {
-                    sbsql.AppendFormat("[{0}] = {1},", field.Key.Substring(1), field.Value);
-                    nofield = false;
-                }
-                else
-                {
-                    sbsql.AppendFormat("[{0}] = @_{0},", field.Key);
-                    ps.Add(new SqlParameter("@_" + field.Key, field.Value));
-                }
-            }
-            if (ps.Count == 0 && nofield)
-            {
-                throw new ArgumentException("updateFields里没有字段，无法修改");
-            }
-            sbsql.Remove(sbsql.Length - 1, 1);
-            if (conditions != null && conditions.Length > 0)
-            {
-                sbsql.AppendFormat(" where {0}", conditions);
-            }
-            var conditionPS = ORM.DictionaryToParams(parameters);
-            if (conditionPS != null)
-            {
-                ps.AddRange(conditionPS);
-            }
-            int c = ExecuteNonQuery(dbConn, CommandType.Text, sbsql.ToString(), ps.ToArray());
+            var tuple = SqlCmd.Update<T>(updateFields, conditions, parameters);
+
+            int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;
         }
 
@@ -543,64 +231,27 @@ namespace Loogn.OrmLite
 
         public static int Delete<T>(this SqlConnection dbConn, Dictionary<string, object> conditions)
         {
-            StringBuilder sqlbuilder = new StringBuilder(200);
-            var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("DELETE FROM [{0}]", tableName);
-            var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
-            return ExecuteNonQuery(dbConn, CommandType.Text, sqlbuilder.ToString(), ps);
+            var tuple = SqlCmd.Delete<T>(conditions);
+            return ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static int DeleteById<T>(this SqlConnection dbConn, object id, string idField = "ID")
+        public static int DeleteById<T>(this SqlConnection dbConn, object id, string idField = OrmLite.KeyName)
         {
-            SqlParameter sp = new SqlParameter("@" + idField, id);
-            return ExecuteNonQuery(dbConn, CommandType.Text, string.Format("DELETE FROM [{0}] WHERE [{1}]=@{1}", typeof(T).GetCachedTableName(), idField), sp);
+            var tuple = SqlCmd.DeleteById<T>(id, idField);
+            return ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static int DeleteByIds<T>(this SqlConnection dbConn, IEnumerable idValues,string idFields="ID")
+        public static int DeleteByIds<T>(this SqlConnection dbConn, IEnumerable idValues, string idFields = OrmLite.KeyName)
         {
-            if (idValues == null) return 0;
-            bool any = false;
-            var needQuot = false;
-            StringBuilder sql = null;
-            var enumerator = idValues.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                if (!any)
-                {
-                    any = true;
-                    var idType = enumerator.Current.GetType();
-                    if (idType == typeof(string) || idType == typeof(DateTime))
-                    {
-                        needQuot = true;
-                    }
-                    var table = typeof(T).GetCachedTableName();
-                    sql = new StringBuilder(200);
-                    sql.AppendFormat("DELETE from [{0}] where [{1}] in (", table, idFields);
-                }
-                if (needQuot)
-                {
-                    sql.AppendFormat("'{0}',", enumerator.Current);
-                }
-                else
-                {
-                    sql.AppendFormat("{0},", enumerator.Current);
-                }
-            }
-            if (!any)
-            {
-                return 0;
-            }
-            else
-            {
-                sql.Replace(',', ')', sql.Length - 1, 1);
-                return ExecuteNonQuery(dbConn, CommandType.Text, sql.ToString());
-            }
+            var sql = SqlCmd.DeleteByIds<T>(idValues, idFields);
+            if (sql == null || sql.Length == 0) return 0;
+            return ExecuteNonQuery(dbConn, CommandType.Text, sql);
         }
 
         public static int Delete<T>(this SqlConnection dbConn)
         {
-            var table = typeof(T).GetCachedTableName();
-            return ExecuteNonQuery(dbConn, CommandType.Text, "DELETE  FROM [" + table + "]");
+            var sql = SqlCmd.Delete<T>();
+            return ExecuteNonQuery(dbConn, CommandType.Text, sql);
         }
     }
 }

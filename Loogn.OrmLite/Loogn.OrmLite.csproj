@@ -54,6 +54,7 @@
     <Compile Include="OrmLiteWriteApiTrans.cs" />
     <Compile Include="OrmLiteWriteApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="_SqlCmd.cs" />
     <Compile Include="_ReflectionCache.cs" />
     <Compile Include="SQLHelper.cs" />
   </ItemGroup>

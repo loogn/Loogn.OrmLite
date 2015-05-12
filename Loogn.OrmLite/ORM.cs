@@ -324,28 +324,7 @@ namespace Loogn.OrmLite
             return dict;
         }
 
-        internal static string FullPartSql<T>(string sql, PartSqlType type)
-        {
-            sql = sql.TrimStart();
-            if (sql.StartsWith("SELECT"))
-            {
-                return sql;
-            }
-            var tableName = typeof(T).GetCachedTableName();
-            StringBuilder sb = new StringBuilder(sql.Length + 50);
-            switch (type)
-            {
-                case PartSqlType.Select:
-                    return sb.AppendFormat("SELECT * FROM [{0}] where {1}", tableName, sql).ToString();
-                case PartSqlType.Single:
-                    return sb.AppendFormat("SELECT TOP 1 * FROM [{0}] where {1}", tableName, sql).ToString();
-                case PartSqlType.Count:
-                    return sb.AppendFormat("SELECT COUNT(0) FROM [{0}] where {1}", tableName, sql).ToString();
-                default:
-                    return sql;
-            }
-        }
-
+        
     }
     internal class MyTuple<T1, T2>
     {

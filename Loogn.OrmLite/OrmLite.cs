@@ -10,6 +10,8 @@ namespace Loogn.OrmLite
 {
     public class OrmLite
     {
+        public const string KeyName = "ID";
+
         public static SqlConnection Open(string connectionString, bool open = false)
         {
             var conn = new SqlConnection(connectionString);
@@ -23,15 +25,18 @@ namespace Loogn.OrmLite
             return conn;
         }
 
-
         private static string defaultConnectionString;
         public static string DefaultConnectionString
         {
             get { return defaultConnectionString; }
-            set
-            {
-                defaultConnectionString = value;
-            }
+            set { defaultConnectionString = value; }
+        }
+
+        private static string defaultKeyName = KeyName;
+        public static string DefaultKeyName
+        {
+            get { return defaultKeyName; }
+            set { defaultKeyName = value; }
         }
 
         public static bool WriteSqlLog
@@ -40,7 +45,6 @@ namespace Loogn.OrmLite
             set;
         }
 
-        public static readonly string KeyFieldName = "ID";
 
         public static int SqlStringBuilderCapacity = 100;
         public static void SetSqlStringBuilderCapacity(int capacity, bool enforce = false)

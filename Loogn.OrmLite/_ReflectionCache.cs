@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
-    internal static class ReflectionCache
+    static class ReflectionCache
     {
         static Dictionary<Type, string> TableNamesDict = new Dictionary<Type, string>();
         static Dictionary<Type, PropertyInfo[]> PropertysDict = new Dictionary<Type, PropertyInfo[]>();

@@ -11,6 +11,14 @@ namespace Loogn.OrmLite
 {
     public static partial class OrmLiteWriteApi
     {
+        public static void EnsureOpen(this SqlConnection dbConn)
+        {
+            if (dbConn.State != ConnectionState.Open)
+            {
+                dbConn.Open();
+            }
+        }
+
         public static SqlCommand Proc(this SqlConnection dbConn, string name, object inParams = null, bool excludeDefaults = false)
         {
             var cmd = dbConn.CreateCommand();

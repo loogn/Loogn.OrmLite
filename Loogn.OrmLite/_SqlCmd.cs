@@ -19,7 +19,7 @@ namespace Loogn.OrmLite
         public static string FullPartSql<T>(string sql, PartSqlType type)
         {
             sql = sql.TrimStart();
-            if (sql.StartsWith("SELECT"))
+            if (sql.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase))
             {
                 return sql;
             }
@@ -452,6 +452,10 @@ namespace Loogn.OrmLite
                         else
                         {
                             if (property.PropertyType.IsValueType && val.Equals(0))
+                            {
+                                continue;
+                            }
+                            if(property.PropertyType==typeof(DateTime) && val.Equals(DateTime.MinValue))
                             {
                                 continue;
                             }

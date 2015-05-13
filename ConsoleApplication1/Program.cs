@@ -29,20 +29,21 @@ namespace ConsoleApplication1
             OrmLite.WriteSqlLog = true;
             using (var db = OrmLite.Open())
             {
-                
-                db.Open();
+                var all = db.Select<Person>("select top 10 * from Person");
+                ShowList(all);
+                db.EnsureOpen();
                 var trans = db.BeginTransaction();
                 try
                 {
-                    trans.Delete("delete from person where  ID=23");
-                    
+                    trans.Delete("delete from person where  ID>23");
                     trans.Insert<Person>(new Person { Name = "loogn", AddDate = DateTime.Now });
                     trans.Update<Person>(new Person { ID = 22, Name = "abc" });
                     trans.Commit();
                 }
-                catch
+                catch(Exception exp)
                 {
                     trans.Rollback();
+                    Console.WriteLine(exp.Message);
                 }
                 return;
                 

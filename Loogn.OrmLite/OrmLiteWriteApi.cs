@@ -19,7 +19,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static SqlCommand Proc(this SqlConnection dbConn, string name, object inParams = null, bool excludeDefaults = false)
+        public static SqlCommand Proc(this SqlConnection dbConn, string name, object inParams = null, bool execute = false)
         {
             var cmd = dbConn.CreateCommand();
             cmd.CommandType = CommandType.StoredProcedure;
@@ -30,7 +30,7 @@ namespace Loogn.OrmLite
                 cmd.Parameters.AddRange(ps);
             }
             dbConn.Open();
-            if (excludeDefaults)
+            if (execute)
             {
                 cmd.ExecuteNonQuery();
                 cmd.Parameters.Clear();

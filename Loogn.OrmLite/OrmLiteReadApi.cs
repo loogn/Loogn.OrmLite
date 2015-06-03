@@ -96,11 +96,11 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static long CountOriginal(this SqlConnection dbConn, CommandType commandType, string commandText, params SqlParameter[] ps)
+        public static int CountOriginal(this SqlConnection dbConn, CommandType commandType, string commandText, params SqlParameter[] ps)
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             var obj = SqlHelper.ExecuteScalar(dbConn, commandType, commandText, ps);
-            return Convert.ToInt64(obj);
+            return Convert.ToInt32(obj);
         }
 
         #endregion
@@ -176,7 +176,7 @@ namespace Loogn.OrmLite
             return SelectOriginal<T>(dbConn, CommandType.Text, sql);
         }
 
-        public static List<T> SelectPage<T>(this SqlConnection dbConn, OrmLitePageFactor factor, out long totalCount)
+        public static List<T> SelectPage<T>(this SqlConnection dbConn, OrmLitePageFactor factor, out int totalCount)
         {
             if (factor.PageIndex < 1)
             {
@@ -407,44 +407,44 @@ namespace Loogn.OrmLite
         #endregion
 
         #region Count
-        public static long Count<T>(this SqlConnection dbConn)
+        public static int Count<T>(this SqlConnection dbConn)
         {
             return CountOriginal(dbConn, CommandType.Text, SqlCmd.Count<T>());
         }
 
-        public static long Count<T>(this SqlConnection dbConn, string sql)
+        public static int Count<T>(this SqlConnection dbConn, string sql)
         {
             return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), null);
         }
-        public static long Count<T>(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static int Count<T>(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters)
         {
             return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), ORM.DictionaryToParams(parameters));
         }
-        public static long Count<T>(this SqlConnection dbConn, string sql, object parameters)
+        public static int Count<T>(this SqlConnection dbConn, string sql, object parameters)
         {
             return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), ORM.AnonTypeToParams(parameters));
         }
 
-        public static long CountWhere<T>(this SqlConnection dbConn, string name, object value)
+        public static int CountWhere<T>(this SqlConnection dbConn, string name, object value)
         {
             var tuple = SqlCmd.CountWhere<T>(name, value);
             return CountOriginal(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static long CountWhere<T>(this SqlConnection dbConn, Dictionary<string, object> conditions)
+        public static int CountWhere<T>(this SqlConnection dbConn, Dictionary<string, object> conditions)
         {
             var tuple = SqlCmd.CountWhere<T>(conditions);
             return CountOriginal(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static long CountWhere<T>(this SqlConnection dbConn,object conditions)
+        public static int CountWhere<T>(this SqlConnection dbConn,object conditions)
         {
             var tuple = SqlCmd.CountWhere<T>(conditions);
             return CountOriginal(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
 
-        public static long CountFmt(this SqlConnection dbConn, string sqlFormat, params object[] parameters)
+        public static int CountFmt(this SqlConnection dbConn, string sqlFormat, params object[] parameters)
         {
             return CountOriginal(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }

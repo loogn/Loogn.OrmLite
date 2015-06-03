@@ -60,13 +60,13 @@ namespace Loogn.OrmLite
             return SqlHelper.ExecuteNonQuery(dbConn, commandType, commandText, ORM.DictionaryToParams(parameters));
         }
 
-        public static long Insert<T>(this SqlConnection dbConn, T obj, bool selectIdentity = false)
+        public static int Insert<T>(this SqlConnection dbConn, T obj, bool selectIdentity = false)
         {
             var tuple = SqlCmd.Insert<T>(obj, selectIdentity);
             if (selectIdentity)
             {
                 var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
-                return Convert.ToInt64(identity);
+                return Convert.ToInt32(identity);
             }
             else
             {
@@ -75,13 +75,13 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static long Insert(this SqlConnection dbConn, string table, Dictionary<string, object> fields, bool selectIdentity = false)
+        public static int Insert(this SqlConnection dbConn, string table, Dictionary<string, object> fields, bool selectIdentity = false)
         {
             var tuple = SqlCmd.Insert(table, fields, selectIdentity);
             if (selectIdentity)
             {
                 var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
-                return Convert.ToInt64(identity);
+                return Convert.ToInt32(identity);
             }
             else
             {
@@ -90,13 +90,13 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static long Insert(this SqlConnection dbConn, string table, object anonType, bool selectIdentity = false)
+        public static int Insert(this SqlConnection dbConn, string table, object anonType, bool selectIdentity = false)
         {
             var tuple = SqlCmd.Insert(table, anonType, selectIdentity);
             if (selectIdentity)
             {
                 var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
-                return Convert.ToInt64(identity);
+                return Convert.ToInt32(identity);
             }
             else
             {

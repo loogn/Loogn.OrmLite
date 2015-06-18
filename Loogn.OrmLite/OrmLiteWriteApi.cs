@@ -177,9 +177,9 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static int Update<T>(this SqlConnection dbConn, T obj, bool includeDefaults = false)
+        public static int Update<T>(this SqlConnection dbConn, T obj, params string[] updateFields)
         {
-            var tuple = SqlCmd.Update<T>(obj, includeDefaults);
+            var tuple = SqlCmd.Update<T>(obj, updateFields);
             int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;
         }

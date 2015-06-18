@@ -18,35 +18,22 @@ namespace ConsoleApplication1
         public double Money { get; set; }
         public DateTime AddDate { get; set; }
 
+        public enum Fields { ID, Name, Sex, Age, Money, AddDate }
     }
 
     class Program
     {
         static void Main(string[] args)
         {
-            
             OrmLite.DefaultConnectionString = "server=.;uid=sa;pwd=123456;database=test";
             OrmLite.WriteSqlLog = true;
             using (var db = OrmLite.Open())
             {
-                var all = db.Select<Person>("select top 10 * from Person");
-                ShowList(all);
-                db.EnsureOpen();
-                var trans = db.BeginTransaction();
-                try
-                {
-                    trans.Delete("delete from person where  ID>23");
-                    trans.Insert<Person>(new Person { Name = "loogn", AddDate = DateTime.Now });
-                    trans.Update<Person>(new Person { ID = 22, Name = "abc" });
-                    trans.Commit();
-                }
-                catch(Exception exp)
-                {
-                    trans.Rollback();
-                    Console.WriteLine(exp.Message);
-                }
+                Person p = new Person() { ID = 2 };
+                p.Age = 2;
+                db.Update<Person>(p, "Age", "Sex");
                 return;
-                
+
                 List<Person> list1 = db.Select<Person>();
                 //select * from Person
 
@@ -123,7 +110,7 @@ namespace ConsoleApplication1
                 //返回新的自增编号
 
                 db.Insert<Person>(
-                    new Person { Name = "loogn1" , AddDate=DateTime.Now},
+                    new Person { Name = "loogn1", AddDate = DateTime.Now },
                     new Person { Name = "loogn2", AddDate = DateTime.Now },
                     new Person { Name = "loogn2", AddDate = DateTime.Now });
                 //事务批量插入
@@ -150,7 +137,7 @@ namespace ConsoleApplication1
                 db.Delete<Person>();
                 //delete from Person
 
-                db.Delete<Person>(DictBuilder.Assign("id", 23).Assign("name","loogn"));
+                db.Delete<Person>(DictBuilder.Assign("id", 23).Assign("name", "loogn"));
                 //delete from person where id=@id and name=@name
 
                 db.DeleteById<Person>(23);
@@ -165,7 +152,7 @@ namespace ConsoleApplication1
                 db.DeleteByIds<Person>(new string[] { "a", "b", "c" }, "name");
                 //delete from person where name in ('a','b','c');
 
-                
+
 
 
 

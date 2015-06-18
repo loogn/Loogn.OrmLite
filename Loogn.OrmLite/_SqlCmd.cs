@@ -378,7 +378,7 @@ namespace Loogn.OrmLite
             };
         }
 
-        public static MyTuple<string, SqlParameter[]> Insert(string table, object anonType, bool selectIdentity )
+        public static MyTuple<string, SqlParameter[]> Insert(string table, object anonType, bool selectIdentity)
         {
             var type = anonType.GetType();
             var propertys = type.GetCachedProperties();
@@ -415,7 +415,7 @@ namespace Loogn.OrmLite
             };
         }
 
-        public static MyTuple<string, SqlParameter[]> Update<T>(T obj, bool includeDefaults )
+        public static MyTuple<string, SqlParameter[]> Update<T>(T obj, params string[] updateFields)
         {
             var type = typeof(T);
             var table = type.GetCachedTableName();
@@ -426,42 +426,10 @@ namespace Loogn.OrmLite
             var ps = new List<SqlParameter>();
             foreach (var property in propertys)
             {
+                var fieldName = property.Name;
                 var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
                 if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
                 {
-                    var val = property.GetValue(obj, null);
-                    if (includeDefaults) //需要初始化
-                    {
-                        if (val == null)
-                        {
-                            if (property.PropertyType == typeof(string))
-                            {
-                                val = string.Empty;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (val == null)
-                        {
-                            if (property.PropertyType == typeof(string))
-                            {
-                                continue;
-                            }
-                        }
-                        else
-                        {
-                            if (property.PropertyType.IsValueType && val.Equals(0))
-                            {
-                                continue;
-                            }
-                            if(property.PropertyType==typeof(DateTime) && val.Equals(DateTime.MinValue))
-                            {
-                                continue;
-                            }
-                        }
-                    }
-                    var fieldName = property.Name;
                     if (fieldAttr != null && fieldAttr.Name != null && fieldAttr.Name.Length > 0)
                     {
                         fieldName = fieldAttr.Name;
@@ -469,12 +437,18 @@ namespace Loogn.OrmLite
                     if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
                     {
                         condition = string.Format("[{0}] = @{0}", fieldName);
+                        var val = property.GetValue(obj, null);
+                        ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
                     }
                     else
                     {
-                        sbsql.AppendFormat("[{0}] = @{0},", fieldName);
+                        if (ArrayContains(updateFields, fieldName))
+                        {
+                            sbsql.AppendFormat("[{0}] = @{0},", fieldName);
+                            var val = property.GetValue(obj, null);
+                            ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+                        }
                     }
-                    ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
                 }
             }
             if (ps.Count == 0)
@@ -489,6 +463,17 @@ namespace Loogn.OrmLite
                 Item1 = sbsql.ToString(),
                 Item2 = ps.ToArray()
             };
+        }
+        private static bool ArrayContains(string[] arr, string value)
+        {
+            foreach (var item in arr)
+            {
+                if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static MyTuple<string, SqlParameter[]> Delete<T>(Dictionary<string, object> conditions)
@@ -515,7 +500,7 @@ namespace Loogn.OrmLite
             };
         }
 
-        public static string DeleteByIds<T>( IEnumerable idValues, string idField)
+        public static string DeleteByIds<T>(IEnumerable idValues, string idField)
         {
             if (idValues == null) return null;
             bool any = false;

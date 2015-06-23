@@ -466,6 +466,7 @@ namespace Loogn.OrmLite
         }
         private static bool ArrayContains(string[] arr, string value)
         {
+            if (arr == null || arr.Length == 0) return true;
             foreach (var item in arr)
             {
                 if (item.Equals(value, StringComparison.OrdinalIgnoreCase))

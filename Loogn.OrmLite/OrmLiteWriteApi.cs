@@ -114,7 +114,7 @@ namespace Loogn.OrmLite
         {
             if (objs != null)
             {
-                if (dbConn.State != ConnectionState.Open) dbConn.Open();
+                dbConn.EnsureOpen();
                 var trans = dbConn.BeginTransaction();
                 try
                 {
@@ -150,7 +150,7 @@ namespace Loogn.OrmLite
         {
             if (objs != null)
             {
-                if (dbConn.State != ConnectionState.Open) dbConn.Open();
+                dbConn.EnsureOpen();
                 var trans = dbConn.BeginTransaction();
                 try
                 {
@@ -194,7 +194,7 @@ namespace Loogn.OrmLite
             int row = 0;
             if (objs != null)
             {
-                dbConn.Open();
+                dbConn.EnsureOpen();
                 var trans = dbConn.BeginTransaction();
                 try
                 {

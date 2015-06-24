@@ -32,11 +32,19 @@ namespace Loogn.OrmLite
             set { defaultConnectionString = value; }
         }
 
+
+
         private static string defaultKeyName = KeyName;
         public static string DefaultKeyName
         {
             get { return defaultKeyName; }
             set { defaultKeyName = value; }
+        }
+
+        private static List<string> updateIgnoreFields = new List<string>() { "AddDate", "AddTime" };
+        public static List<string> UpdateIgnoreFields
+        {
+            get { return updateIgnoreFields; }
         }
 
         public static bool WriteSqlLog

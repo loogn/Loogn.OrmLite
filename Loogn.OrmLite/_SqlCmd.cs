@@ -427,6 +427,10 @@ namespace Loogn.OrmLite
             foreach (var property in propertys)
             {
                 var fieldName = property.Name;
+                if (FieldsIgnore(OrmLite.UpdateIgnoreFields, fieldName))
+                {
+                    continue;
+                }
                 var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
                 if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
                 {
@@ -442,7 +446,7 @@ namespace Loogn.OrmLite
                     }
                     else
                     {
-                        if (ArrayContains(updateFields, fieldName))
+                        if (FieldsContains(updateFields, fieldName))
                         {
                             sbsql.AppendFormat("[{0}] = @{0},", fieldName);
                             var val = property.GetValue(obj, null);
@@ -464,10 +468,22 @@ namespace Loogn.OrmLite
                 Item2 = ps.ToArray()
             };
         }
-        private static bool ArrayContains(string[] arr, string value)
+        private static bool FieldsContains(string[] fields, string value)
         {
-            if (arr == null || arr.Length == 0) return true;
-            foreach (var item in arr)
+            if (fields == null || fields.Length == 0) return true;
+            foreach (var item in fields)
+            {
+                if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        private static bool FieldsIgnore(List<string> fields, string value)
+        {
+            if (fields == null || fields.Count == 0) return false;
+            foreach (var item in fields)
             {
                 if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
                 {

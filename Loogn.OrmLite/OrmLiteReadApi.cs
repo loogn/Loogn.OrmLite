@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
-    public  static  partial class OrmLiteReadApi
+    public static partial class OrmLiteReadApi
     {
         #region Original Function
         public static SqlDataReader ExecuteReader(this SqlConnection dbConn, CommandType commandType, string commandText, params SqlParameter[] ps)
@@ -57,7 +57,14 @@ namespace Loogn.OrmLite
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             var obj = SqlHelper.ExecuteScalar(dbConn, commandType, commandText, ps);
-            return (T)obj;
+            if (obj == null || obj is DBNull)
+            {
+                return default(T);
+            }
+            else
+            {
+                return (T)obj;
+            }
         }
 
         public static List<T> ColumnOriginal<T>(this SqlConnection dbConn, CommandType commandType, string commandText, params SqlParameter[] ps)
@@ -87,7 +94,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static Dictionary<K, V> DictionaryOriginal<K, V>(this SqlConnection dbConn,CommandType commandType, string commandText, params SqlParameter[] ps)
+        public static Dictionary<K, V> DictionaryOriginal<K, V>(this SqlConnection dbConn, CommandType commandType, string commandText, params SqlParameter[] ps)
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
@@ -100,6 +107,10 @@ namespace Loogn.OrmLite
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             var obj = SqlHelper.ExecuteScalar(dbConn, commandType, commandText, ps);
+            if(obj==null || obj is DBNull)
+            {
+                return 0;
+            }
             return Convert.ToInt32(obj);
         }
 
@@ -131,7 +142,7 @@ namespace Loogn.OrmLite
             return SelectOriginal(dbConn, CommandType.Text, sql, null);
         }
 
-        public static List<dynamic> Select(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters )
+        public static List<dynamic> Select(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters)
         {
             return SelectOriginal(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
         }
@@ -153,7 +164,7 @@ namespace Loogn.OrmLite
             return SelectOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static List<T> SelectWhere<T>(this SqlConnection dbConn, object  conditions)
+        public static List<T> SelectWhere<T>(this SqlConnection dbConn, object conditions)
         {
             var tuple = SqlCmd.SelectWhere<T>(conditions);
             return SelectOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
@@ -244,7 +255,7 @@ namespace Loogn.OrmLite
             return SingleOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Single), null);
         }
 
-        public static T Single<T>(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters )
+        public static T Single<T>(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters)
         {
             return SingleOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Single), ORM.DictionaryToParams(parameters));
         }
@@ -371,13 +382,13 @@ namespace Loogn.OrmLite
         #region Lookup Dictionary
         public static Dictionary<K, List<V>> Lookup<K, V>(this SqlConnection dbConn, string sql)
         {
-            return LookupOriginal<K, V>(dbConn, CommandType.Text, sql,null);
+            return LookupOriginal<K, V>(dbConn, CommandType.Text, sql, null);
         }
-        public static Dictionary<K, List<V>> Lookup<K, V>(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters )
+        public static Dictionary<K, List<V>> Lookup<K, V>(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters)
         {
             return LookupOriginal<K, V>(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
         }
-        public static Dictionary<K, List<V>> Lookup<K, V>(this SqlConnection dbConn, string sql, object parameters )
+        public static Dictionary<K, List<V>> Lookup<K, V>(this SqlConnection dbConn, string sql, object parameters)
         {
             return LookupOriginal<K, V>(dbConn, CommandType.Text, sql, ORM.AnonTypeToParams(parameters));
         }
@@ -389,13 +400,13 @@ namespace Loogn.OrmLite
 
         public static Dictionary<K, V> Dictionary<K, V>(this SqlConnection dbConn, string sql)
         {
-            return DictionaryOriginal<K, V>(dbConn, CommandType.Text, sql,null);
+            return DictionaryOriginal<K, V>(dbConn, CommandType.Text, sql, null);
         }
         public static Dictionary<K, V> Dictionary<K, V>(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters)
         {
             return DictionaryOriginal<K, V>(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(parameters));
         }
-        public static Dictionary<K, V> Dictionary<K, V>(this SqlConnection dbConn, string sql, object  parameters )
+        public static Dictionary<K, V> Dictionary<K, V>(this SqlConnection dbConn, string sql, object parameters)
         {
             return DictionaryOriginal<K, V>(dbConn, CommandType.Text, sql, ORM.AnonTypeToParams(parameters));
         }
@@ -437,7 +448,7 @@ namespace Loogn.OrmLite
             return CountOriginal(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static int CountWhere<T>(this SqlConnection dbConn,object conditions)
+        public static int CountWhere<T>(this SqlConnection dbConn, object conditions)
         {
             var tuple = SqlCmd.CountWhere<T>(conditions);
             return CountOriginal(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);

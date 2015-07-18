@@ -66,6 +66,10 @@ namespace Loogn.OrmLite
             if (selectIdentity)
             {
                 var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+                if (identity == null || identity is DBNull)
+                {
+                    return 0;
+                }
                 return Convert.ToInt32(identity);
             }
             else
@@ -81,6 +85,10 @@ namespace Loogn.OrmLite
             if (selectIdentity)
             {
                 var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+                if (identity == null || identity is DBNull)
+                {
+                    return 0;
+                }
                 return Convert.ToInt32(identity);
             }
             else
@@ -96,6 +104,10 @@ namespace Loogn.OrmLite
             if (selectIdentity)
             {
                 var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+                if (identity == null || identity is DBNull)
+                {
+                    return 0;
+                }
                 return Convert.ToInt32(identity);
             }
             else

@@ -26,7 +26,9 @@ namespace Loogn.OrmLite
             cmd.CommandText = name;
             if (inParams != null)
             {
-                var ps = ORM.AnonTypeToParams(inParams);
+                var ps = inParams is Dictionary<string, object> ?
+                ORM.DictionaryToParams(inParams as Dictionary<string, object>)
+                : ORM.AnonTypeToParams(inParams);
                 cmd.Parameters.AddRange(ps);
             }
             dbConn.Open();
@@ -122,7 +124,7 @@ namespace Loogn.OrmLite
         {
             InsertAll(dbConn, table, objs);
         }
-        public static void InsertAll(this SqlConnection dbConn, string table,  IEnumerable objs)
+        public static void InsertAll(this SqlConnection dbConn, string table, IEnumerable objs)
         {
             if (objs != null)
             {

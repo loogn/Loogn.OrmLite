@@ -206,7 +206,9 @@ namespace Loogn.OrmLite
                 factor.Fields = "*";
             }
 
-            var ps = ORM.AnonTypeToParams(factor.Params);
+            var ps = factor.Params is Dictionary<string, object> ?
+                ORM.DictionaryToParams(factor.Params as Dictionary<string, object>)
+                : ORM.AnonTypeToParams(factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
             sb.AppendFormat("select count(0) from [{0}]", factor.TableName);

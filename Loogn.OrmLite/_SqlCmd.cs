@@ -427,10 +427,6 @@ namespace Loogn.OrmLite
             foreach (var property in propertys)
             {
                 var fieldName = property.Name;
-                if (FieldsIgnore(OrmLite.UpdateIgnoreFields, fieldName))
-                {
-                    continue;
-                }
                 var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
                 if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
                 {
@@ -470,7 +466,20 @@ namespace Loogn.OrmLite
         }
         private static bool FieldsContains(string[] fields, string value)
         {
-            if (fields == null || fields.Length == 0) return true;
+            if (fields == null || fields.Length == 0)
+            {
+                if (OrmLite.UpdateIgnoreFields != null && OrmLite.UpdateIgnoreFields.Count > 0)
+                {
+                    foreach (var item in OrmLite.UpdateIgnoreFields)
+                    {
+                        if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
             foreach (var item in fields)
             {
                 if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
@@ -480,18 +489,7 @@ namespace Loogn.OrmLite
             }
             return false;
         }
-        private static bool FieldsIgnore(List<string> fields, string value)
-        {
-            if (fields == null || fields.Count == 0) return false;
-            foreach (var item in fields)
-            {
-                if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+
 
         public static MyTuple<string, SqlParameter[]> Delete<T>(Dictionary<string, object> conditions)
         {

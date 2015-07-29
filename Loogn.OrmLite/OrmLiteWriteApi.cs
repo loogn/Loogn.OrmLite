@@ -26,7 +26,9 @@ namespace Loogn.OrmLite
             cmd.CommandText = name;
             if (inParams != null)
             {
-                var ps = ORM.AnonTypeToParams(inParams);
+                var ps = inParams is Dictionary<string, object> ?
+                ORM.DictionaryToParams(inParams as Dictionary<string, object>)
+                : ORM.AnonTypeToParams(inParams);
                 cmd.Parameters.AddRange(ps);
             }
             dbConn.Open();
@@ -66,6 +68,10 @@ namespace Loogn.OrmLite
             if (selectIdentity)
             {
                 var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+                if (identity == null || identity is DBNull)
+                {
+                    return 0;
+                }
                 return Convert.ToInt32(identity);
             }
             else
@@ -81,6 +87,10 @@ namespace Loogn.OrmLite
             if (selectIdentity)
             {
                 var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+                if (identity == null || identity is DBNull)
+                {
+                    return 0;
+                }
                 return Convert.ToInt32(identity);
             }
             else
@@ -96,6 +106,10 @@ namespace Loogn.OrmLite
             if (selectIdentity)
             {
                 var identity = ExecuteScalar(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+                if (identity == null || identity is DBNull)
+                {
+                    return 0;
+                }
                 return Convert.ToInt32(identity);
             }
             else
@@ -110,7 +124,7 @@ namespace Loogn.OrmLite
         {
             InsertAll(dbConn, table, objs);
         }
-        public static void InsertAll(this SqlConnection dbConn, string table,  IEnumerable objs)
+        public static void InsertAll(this SqlConnection dbConn, string table, IEnumerable objs)
         {
             if (objs != null)
             {

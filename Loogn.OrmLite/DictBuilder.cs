@@ -13,6 +13,11 @@ namespace Loogn.OrmLite
             ChainOperateDict dict = new ChainOperateDict();
             return dict.Assign(name, value);
         }
+
+        public static ChainOperateDict New()
+        {
+            return new ChainOperateDict();
+        }
     }
 
     public class ChainOperateDict : Dictionary<string, object>

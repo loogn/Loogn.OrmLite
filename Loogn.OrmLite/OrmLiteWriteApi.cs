@@ -120,11 +120,11 @@ namespace Loogn.OrmLite
         }
 
 
-        public static void Insert(this SqlConnection dbConn, string table, params object[] objs)
+        public static bool Insert(this SqlConnection dbConn, string table, params object[] objs)
         {
-            InsertAll(dbConn, table, objs);
+            return InsertAll(dbConn, table, objs);
         }
-        public static void InsertAll(this SqlConnection dbConn, string table, IEnumerable objs)
+        public static bool InsertAll(this SqlConnection dbConn, string table, IEnumerable objs)
         {
             if (objs != null)
             {
@@ -138,10 +138,11 @@ namespace Loogn.OrmLite
                         if (rowCount == 0)
                         {
                             trans.Rollback();
-                            break;
+                            return false;
                         }
                     }
                     trans.Commit();
+                    return true;
                 }
                 catch (Exception exp)
                 {
@@ -153,14 +154,15 @@ namespace Loogn.OrmLite
                     trans.Dispose();
                 }
             }
+            return true;
         }
 
-        public static void Insert<T>(this SqlConnection dbConn, params T[] objs)
+        public static bool Insert<T>(this SqlConnection dbConn, params T[] objs)
         {
-            InsertAll<T>(dbConn, objs);
+            return InsertAll<T>(dbConn, objs);
         }
 
-        public static void InsertAll<T>(this SqlConnection dbConn, IEnumerable<T> objs)
+        public static bool InsertAll<T>(this SqlConnection dbConn, IEnumerable<T> objs)
         {
             if (objs != null)
             {
@@ -174,10 +176,11 @@ namespace Loogn.OrmLite
                         if (rowCount == 0)
                         {
                             trans.Rollback();
-                            break;
+                            return false;
                         }
                     }
                     trans.Commit();
+                    return true;
                 }
                 catch (Exception exp)
                 {
@@ -189,6 +192,7 @@ namespace Loogn.OrmLite
                     trans.Dispose();
                 }
             }
+            return true;
         }
 
         public static int Update<T>(this SqlConnection dbConn, T obj, params string[] updateFields)

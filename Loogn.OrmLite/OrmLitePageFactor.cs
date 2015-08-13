@@ -14,6 +14,9 @@ namespace Loogn.OrmLite
         public string Fields { get; set; }
 
         public string OrderBy { get; set; }
+        /// <summary>
+        /// 匿名对象 或 Dictionary[string, object]
+        /// </summary>
         public object Params { get; set; }
 
         public int PageIndex { get; set; }

@@ -201,31 +201,41 @@ namespace Loogn.OrmLite
         {
             InsertAll(dbTrans, table, objs);
         }
-        public static void InsertAll(this SqlTransaction dbTrans, string table, IEnumerable objs)
+        public static bool InsertAll(this SqlTransaction dbTrans, string table, IEnumerable objs)
         {
             if (objs != null)
             {
                 foreach (var obj in objs)
                 {
                     var rowCount = InsertTrans(dbTrans, table, obj);
+                    if (rowCount == 0)
+                    {
+                        return false;
+                    }
                 }
             }
+            return true;
         }
 
-        public static void Insert<T>(this SqlTransaction dbTrans, params T[] objs)
+        public static bool Insert<T>(this SqlTransaction dbTrans, params T[] objs)
         {
-            InsertAll<T>(dbTrans, objs);
+            return InsertAll<T>(dbTrans, objs);
         }
 
-        public static void InsertAll<T>(this SqlTransaction dbTrans, IEnumerable<T> objs)
+        public static bool InsertAll<T>(this SqlTransaction dbTrans, IEnumerable<T> objs)
         {
             if (objs != null)
             {
                 foreach (var obj in objs)
                 {
                     var rowCount = InsertTrans<T>(dbTrans, obj);
+                    if (rowCount == 0)
+                    {
+                        return false;
+                    }
                 }
             }
+            return true;
         }
 
         public static int Update<T>(this SqlTransaction dbTrans, T obj, params string[] updateFields)

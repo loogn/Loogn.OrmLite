@@ -24,6 +24,13 @@ namespace Loogn.OrmLite
             return p;
         }
 
+        public static SqlParameter CreateReturnParameter(this SqlConnection dbConn, SqlDbType dbType, int size)
+        {
+            SqlParameter p = new SqlParameter("@retValue", dbType, size);
+            p.Direction = ParameterDirection.ReturnValue;
+            return p;
+        }
+
         public static SqlParameter CreateOutputParameter(this SqlConnection dbConn, string parameterName, SqlDbType dbType)
         {
             SqlParameter p = new SqlParameter(parameterName, dbType);

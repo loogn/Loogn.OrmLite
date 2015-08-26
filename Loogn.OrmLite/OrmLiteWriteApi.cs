@@ -202,9 +202,22 @@ namespace Loogn.OrmLite
             return c;
         }
 
-        public static int Update(this SqlConnection dbConn, string tableName, object anonymous)
+        public static int UpdateAnonymous(this SqlConnection dbConn, string tableName, object anonymous)
         {
             var tuple = SqlCmd.Update(tableName, anonymous);
+            int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+            return c;
+        }
+        public static int UpdateAnonymous<T>(this SqlConnection dbConn, object anonymous)
+        {
+            var tuple = SqlCmd.Update(typeof(T).GetCachedTableName(), anonymous);
+            int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+            return c;
+        }
+
+        public static int UpdateAnonymous(this SqlConnection dbConn, object model, object anonymous)
+        {
+            var tuple = SqlCmd.Update(model.GetType().GetCachedTableName(), anonymous);
             int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;
         }

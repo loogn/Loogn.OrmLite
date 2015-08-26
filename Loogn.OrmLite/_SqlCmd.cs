@@ -464,6 +464,48 @@ namespace Loogn.OrmLite
                 Item2 = ps.ToArray()
             };
         }
+
+
+        public static MyTuple<string, SqlParameter[]> Update(string tableName, object anonymous)
+        {
+            var type = anonymous.GetType();
+            var propertys = type.GetCachedProperties();
+            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
+            sbsql.AppendFormat("update [{0}] set ", tableName);
+            string condition = null;
+            var ps = new List<SqlParameter>();
+            foreach (var property in propertys)
+            {
+                var fieldName = property.Name;
+                if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase))
+                {
+                    condition = string.Format("[{0}] = @{0}", fieldName);
+                    var val = property.GetValue(anonymous, null);
+                    ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+                }
+                else
+                {
+                    sbsql.AppendFormat("[{0}] = @{0},", fieldName);
+                    var val = property.GetValue(anonymous, null);
+                    ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+                }
+            }
+
+            if (ps.Count == 0)
+            {
+                throw new ArgumentException("model里没有字段，无法修改");
+            }
+            sbsql.Remove(sbsql.Length - 1, 1);
+            sbsql.AppendFormat(" where ");
+            sbsql.Append(condition);
+            return new MyTuple<string, SqlParameter[]>
+            {
+                Item1 = sbsql.ToString(),
+                Item2 = ps.ToArray()
+            };
+        }
+
+
         private static bool FieldsContains(string[] fields, string value)
         {
             if (fields == null || fields.Length == 0)

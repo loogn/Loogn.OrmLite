@@ -202,6 +202,13 @@ namespace Loogn.OrmLite
             return c;
         }
 
+        public static int Update(this SqlConnection dbConn, string tableName, object anonymous)
+        {
+            var tuple = SqlCmd.Update(tableName, anonymous);
+            int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+            return c;
+        }
+
         public static int Update<T>(this SqlConnection dbConn, params T[] objs)
         {
             return UpdateAll<T>(dbConn, objs);

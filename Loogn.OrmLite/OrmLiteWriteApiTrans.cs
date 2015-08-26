@@ -245,6 +245,13 @@ namespace Loogn.OrmLite
             return c;
         }
 
+        public static int Update(this SqlTransaction dbTrans, string tableName, object anonymous)
+        {
+            var tuple = SqlCmd.Update(tableName, anonymous);
+            int c = ExecuteNonQuery(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
+            return c;
+        }
+
         private static int UpdateTrans<T>(this SqlTransaction dbTrans, T obj)
         {
             var type = typeof(T);

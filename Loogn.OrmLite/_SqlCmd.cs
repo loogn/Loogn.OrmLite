@@ -233,11 +233,10 @@ namespace Loogn.OrmLite
         }
 
 
-        public static MyTuple<string, SqlParameter[]> Update<T>(Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
-        {
-            var table = typeof(T).GetCachedTableName();
+        public static MyTuple<string, SqlParameter[]> Update(string tableName, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
+        {         
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("update [{0}] set ", table);
+            sbsql.AppendFormat("update [{0}] set ", tableName);
             var ps = new List<SqlParameter>();
             var nofield = true;
             foreach (var field in updateFields)

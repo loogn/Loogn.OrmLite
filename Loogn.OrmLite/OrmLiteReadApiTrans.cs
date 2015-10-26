@@ -223,6 +223,54 @@ namespace Loogn.OrmLite
             return list;
         }
 
+        public static List<dynamic> SelectPage(this SqlTransaction dbTrans, OrmLitePageFactor factor, out int totalCount)
+        {
+            if (factor.PageIndex < 1)
+            {
+                throw new ArgumentException("pageIndex参数应>1");
+            }
+            if (string.IsNullOrEmpty(factor.OrderBy))
+            {
+                throw new ArgumentException("orderby参数不能为空或null");
+            }
+            if (factor.TableName == null || factor.TableName.Length == 0)
+            {
+                throw new ArgumentException("tableName参数不能为空或null");
+            }
+            if (string.IsNullOrEmpty(factor.Fields))
+            {
+                factor.Fields = "*";
+            }
+
+            var ps = factor.Params is Dictionary<string, object> ?
+                ORM.DictionaryToParams(factor.Params as Dictionary<string, object>)
+                : ORM.AnonTypeToParams(factor.Params);
+            StringBuilder sb = new StringBuilder(200);
+
+            sb.AppendFormat("select count(0) from [{0}]", factor.TableName);
+            if (!string.IsNullOrEmpty(factor.Conditions))
+            {
+                sb.AppendFormat(" where {0}", factor.Conditions);
+            }
+            totalCount = CountOriginal(dbTrans, CommandType.Text, sb.ToString(), ps);
+
+            if (totalCount == 0) //总数为0了，肯定没有数据
+            {
+                return new List<dynamic>();
+            }
+            sb.Clear();
+
+            sb.AppendFormat("select * from (");
+            sb.AppendFormat(" select top {0} {1},ROW_NUMBER() over(order by {2}) rowid from [{3}]", factor.PageIndex * factor.PageSize, factor.Fields, factor.OrderBy, factor.TableName);
+            if (!string.IsNullOrEmpty(factor.Conditions))
+            {
+                sb.AppendFormat(" where {0}", factor.Conditions);
+            }
+            sb.AppendFormat(")t where t.rowid>{0}", (factor.PageIndex - 1) * factor.PageSize);
+
+            var list = SelectOriginal(dbTrans, CommandType.Text, sb.ToString(), ps);
+            return list;
+        }
         #endregion
 
         #region Single

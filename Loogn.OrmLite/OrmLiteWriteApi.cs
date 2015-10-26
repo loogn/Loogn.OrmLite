@@ -264,10 +264,23 @@ namespace Loogn.OrmLite
 
         public static int Update<T>(this SqlConnection dbConn, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
         {
-            var tuple = SqlCmd.Update<T>(updateFields, conditions, parameters);
+            var tuple = SqlCmd.Update(typeof(T).GetCachedTableName(), updateFields, conditions, parameters);
 
             int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;
+        }
+
+        public static int Update(this SqlConnection dbConn, string tableName, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
+        {
+            var tuple = SqlCmd.Update(tableName, updateFields, conditions, parameters);
+
+            int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
+            return c;
+        }
+
+        public static int UpdateFieldById<T>(this SqlConnection dbConn, string fieldName, object fieldValue, object id, string idname = OrmLite.KeyName)
+        {
+            return Update<T>(dbConn, DictBuilder.Assign(fieldName, fieldValue), idname + "=@id", DictBuilder.Assign("id", id));
         }
 
         public static int Delete(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters = null)

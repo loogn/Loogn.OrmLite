@@ -75,7 +75,7 @@ namespace Loogn.OrmLite
             var capacity = sql.Length;
             if (WriteSqlLog)
             {
-                File.AppendAllText("sqllog.txt",
+                File.AppendAllText("ormlite.sqllog.txt",
                     string.Format("Sql Leng:{0}\tSql Capacity:{1}{2}{3}{2}{4}{2}",
                     capacity,
                     SqlStringBuilderCapacity,

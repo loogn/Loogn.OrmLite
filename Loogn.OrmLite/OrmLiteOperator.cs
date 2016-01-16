@@ -350,35 +350,36 @@ namespace Loogn.OrmLite
 
         #region Scalar
 
-        public T Scalar(string sql)
+        public RetType Scalar<RetType>(string sql)
         {
             using (var db = openDb())
             {
-                return db.Scalar<T>(sql);
+                
+                return db.Scalar<RetType>(sql);
             }
         }
 
-        public T Scalar(string sql, Dictionary<string, object> parameters)
+        public RetType Scalar<RetType>(string sql, Dictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
-                return db.Scalar<T>(sql, parameters);
+                return db.Scalar<RetType>(sql, parameters);
             }
         }
 
-        public T Scalar(string sql, object parameters)
+        public RetType Scalar<RetType>(string sql, object parameters)
         {
             using (var db = openDb())
             {
-                return db.Scalar<T>(sql, parameters);
+                return db.Scalar<RetType>(sql, parameters);
             }
         }
 
-        public T ScalarFmt(string sqlFormat, params object[] parameters)
+        public RetType ScalarFmt<RetType>(string sqlFormat, params object[] parameters)
         {
             using (var db = openDb())
             {
-                return db.ScalarFmt<T>(sqlFormat, parameters);
+                return db.ScalarFmt<RetType>(sqlFormat, parameters);
             }
         }
 

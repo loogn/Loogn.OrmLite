@@ -107,7 +107,7 @@ namespace Loogn.OrmLite
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             var obj = SqlHelper.ExecuteScalar(dbConn, commandType, commandText, ps);
-            if(obj==null || obj is DBNull)
+            if (obj == null || obj is DBNull)
             {
                 return 0;
             }
@@ -381,6 +381,13 @@ namespace Loogn.OrmLite
         public static T ScalarFmt<T>(this SqlConnection dbConn, string sqlFormat, params object[] parameters)
         {
             return ScalarOriginal<T>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
+        }
+
+        public static T MaxID<T>(this SqlConnection dbConn, string tableName, string field = "id")
+        {
+            tableName = SqlInjection.Filter(tableName);
+            var sql = string.Format("SELECT ISNULL(MAX({0}), 0) FROM [{1}]", field, tableName);
+            return ScalarOriginal<T>(dbConn, CommandType.Text, sql);
         }
 
         #endregion

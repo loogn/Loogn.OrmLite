@@ -354,7 +354,6 @@ namespace Loogn.OrmLite
         {
             using (var db = openDb())
             {
-                
                 return db.Scalar<RetType>(sql);
             }
         }
@@ -580,6 +579,15 @@ namespace Loogn.OrmLite
             using (var db = openDb())
             {
                 return db.CountFmt(sqlFormat, parameters);
+            }
+        }
+
+        public TField MaxId<TField>(string field = "ID")
+        {
+            using (var db = openDb())
+            {
+                var tableName = typeof(T).GetCachedTableName();
+                return db.MaxID<TField>(tableName, field);
             }
         }
         #endregion

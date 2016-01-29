@@ -370,6 +370,12 @@ namespace Loogn.OrmLite
             return ScalarOriginal<T>(dbTrans, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
+        public static T MaxID<T>(this SqlTransaction dbTrans, string tableName, string field = "id")
+        {
+            tableName = SqlInjection.Filter(tableName);
+            var sql = string.Format("SELECT ISNULL(MAX({0}), 0) FROM [{1}]", field, tableName);
+            return ScalarOriginal<T>(dbTrans, CommandType.Text, sql);
+        }
         #endregion
 
         #region Column

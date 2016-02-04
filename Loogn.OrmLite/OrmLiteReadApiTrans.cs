@@ -169,9 +169,9 @@ namespace Loogn.OrmLite
             return SelectOriginal(dbTrans, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
-        public static List<T> SelectByIds<T>(this SqlTransaction dbTrans, IEnumerable idValues, string idField = OrmLite.KeyName)
+        public static List<T> SelectByIds<T>(this SqlTransaction dbTrans, IEnumerable idValues, string idField = OrmLite.KeyName, string selectFields = "*")
         {
-            var sql = SqlCmd.SelectByIds<T>(idValues, idField);
+            var sql = SqlCmd.SelectByIds<T>(idValues, idField,selectFields);
             if (sql == null) return new List<T>();
             return SelectOriginal<T>(dbTrans, CommandType.Text, sql);
         }

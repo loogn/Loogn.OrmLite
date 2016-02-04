@@ -256,11 +256,11 @@ namespace Loogn.OrmLite
             }
         }
 
-        public List<T> SelectByIds(IEnumerable idValues, string idField = OrmLite.KeyName)
+        public List<T> SelectByIds(IEnumerable idValues, string idField = OrmLite.KeyName, string selectFields = "*")
         {
             using (var db = openDb())
             {
-                return db.SelectByIds<T>(idValues, idField);
+                return db.SelectByIds<T>(idValues, idField, selectFields);
             }
         }
 

@@ -75,7 +75,7 @@ namespace Loogn.OrmLite
             return result;
         }
 
-        public static string SelectByIds<T>(IEnumerable idValues, string idField)
+        public static string SelectByIds<T>(IEnumerable idValues, string idField,string selectFields="*")
         {
             if (idValues == null) return null;
             bool any = false;
@@ -94,7 +94,7 @@ namespace Loogn.OrmLite
                     }
                     var table = typeof(T).GetCachedTableName();
                     sql = new StringBuilder(50);
-                    sql.AppendFormat("Select * from [{0}] where [{1}] in (", table, idField);
+                    sql.AppendFormat("Select {2} from [{0}] where [{1}] in (", table, idField,selectFields);
                 }
                 if (needQuot)
                 {

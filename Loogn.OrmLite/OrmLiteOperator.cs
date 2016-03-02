@@ -28,6 +28,15 @@ namespace Loogn.OrmLite
             }
         }
 
+        public int ExecuteNonQuery(string sql, Dictionary<string, object> ps)
+        {
+            using (var db = openDb())
+            {
+                return db.ExecuteNonQuery(System.Data.CommandType.Text, sql, ORM.DictionaryToParams(ps));
+            }
+        }
+        
+
         #region insert
         public int Insert(T m, bool selectIdentity = false)
         {

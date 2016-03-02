@@ -28,7 +28,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public int ExecuteNonQuery(string sql, Dictionary<string, object> ps)
+        public int ExecuteNonQuery(string sql, Dictionary<string, object> ps=null)
         {
             using (var db = openDb())
             {

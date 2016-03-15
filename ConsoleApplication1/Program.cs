@@ -1,4 +1,5 @@
-﻿using Loogn.OrmLite;
+﻿using ConsoleApplication1.GeneralParadigm.Model;
+using Loogn.OrmLite;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -9,18 +10,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1
 {
-    class Person
-    {
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public bool Sex { get; set; }
-        public byte Age { get; set; }
-        public double Money { get; set; }
-        public DateTime AddDate { get; set; }
-
-        public enum Fields { ID, Name, Sex, Age, Money, AddDate }
-    }
-
+  
     class Program
     {
         static void Main(string[] args)

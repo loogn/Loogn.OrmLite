@@ -42,6 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeTimer.cs" />
+    <Compile Include="GeneralParadigm\Model\Person.cs" />
+    <Compile Include="GeneralParadigm\Service\DB.cs" />
+    <Compile Include="GeneralParadigm\Service\PersonService.cs" />
+    <Compile Include="GeneralParadigm\Service\ServiceCreator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

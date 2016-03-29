@@ -57,7 +57,14 @@ namespace Loogn.OrmLite
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             var obj = SqlHelper.ExecuteScalar(dbTrans, commandType, commandText, ps);
-            return (T)obj;
+            if (obj == null || obj is DBNull)
+            {
+                return default(T);
+            }
+            else
+            {
+                return (T)obj;
+            }
         }
 
         public static List<T> ColumnOriginal<T>(this SqlTransaction dbTrans, CommandType commandType, string commandText, params SqlParameter[] ps)
@@ -100,6 +107,10 @@ namespace Loogn.OrmLite
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             var obj = SqlHelper.ExecuteScalar(dbTrans, commandType, commandText, ps);
+            if (obj == null || obj is DBNull)
+            {
+                return 0;
+            }
             return Convert.ToInt32(obj);
         }
 
@@ -171,7 +182,7 @@ namespace Loogn.OrmLite
 
         public static List<T> SelectByIds<T>(this SqlTransaction dbTrans, IEnumerable idValues, string idField = OrmLite.KeyName, string selectFields = "*")
         {
-            var sql = SqlCmd.SelectByIds<T>(idValues, idField,selectFields);
+            var sql = SqlCmd.SelectByIds<T>(idValues, idField, selectFields);
             if (sql == null) return new List<T>();
             return SelectOriginal<T>(dbTrans, CommandType.Text, sql);
         }

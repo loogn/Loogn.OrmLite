@@ -278,6 +278,18 @@ namespace Loogn.OrmLite
             return c;
         }
 
+
+
+        public static int UpdateById(this SqlConnection dbConn, string tableName, Dictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
+        {
+            return Update(dbConn, tableName, updateFields, idname + "=@id", DictBuilder.Assign("id", id));
+        }
+
+        public static int UpdateById<T>(this SqlConnection dbConn, Dictionary<string, object> updateFields,object id,string idname=OrmLite.KeyName)
+        {
+            return Update<T>(dbConn, updateFields, idname + "=@id", DictBuilder.Assign("id", id));
+        }
+
         public static int UpdateFieldById<T>(this SqlConnection dbConn, string fieldName, object fieldValue, object id, string idname = OrmLite.KeyName)
         {
             return Update<T>(dbConn, DictBuilder.Assign(fieldName, fieldValue), idname + "=@id", DictBuilder.Assign("id", id));

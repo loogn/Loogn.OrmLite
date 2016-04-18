@@ -351,6 +351,16 @@ namespace Loogn.OrmLite
             return c;
         }
 
+        public static int UpdateById(this SqlTransaction dbTrans, string tableName, Dictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
+        {
+            return Update(dbTrans, tableName, updateFields, idname + "=@id", DictBuilder.Assign("id", id));
+        }
+
+        public static int UpdateById<T>(this SqlTransaction dbTrans, Dictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
+        {
+            return Update<T>(dbTrans, updateFields, idname + "=@id", DictBuilder.Assign("id", id));
+        }
+
         public static int UpdateFieldById<T>(this SqlTransaction dbTrans, string fieldName, object fieldValue, object id, string idname = OrmLite.KeyName)
         {
             return Update<T>(dbTrans, DictBuilder.Assign(fieldName, fieldValue), idname + "=@id", DictBuilder.Assign("id", id));

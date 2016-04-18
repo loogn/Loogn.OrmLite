@@ -278,6 +278,7 @@ namespace Loogn.OrmLite
             return c;
         }
 
+       
 
 
         public static int UpdateById(this SqlConnection dbConn, string tableName, Dictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
@@ -294,7 +295,7 @@ namespace Loogn.OrmLite
         {
             return Update<T>(dbConn, DictBuilder.Assign(fieldName, fieldValue), idname + "=@id", DictBuilder.Assign("id", id));
         }
-
+        
         public static int Delete(this SqlConnection dbConn, string sql, Dictionary<string, object> parameters = null)
         {
             return ExecuteNonQuery(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(parameters));

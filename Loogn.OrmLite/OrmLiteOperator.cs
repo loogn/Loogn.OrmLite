@@ -28,14 +28,14 @@ namespace Loogn.OrmLite
             }
         }
 
-        public int ExecuteNonQuery(string sql, Dictionary<string, object> ps=null)
+        public int ExecuteNonQuery(string sql, Dictionary<string, object> ps = null)
         {
             using (var db = openDb())
             {
                 return db.ExecuteNonQuery(System.Data.CommandType.Text, sql, ORM.DictionaryToParams(ps));
             }
         }
-        
+
 
         #region insert
         public int Insert(T m, bool selectIdentity = false)
@@ -148,6 +148,15 @@ namespace Loogn.OrmLite
                 return db.Update<T>(updateFields, conditions, parameters);
             }
         }
+
+        public int UpdateById(Dictionary<string, object> updateFields, object id, string idname=OrmLite.KeyName)
+        {
+            using (var db = openDb())
+            {
+                return db.UpdateById<T>(updateFields, id, idname);
+            }
+        }
+
 
         public int UpdateFieldById(string fieldName, object fieldValue, object id, string idname = OrmLite.KeyName)
         {

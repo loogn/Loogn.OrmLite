@@ -404,67 +404,67 @@ namespace Loogn.OrmLite
 
         #region Column
 
-        public List<T> Column(string sql)
+        public List<TField> Column<TField>(string sql)
         {
             using (var db = openDb())
             {
-                return db.Column<T>(sql);
+                return db.Column<TField>(sql);
             }
         }
 
-        public List<T> Column(string sql, Dictionary<string, object> parameters)
+        public List<TField> Column<TField>(string sql, Dictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
-                return db.Column<T>(sql, parameters);
+                return db.Column<TField>(sql, parameters);
             }
         }
 
-        public List<T> Column(string sql, object parameters)
+        public List<TField> Column<TField>(string sql, object parameters)
         {
             using (var db = openDb())
             {
-                return db.Column<T>(sql, parameters);
+                return db.Column<TField>(sql, parameters);
             }
         }
 
-        public List<T> ColumnFmt(string sqlFormat, params object[] parameters)
+        public List<TField> ColumnFmt<TField>(string sqlFormat, params object[] parameters)
         {
             using (var db = openDb())
             {
-                return db.ColumnFmt<T>(sqlFormat, parameters);
+                return db.ColumnFmt<TField>(sqlFormat, parameters);
             }
         }
 
-        public HashSet<T> ColumnDistinct(string sql)
+        public HashSet<TField> ColumnDistinct<TField>(string sql)
         {
             using (var db = openDb())
             {
-                return db.ColumnDistinct<T>(sql);
+                return db.ColumnDistinct<TField>(sql);
             }
         }
 
-        public HashSet<T> ColumnDistinct(string sql, Dictionary<string, object> parameters)
+        public HashSet<TField> ColumnDistinct<TField>(string sql, Dictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
-                return db.ColumnDistinct<T>(sql, parameters);
+                return db.ColumnDistinct<TField>(sql, parameters);
             }
         }
 
-        public HashSet<T> ColumnDistinct(string sql, object parameters)
+        public HashSet<TField> ColumnDistinct<TField>(string sql, object parameters)
         {
             using (var db = openDb())
             {
-                return db.ColumnDistinct<T>(sql, parameters);
+                return db.ColumnDistinct<TField>(sql, parameters);
             }
         }
 
-        public HashSet<T> ColumnDistinctFmt(string sqlFormat, params object[] parameters)
+        public HashSet<TField> ColumnDistinctFmt<TField>(string sqlFormat, params object[] parameters)
         {
             using (var db = openDb())
             {
-                return db.ColumnDistinctFmt<T>(sqlFormat, parameters);
+                return db.ColumnDistinctFmt<TField>(sqlFormat, parameters);
             }
         }
 

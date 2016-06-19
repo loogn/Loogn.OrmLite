@@ -19,20 +19,21 @@ namespace Loogn.OrmLite
             {
                 return tableName;
             }
-            if (type.Name.EndsWith("Info", StringComparison.OrdinalIgnoreCase))
+
+            var tableAttr = type.GetCustomAttributes(typeof(OrmLiteTableAttribute), true).FirstOrDefault() as OrmLiteTableAttribute;
+            if (tableAttr != null && tableAttr.Name != null && tableAttr.Name.Length > 0)
             {
-                tableName = type.Name.Substring(0, type.Name.Length - 4);
-            }
-            else if (type.Name.EndsWith("Model", StringComparison.OrdinalIgnoreCase))
-            {
-                tableName = type.Name.Substring(0, type.Name.Length - 5);
+                tableName = tableAttr.Name;
             }
             else
             {
-                var tableAttr = type.GetCustomAttributes(typeof(OrmLiteTableAttribute), true).FirstOrDefault() as OrmLiteTableAttribute;
-                if (tableAttr != null && tableAttr.Name != null && tableAttr.Name.Length > 0)
+                if (type.Name.EndsWith("Info", StringComparison.OrdinalIgnoreCase))
                 {
-                    tableName = tableAttr.Name;
+                    tableName = type.Name.Substring(0, type.Name.Length - 4);
+                }
+                else if (type.Name.EndsWith("Model", StringComparison.OrdinalIgnoreCase))
+                {
+                    tableName = type.Name.Substring(0, type.Name.Length - 5);
                 }
                 else
                 {

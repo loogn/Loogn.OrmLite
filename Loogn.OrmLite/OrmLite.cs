@@ -14,7 +14,11 @@ namespace Loogn.OrmLite
 
         public static SqlConnection Open(string connectionString, bool open = false)
         {
+
             var conn = new SqlConnection(connectionString);
+            System.Data.Common.DbConnection s;
+            s.CreateCommand();
+
             if (open) conn.Open();
             return conn;
         }

@@ -1,5 +1,6 @@
 ﻿using ConsoleApplication1.GeneralParadigm.Model;
 using Loogn.OrmLite;
+using Loogn.OrmLite.MySql;
 using System;
 using System.Collections.Generic;
 using System.Linq;

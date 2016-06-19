@@ -1,4 +1,5 @@
-﻿using Loogn.OrmLite;
+﻿using Loogn.OrmLite.MySql;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -13,12 +14,12 @@ namespace ConsoleApplication1.GeneralParadigm.Service
         //public static readonly string ConnectionString = ConfigHelper.ConnString("conn");
         public static readonly string ConnectionString = "server=.;uid=sa;pwd=123456;database=test";
 
-        public static SqlConnection Open()
+        public static MySqlConnection Open()
         {
             return OrmLite.Open(ConnectionString);
         }
 
-        public static SqlConnection Open(bool open)
+        public static MySqlConnection Open(bool open)
         {
             return OrmLite.Open(ConnectionString, open);
         }

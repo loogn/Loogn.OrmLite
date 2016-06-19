@@ -25,10 +25,7 @@ namespace Loogn.OrmLite
                     if (null != prop)
                     {
                         var value = reader.GetValue(i);
-                        if (null == value || value is DBNull)
-                            prop.SetValue(obj, null, null);
-                        else
-                            prop.SetValue(obj, value, null);
+                        SetPropertyValue(obj, prop, value);
                     }
                 }
                 return obj;
@@ -39,6 +36,49 @@ namespace Loogn.OrmLite
             }
         }
 
+
+        private static void SetPropertyValue(object obj, PropertyInfo prop, object value)
+        {
+            var propType = prop.PropertyType;
+
+            if (null == value || value is DBNull)
+                prop.SetValue(obj, null, null);
+            else
+            {
+                if (propType == typeof(bool))
+                {
+                    var boolValue = Convert.ToInt32(value);
+                    prop.SetValue(obj, boolValue > 0, null);
+                }
+                else if (propType == typeof(byte))
+                {
+                    var byteValue = Convert.ToByte(value);
+                    prop.SetValue(obj, byteValue, null);
+                }
+                else
+                {
+                    prop.SetValue(obj, value, null);
+                }
+            }
+        }
+
+        internal static T ConvertToType<T>(object obj)
+        {
+            if (obj == null || obj is DBNull)
+            {
+                return default(T);
+            }
+            else
+            {
+                var type = typeof(T);
+                object newobj = obj;
+                if (type == typeof(int))
+                {
+                    newobj = Convert.ToInt32(obj);
+                }
+                return (T)newobj;
+            }
+        }
         public static List<T> ReaderToObjectList<T>(SqlDataReader reader)
         {
             if (!reader.HasRows)
@@ -69,10 +109,7 @@ namespace Loogn.OrmLite
                     if (null != prop)
                     {
                         var value = reader.GetValue(i);
-                        if (null == value || value is DBNull)
-                            prop.SetValue(obj, null, null);
-                        else
-                            prop.SetValue(obj, value, null);
+                        SetPropertyValue(obj, prop, value);
                     }
                 }
                 list.Add(obj);
@@ -101,7 +138,7 @@ namespace Loogn.OrmLite
             List<T> list = new List<T>();
             while (reader.Read())
             {
-                list.Add((T)reader[0]);
+                list.Add(ConvertToType<T>(reader[0]));
             }
             return list;
         }
@@ -112,7 +149,7 @@ namespace Loogn.OrmLite
             HashSet<T> set = new HashSet<T>();
             while (reader.Read())
             {
-                set.Add((T)reader[0]);
+                set.Add(ConvertToType<T>(reader[0]));
             }
             return set;
         }
@@ -245,7 +282,7 @@ namespace Loogn.OrmLite
         {
             var props = anonType.GetType().GetCachedProperties();
 
-            if (props.Length>0)
+            if (props.Length > 0)
             {
                 SqlParameter[] ps = new SqlParameter[props.Length];
                 int i = 0;
@@ -324,7 +361,7 @@ namespace Loogn.OrmLite
             return dict;
         }
 
-        
+
     }
     internal class MyTuple<T1, T2>
     {

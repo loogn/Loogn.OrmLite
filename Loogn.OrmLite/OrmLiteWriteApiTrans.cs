@@ -109,7 +109,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        private static int InsertTrans<T>( this DbTransaction dbTrans, OrmLiteProviderType type, T obj)
+        private static int InsertTrans<T>(this DbTransaction dbTrans, OrmLiteProviderType type, T obj)
         {
             var objtype = typeof(T);
             var table = objtype.GetCachedTableName();
@@ -344,14 +344,14 @@ namespace Loogn.OrmLite
 
         public static int Update<T>(this DbTransaction dbTrans, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
         {
-            var tuple = SqlCmd.Update(dbTrans.GetProviderType(),typeof(T).GetCachedTableName(), updateFields, conditions, parameters);
+            var tuple = SqlCmd.Update(dbTrans.GetProviderType(), typeof(T).GetCachedTableName(), updateFields, conditions, parameters);
             int c = ExecuteNonQuery(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;
         }
 
         public static int Update(this DbTransaction dbTrans, string tableName, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
         {
-            var tuple = SqlCmd.Update(dbTrans.GetProviderType(),tableName, updateFields, conditions, parameters);
+            var tuple = SqlCmd.Update(dbTrans.GetProviderType(), tableName, updateFields, conditions, parameters);
 
             int c = ExecuteNonQuery(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;
@@ -391,14 +391,14 @@ namespace Loogn.OrmLite
 
         public static int DeleteByIds<T>(this DbTransaction dbTrans, IEnumerable idValues, string idFields = OrmLite.KeyName)
         {
-            var sql = SqlCmd.DeleteByIds<T>(idValues, idFields);
+            var sql = SqlCmd.DeleteByIds<T>(dbTrans.GetProviderType(), idValues, idFields);
             if (sql == null || sql.Length == 0) return 0;
             return ExecuteNonQuery(dbTrans, CommandType.Text, sql);
         }
 
         public static int Delete<T>(this DbTransaction dbTrans)
         {
-            var sql = SqlCmd.Delete<T>();
+            var sql = SqlCmd.Delete<T>(dbTrans.GetProviderType());
             return ExecuteNonQuery(dbTrans, CommandType.Text, sql);
         }
 

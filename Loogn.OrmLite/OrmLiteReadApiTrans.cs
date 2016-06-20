@@ -109,17 +109,17 @@ namespace Loogn.OrmLite
         #region Select
         public static List<T> Select<T>(this DbTransaction dbTrans)
         {
-            return SelectOriginal<T>(dbTrans, CommandType.Text, SqlCmd.Select<T>());
+            return SelectOriginal<T>(dbTrans, CommandType.Text, SqlCmd.Select<T>(dbTrans.GetProviderType()));
         }
 
         public static List<T> Select<T>(this DbTransaction dbTrans, string sql)
         {
-            return SelectOriginal<T>(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Select), null);
+            return SelectOriginal<T>(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(dbTrans.GetProviderType(), sql, PartSqlType.Select), null);
         }
 
         public static List<T> Select<T>(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
-            return SelectOriginal<T>(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Select), ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
+            return SelectOriginal<T>(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(dbTrans.GetProviderType(), sql, PartSqlType.Select), ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
 
         public static List<T> Select<T>(this DbTransaction dbTrans, string sql, object parameters)
@@ -172,7 +172,7 @@ namespace Loogn.OrmLite
 
         public static List<T> SelectByIds<T>(this DbTransaction dbTrans, IEnumerable idValues, string idField = OrmLite.KeyName, string selectFields = "*")
         {
-            var sql = SqlCmd.SelectByIds<T>(idValues, idField, selectFields);
+            var sql = SqlCmd.SelectByIds<T>(dbTrans.GetProviderType(), idValues, idField, selectFields);
             if (sql == null) return new List<T>();
             return SelectOriginal<T>(dbTrans, CommandType.Text, sql);
         }
@@ -451,20 +451,20 @@ namespace Loogn.OrmLite
         #region Count
         public static int Count<T>(this DbTransaction dbTrans)
         {
-            return CountOriginal(dbTrans, CommandType.Text, SqlCmd.Count<T>());
+            return CountOriginal(dbTrans, CommandType.Text, SqlCmd.Count<T>(dbTrans.GetProviderType()));
         }
 
         public static int Count<T>(this DbTransaction dbTrans, string sql)
         {
-            return CountOriginal(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), null);
+            return CountOriginal(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(dbTrans.GetProviderType(), sql, PartSqlType.Count), null);
         }
         public static int Count<T>(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
         {
-            return CountOriginal(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
+            return CountOriginal(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(dbTrans.GetProviderType(), sql, PartSqlType.Count), ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
         public static int Count<T>(this DbTransaction dbTrans, string sql, object parameters)
         {
-            return CountOriginal(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), ORM.AnonTypeToParams(dbTrans.GetProviderType(), parameters));
+            return CountOriginal(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(dbTrans.GetProviderType(), sql, PartSqlType.Count), ORM.AnonTypeToParams(dbTrans.GetProviderType(), parameters));
         }
 
         public static int CountWhere<T>(this DbTransaction dbTrans, string name, object value)

@@ -320,14 +320,14 @@ namespace Loogn.OrmLite
 
         public static int DeleteByIds<T>(this DbConnection dbConn, IEnumerable idValues, string idFields = OrmLite.KeyName)
         {
-            var sql = SqlCmd.DeleteByIds<T>(idValues, idFields);
+            var sql = SqlCmd.DeleteByIds<T>(dbConn.GetProviderType(), idValues, idFields);
             if (sql == null || sql.Length == 0) return 0;
             return ExecuteNonQuery(dbConn, CommandType.Text, sql);
         }
 
         public static int Delete<T>(this DbConnection dbConn)
         {
-            var sql = SqlCmd.Delete<T>();
+            var sql = SqlCmd.Delete<T>(dbConn.GetProviderType());
             return ExecuteNonQuery(dbConn, CommandType.Text, sql);
         }
     }

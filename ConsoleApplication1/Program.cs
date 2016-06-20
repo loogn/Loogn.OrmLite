@@ -17,6 +17,8 @@ namespace ConsoleApplication1
         static string MySqlConnstr = "Server=192.168.2.254;Uid=admin;Password=123456;Database=test;Port=3308;TreatTinyAsBoolean=false";
         static void Main(string[] args)
         {
+            
+            return;
             OrmLite.RegisterProvider(OrmLiteProviderType.MySql, MySqlOrmLiteProvider.Instance);
             
             OrmLite.WriteSqlLog = true;

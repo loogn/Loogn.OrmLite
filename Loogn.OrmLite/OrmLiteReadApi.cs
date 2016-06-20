@@ -109,22 +109,22 @@ namespace Loogn.OrmLite
         #region Select
         public static List<T> Select<T>(this DbConnection dbConn)
         {
-            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.Select<T>());
+            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.Select<T>(dbConn.GetProviderType()));
         }
 
         public static List<T> Select<T>(this DbConnection dbConn, string sql)
         {
-            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Select), null);
+            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Select), null);
         }
 
         public static List<T> Select<T>(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
         {
-            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Select), ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
+            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Select), ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
 
         public static List<T> Select<T>(this DbConnection dbConn, string sql, object parameters)
         {
-            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Select), ORM.AnonTypeToParams(dbConn.GetProviderType(), parameters));
+            return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Select), ORM.AnonTypeToParams(dbConn.GetProviderType(), parameters));
         }
 
         public static List<dynamic> Select(this DbConnection dbConn, string sql)
@@ -172,7 +172,7 @@ namespace Loogn.OrmLite
 
         public static List<T> SelectByIds<T>(this DbConnection dbConn, IEnumerable idValues, string idField = OrmLite.KeyName, string selectFields = "*")
         {
-            var sql = SqlCmd.SelectByIds<T>(idValues, idField, selectFields);
+            var sql = SqlCmd.SelectByIds<T>(dbConn.GetProviderType(), idValues, idField, selectFields);
             if (sql == null) return new List<T>();
             return SelectOriginal<T>(dbConn, CommandType.Text, sql);
         }
@@ -480,20 +480,20 @@ namespace Loogn.OrmLite
         #region Count
         public static int Count<T>(this DbConnection dbConn)
         {
-            return CountOriginal(dbConn, CommandType.Text, SqlCmd.Count<T>());
+            return CountOriginal(dbConn, CommandType.Text, SqlCmd.Count<T>(dbConn.GetProviderType()));
         }
 
         public static int Count<T>(this DbConnection dbConn, string sql)
         {
-            return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), null);
+            return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Count), null);
         }
         public static int Count<T>(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
         {
-            return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
+            return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Count), ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
         public static int Count<T>(this DbConnection dbConn, string sql, object parameters)
         {
-            return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(sql, PartSqlType.Count), ORM.AnonTypeToParams(dbConn.GetProviderType(), parameters));
+            return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Count), ORM.AnonTypeToParams(dbConn.GetProviderType(), parameters));
         }
 
         public static int CountWhere<T>(this DbConnection dbConn, string name, object value)

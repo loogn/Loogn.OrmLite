@@ -50,8 +50,15 @@ namespace Loogn.OrmLite
             {
                 if (propType == typeof(bool))
                 {
-                    var boolValue = Convert.ToInt32(value);
-                    prop.SetValue(obj, boolValue > 0, null);
+                    if (value.GetType() == typeof(bool))
+                    {
+                        prop.SetValue(obj, value, null);
+                    }
+                    else
+                    {
+                        var boolValue = Convert.ToInt32(value);
+                        prop.SetValue(obj, boolValue > 0, null);
+                    }
                 }
                 else if (propType == typeof(byte))
                 {
@@ -62,8 +69,6 @@ namespace Loogn.OrmLite
                 {
                     prop.SetValue(obj, value, null);
                 }
-
-
             }
         }
 

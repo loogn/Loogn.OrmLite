@@ -16,7 +16,6 @@ namespace Loogn.OrmLite
 
     public interface IOrmLiteProvider
     {
-        DbConnection CreateConnection();
         DbParameter CreateParameter(string name, object value);
     }
 

@@ -15,11 +15,6 @@ namespace ConsoleApplication1
 
         public static MySqlOrmLiteProvider Instance = new MySqlOrmLiteProvider();
 
-        public DbConnection CreateConnection()
-        {
-            return new MySqlConnection();
-        }
-
         public DbParameter CreateParameter(string name, object value)
         {
             return new MySqlParameter(name, value);

@@ -14,11 +14,6 @@ namespace Loogn.OrmLite
 
         public static SqlServerOrmLiteProvider Instance = new SqlServerOrmLiteProvider();
 
-        public DbConnection CreateConnection()
-        {
-            return new SqlConnection();
-        }
-
         public DbParameter CreateParameter(string name, object value)
         {
             return new SqlParameter(name, value);

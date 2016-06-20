@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace Loogn.OrmLite
 {
+
+    /// <summary>
+    /// ORM映射类，从reader到模型
+    /// </summary>
     public static class ORM
     {
-        public static T ReaderToObject<T>(SqlDataReader reader)
+        public static T ReaderToObject<T>(DbDataReader reader)
         {
             if (reader.Read())
             {
@@ -36,7 +40,6 @@ namespace Loogn.OrmLite
             }
         }
 
-
         private static void SetPropertyValue(object obj, PropertyInfo prop, object value)
         {
             var propType = prop.PropertyType;
@@ -59,6 +62,8 @@ namespace Loogn.OrmLite
                 {
                     prop.SetValue(obj, value, null);
                 }
+
+
             }
         }
 
@@ -77,9 +82,11 @@ namespace Loogn.OrmLite
                     newobj = Convert.ToInt32(obj);
                 }
                 return (T)newobj;
+
             }
         }
-        public static List<T> ReaderToObjectList<T>(SqlDataReader reader)
+
+        public static List<T> ReaderToObjectList<T>(DbDataReader reader)
         {
             if (!reader.HasRows)
             {
@@ -118,7 +125,7 @@ namespace Loogn.OrmLite
             return list;
         }
 
-        internal static List<MyTuple<T1, T2>> ReaderToTupleList<T1, T2>(SqlDataReader reader)
+        internal static List<MyTuple<T1, T2>> ReaderToTupleList<T1, T2>(DbDataReader reader)
         {
             if (!reader.HasRows) return new List<MyTuple<T1, T2>>();
             var list = new List<MyTuple<T1, T2>>();
@@ -132,7 +139,7 @@ namespace Loogn.OrmLite
             return list;
         }
 
-        public static List<T> ReaderToColumnList<T>(SqlDataReader reader)
+        public static List<T> ReaderToColumnList<T>(DbDataReader reader)
         {
             if (!reader.HasRows) return new List<T>();
             List<T> list = new List<T>();
@@ -143,7 +150,7 @@ namespace Loogn.OrmLite
             return list;
         }
 
-        public static HashSet<T> ReaderToColumnSet<T>(SqlDataReader reader)
+        public static HashSet<T> ReaderToColumnSet<T>(DbDataReader reader)
         {
             if (!reader.HasRows) return new HashSet<T>();
             HashSet<T> set = new HashSet<T>();
@@ -154,7 +161,7 @@ namespace Loogn.OrmLite
             return set;
         }
 
-        public static dynamic ReaderToDynamic(SqlDataReader reader)
+        public static dynamic ReaderToDynamic(DbDataReader reader)
         {
             if (reader.Read())
             {
@@ -172,7 +179,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static List<dynamic> ReaderToDynamicList(SqlDataReader reader)
+        public static List<dynamic> ReaderToDynamicList(DbDataReader reader)
         {
             if (!reader.HasRows)
             {
@@ -192,7 +199,7 @@ namespace Loogn.OrmLite
             return list;
         }
 
-        private static void ReaderToJson(SqlDataReader reader, StringBuilder result)
+        private static void ReaderToJson(DbDataReader reader, StringBuilder result)
         {
             result.Append("{");
             for (int i = 0; i < reader.FieldCount; i++)
@@ -227,7 +234,7 @@ namespace Loogn.OrmLite
             result.Append("}");
         }
 
-        public static string ReaderToJsonArray(SqlDataReader reader)
+        public static string ReaderToJsonArray(DbDataReader reader)
         {
             StringBuilder json = new StringBuilder(500);
             while (reader.Read())
@@ -248,7 +255,7 @@ namespace Loogn.OrmLite
             return json.ToString();
         }
 
-        public static string ReaderToJsonObject(SqlDataReader reader)
+        public static string ReaderToJsonObject(DbDataReader reader)
         {
             if (reader.Read())
             {
@@ -262,35 +269,44 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static SqlParameter[] AnonTypeToParams(object anonType)
+        public static DbParameter[] AnonTypeToParams(OrmLiteProviderType type, object anonType)
         {
             if (anonType != null)
             {
+
+                var provider = OrmLite.GetProvider(type);
+
                 var props = anonType.GetType().GetCachedProperties();
-                var ps = new SqlParameter[props.Length];
+                var ps = new DbParameter[props.Length];
                 for (int i = 0, len = props.Length; i < len; i++)
                 {
                     var prop = props[i];
-                    ps[i] = new SqlParameter("@" + prop.Name, prop.GetValue(anonType, null));
+                    var p = provider.CreateParameter("@" + prop.Name, prop.GetValue(anonType, null));
+
+                    ps[i] = p;
                 }
                 return ps;
             }
             return null;
         }
 
-        public static SqlParameter[] AnonTypeToParams(object anonType, StringBuilder appendWhere)
+        public static DbParameter[] AnonTypeToParams(OrmLiteProviderType type, object anonType, StringBuilder appendWhere)
         {
             var props = anonType.GetType().GetCachedProperties();
 
             if (props.Length > 0)
             {
-                SqlParameter[] ps = new SqlParameter[props.Length];
+                var provider = OrmLite.GetProvider(type);
+
+                DbParameter[] ps = new DbParameter[props.Length];
                 int i = 0;
                 appendWhere.Append(" where ");
                 foreach (var prop in props)
                 {
-                    ps[i++] = new SqlParameter("@" + prop.Name, prop.GetValue(anonType, null));
-                    appendWhere.AppendFormat(" [{0}]=@{0} and ", prop.Name);
+                    var p = provider.CreateParameter("@" + prop.Name, prop.GetValue(anonType, null));
+
+                    ps[i++] = p;
+                    appendWhere.AppendFormat(" {0}=@{0} and ", prop.Name);
                 }
                 appendWhere.Length -= 4;
                 return ps;
@@ -298,32 +314,39 @@ namespace Loogn.OrmLite
             return null;
         }
 
-        public static SqlParameter[] DictionaryToParams(Dictionary<string, object> dict)
+        public static DbParameter[] DictionaryToParams(OrmLiteProviderType type, Dictionary<string, object> dict)
         {
             if (dict != null)
             {
-                SqlParameter[] ps = new SqlParameter[dict.Count];
+                var provider = OrmLite.GetProvider(type);
+
+                DbParameter[] ps = new DbParameter[dict.Count];
                 int i = 0;
                 foreach (var kv in dict)
                 {
-                    ps[i++] = new SqlParameter("@" + kv.Key, kv.Value);
+                    var p = provider.CreateParameter("@" + kv.Key, kv.Value);
+                    ps[i++] = p;
                 }
                 return ps;
             }
             return null;
         }
 
-        public static SqlParameter[] DictionaryToParams(Dictionary<string, object> conditions, StringBuilder appendWhere)
+        public static DbParameter[] DictionaryToParams(OrmLiteProviderType type, Dictionary<string, object> conditions, StringBuilder appendWhere)
         {
             if (conditions != null && conditions.Count > 0)
             {
-                SqlParameter[] ps = new SqlParameter[conditions.Count];
+                var provider = OrmLite.GetProvider(type);
+
+                DbParameter[] ps = new DbParameter[conditions.Count];
                 int i = 0;
                 appendWhere.Append(" where ");
                 foreach (var kv in conditions)
                 {
-                    ps[i++] = new SqlParameter("@" + kv.Key, kv.Value);
-                    appendWhere.AppendFormat(" [{0}]=@{0} and ", kv.Key);
+                    var p = provider.CreateParameter("@" + kv.Key, kv.Value);
+
+                    ps[i++] = p;
+                    appendWhere.AppendFormat(" {0}=@{0} and ", kv.Key);
                 }
                 appendWhere.Length -= 4;
                 return ps;
@@ -331,7 +354,7 @@ namespace Loogn.OrmLite
             return null;
         }
 
-        public static Dictionary<K, List<V>> ReaderToLookup<K, V>(SqlDataReader reader)
+        public static Dictionary<K, List<V>> ReaderToLookup<K, V>(DbDataReader reader)
         {
             if (!reader.HasRows) return new Dictionary<K, List<V>>();
             var list = ReaderToTupleList<K, V>(reader);
@@ -349,7 +372,7 @@ namespace Loogn.OrmLite
             return dict;
         }
 
-        public static Dictionary<K, V> ReaderToDictionary<K, V>(SqlDataReader reader)
+        public static Dictionary<K, V> ReaderToDictionary<K, V>(DbDataReader reader)
         {
             if (!reader.HasRows) return new Dictionary<K, V>();
             var list = ReaderToTupleList<K, V>(reader);
@@ -372,7 +395,6 @@ namespace Loogn.OrmLite
     internal enum PartSqlType
     {
         Select,
-        Single,
         Count
     }
 

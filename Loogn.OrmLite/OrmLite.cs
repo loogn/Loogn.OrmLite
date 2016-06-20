@@ -1,42 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Common;
+using System.Data.SqlClient;
 
 namespace Loogn.OrmLite
 {
+
+
     public class OrmLite
     {
+        private static IOrmLiteProvider SqlServerProvider;
+        private static IOrmLiteProvider MySqlProvider;
+
+        public static void RegisterProvider(OrmLiteProviderType type, IOrmLiteProvider provider)
+        {
+            if (type == OrmLiteProviderType.SqlServer && SqlServerProvider == null)
+            {
+                SqlServerProvider = provider;
+            }
+            else if (type == OrmLiteProviderType.MySql && MySqlProvider == null)
+            {
+                MySqlProvider = provider;
+            }
+        }
+
+
+        static OrmLite()
+        {
+            RegisterProvider(OrmLiteProviderType.SqlServer, SqlServerOrmLiteProvider.Instance);
+        }
+
+        public static IOrmLiteProvider GetProvider(OrmLiteProviderType type)
+        {
+            if (type == OrmLiteProviderType.SqlServer)
+            {
+                return SqlServerProvider;
+            }
+            else if (type == OrmLiteProviderType.MySql)
+            {
+                return MySqlProvider;
+            }
+            throw new ArgumentException("OrmLiteProviderType 参数错误");
+        }
+
         public const string KeyName = "ID";
-
-        public static SqlConnection Open(string connectionString, bool open = false)
-        {
-
-            var conn = new SqlConnection(connectionString);
-            System.Data.Common.DbConnection s;
-            s.CreateCommand();
-
-            if (open) conn.Open();
-            return conn;
-        }
-        public static SqlConnection Open(bool open = false)
-        {
-            var conn = new SqlConnection(defaultConnectionString);
-            if (open) conn.Open();
-            return conn;
-        }
-
-        private static string defaultConnectionString;
-        public static string DefaultConnectionString
-        {
-            get { return defaultConnectionString; }
-            set { defaultConnectionString = value; }
-        }
-
-
 
         private static string defaultKeyName = KeyName;
         public static string DefaultKeyName

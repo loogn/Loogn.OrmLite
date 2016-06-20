@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace Loogn.OrmLite
 {
@@ -14,13 +14,13 @@ namespace Loogn.OrmLite
     /// <typeparam name="T"></typeparam>
     public class OrmLiteOperator<T> where T : new()
     {
-        Func<SqlConnection> openDb;
-        public OrmLiteOperator(Func<SqlConnection> connFunc)
+        Func<DbConnection> openDb;
+        public OrmLiteOperator(Func<DbConnection> connFunc)
         {
             this.openDb = connFunc;
         }
 
-        public SqlCommand Proc(string name, object inParams = null, bool execute = false)
+        public DbCommand Proc(string name, object inParams = null, bool execute = false)
         {
             using (var db = openDb())
             {
@@ -32,7 +32,7 @@ namespace Loogn.OrmLite
         {
             using (var db = openDb())
             {
-                return db.ExecuteNonQuery(System.Data.CommandType.Text, sql, ORM.DictionaryToParams(ps));
+                return db.ExecuteNonQuery(System.Data.CommandType.Text, sql, ORM.DictionaryToParams(db.GetProviderType(), ps));
             }
         }
 
@@ -149,7 +149,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public int UpdateById(Dictionary<string, object> updateFields, object id, string idname=OrmLite.KeyName)
+        public int UpdateById(Dictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
         {
             using (var db = openDb())
             {

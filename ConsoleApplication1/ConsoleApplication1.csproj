@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>..\dlls\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,6 +49,7 @@
     <Compile Include="GeneralParadigm\Service\DB.cs" />
     <Compile Include="GeneralParadigm\Service\PersonService.cs" />
     <Compile Include="GeneralParadigm\Service\ServiceCreator.cs" />
+    <Compile Include="MySqlOrmLiteProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

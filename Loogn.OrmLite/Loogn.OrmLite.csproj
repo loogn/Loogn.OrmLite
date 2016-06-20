@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DictBuilder.cs" />
+    <Compile Include="IOrmLiteProvider.cs" />
     <Compile Include="OrmLiteOperator.cs" />
     <Compile Include="ORM.cs" />
     <Compile Include="OrmLite.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="OrmLiteWriteApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlInjection.cs" />
+    <Compile Include="SqlServerOrmLiteProvider.cs" />
     <Compile Include="_SqlCmd.cs" />
     <Compile Include="_ReflectionCache.cs" />
     <Compile Include="SQLHelper.cs" />

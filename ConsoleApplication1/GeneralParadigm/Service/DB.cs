@@ -1,4 +1,4 @@
-﻿using Loogn.OrmLite.MySql;
+﻿using Loogn.OrmLite;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -16,12 +16,18 @@ namespace ConsoleApplication1.GeneralParadigm.Service
 
         public static MySqlConnection Open()
         {
-            return OrmLite.Open(ConnectionString);
+            return new MySqlConnection(ConnectionString);
         }
 
         public static MySqlConnection Open(bool open)
         {
-            return OrmLite.Open(ConnectionString, open);
+            var conn = new MySqlConnection(ConnectionString);
+            if (open)
+            {
+                conn.Open();
+            }
+
+            return conn;
         }
     }
 }

@@ -42,7 +42,6 @@ namespace Loogn.OrmLite
             }
             TableNamesDict[type] = tableName;
             return tableName;
-
         }
 
         public static PropertyInfo[] GetCachedProperties(this Type type)

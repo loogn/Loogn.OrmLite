@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Common;
 
 namespace Loogn.OrmLite
 {
@@ -13,7 +13,7 @@ namespace Loogn.OrmLite
         public static string Select<T>()
         {
             var table = typeof(T).GetCachedTableName();
-            return "SELECT * FROM [" + table + "]";
+            return "SELECT * FROM " + table;
         }
 
         public static string FullPartSql<T>(string sql, PartSqlType type)
@@ -28,54 +28,73 @@ namespace Loogn.OrmLite
             switch (type)
             {
                 case PartSqlType.Select:
-                    return sb.AppendFormat("SELECT * FROM [{0}] where {1}", tableName, sql).ToString();
-                case PartSqlType.Single:
-                    return sb.AppendFormat("SELECT TOP 1 * FROM [{0}] where {1}", tableName, sql).ToString();
+                    return sb.AppendFormat("SELECT * FROM {0} where {1}", tableName, sql).ToString();
                 case PartSqlType.Count:
-                    return sb.AppendFormat("SELECT COUNT(0) FROM [{0}] where {1}", tableName, sql).ToString();
+                    return sb.AppendFormat("SELECT COUNT(0) FROM {0} where {1}", tableName, sql).ToString();
                 default:
                     return sql;
             }
         }
+        public static string FullPartSqlSingle<T>(OrmLiteProviderType type, string sql)
+        {
+            sql = sql.TrimStart();
+            if (sql.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase))
+            {
+                return sql;
+            }
+            var tableName = typeof(T).GetCachedTableName();
+            StringBuilder sb = new StringBuilder(sql.Length + 50);
+            if (type == OrmLiteProviderType.MySql)
+            {
+                return sb.AppendFormat("SELECT * FROM {0} where {1} limit 1", tableName, sql).ToString();
+            }
+            else
+            {
+                return sb.AppendFormat("SELECT top 1 * FROM {0} where {1}", tableName, sql).ToString();
+            }
+        }
 
-        public static MyTuple<string, SqlParameter[]> SelectWhere<T>(string name, object value)
+
+
+        public static MyTuple<string, DbParameter[]> SelectWhere<T>(OrmLiteProviderType type, string name, object value)
         {
             var table = typeof(T).GetCachedTableName();
-            SqlParameter p = new SqlParameter("@" + name, value);
+            DbParameter p = OrmLite.GetProvider(type).CreateParameter("@" + name, value);
 
-            MyTuple<string, SqlParameter[]> result = new MyTuple<string, SqlParameter[]>();
-            result.Item1 = string.Format("Select * from [{0}] where [{1}]=@{1}", table, name);
-            result.Item2 = new SqlParameter[] { p };
+
+            MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
+            result.Item1 = string.Format("Select * from {0} where {1}=@{1}", table, name);
+            result.Item2 = new DbParameter[] { p };
             return result;
         }
 
-        public static MyTuple<string, SqlParameter[]> SelectWhere<T>(Dictionary<string, object> conditions)
+        public static MyTuple<string, DbParameter[]> SelectWhere<T>(OrmLiteProviderType type, Dictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT * FROM [{0}]", tableName);
-            var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
+            sqlbuilder.AppendFormat("SELECT * FROM {0}", tableName);
+            var ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
 
-            MyTuple<string, SqlParameter[]> result = new MyTuple<string, SqlParameter[]>();
+            MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sqlbuilder.ToString();
             result.Item2 = ps;
             return result;
         }
 
-        public static MyTuple<string, SqlParameter[]> SelectWhere<T>(object conditions)
+        public static MyTuple<string, DbParameter[]> SelectWhere<T>(OrmLiteProviderType type, object conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT * FROM [{0}]", tableName);
-            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
+            sqlbuilder.AppendFormat("SELECT * FROM {0}", tableName);
+            var ps = ORM.AnonTypeToParams(type, conditions, sqlbuilder);
 
-            MyTuple<string, SqlParameter[]> result = new MyTuple<string, SqlParameter[]>();
+            MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sqlbuilder.ToString();
             result.Item2 = ps;
             return result;
         }
 
-        public static string SelectByIds<T>(IEnumerable idValues, string idField,string selectFields="*")
+        public static string SelectByIds<T>(IEnumerable idValues, string idField, string selectFields = "*")
         {
             if (idValues == null) return null;
             bool any = false;
@@ -94,7 +113,7 @@ namespace Loogn.OrmLite
                     }
                     var table = typeof(T).GetCachedTableName();
                     sql = new StringBuilder(50);
-                    sql.AppendFormat("Select {2} from [{0}] where [{1}] in (", table, idField,selectFields);
+                    sql.AppendFormat("Select {2} from {0} where {1} in (", table, idField, selectFields);
                 }
                 if (needQuot)
                 {
@@ -116,75 +135,131 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static MyTuple<string, SqlParameter[]> Single<T>(Dictionary<string, object> conditions)
+        public static MyTuple<string, DbParameter[]> Single<T>(OrmLiteProviderType type, Dictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT  TOP 1 * FROM [{0}]", tableName);
-            var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
+            DbParameter[] ps = null;
+            if (type == OrmLiteProviderType.MySql)
+            {
+                sqlbuilder.AppendFormat("SELECT * FROM {0}", tableName);
+                ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
+                sqlbuilder.Append(" limit 1");
+            }
+            else if (type == OrmLiteProviderType.SqlServer)
+            {
+                sqlbuilder.AppendFormat("SELECT top 1 * FROM {0}", tableName);
+                ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
+            }
 
-            var result = new MyTuple<string, SqlParameter[]>();
+            var result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sqlbuilder.ToString();
             result.Item2 = ps;
             return result;
         }
 
-        public static MyTuple<string, SqlParameter[]> Single<T>(object conditions)
+        public static MyTuple<string, DbParameter[]> Single<T>(OrmLiteProviderType type, object conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT  TOP 1 * FROM [{0}]", tableName);
-            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
+            DbParameter[] ps = null;
+            if (type == OrmLiteProviderType.MySql)
+            {
+                sqlbuilder.AppendFormat("SELECT * FROM {0}", tableName);
+                ps = ORM.AnonTypeToParams(type, conditions, sqlbuilder);
+                sqlbuilder.Append(" limit 1");
+            }
+            else if (type == OrmLiteProviderType.SqlServer)
+            {
+                sqlbuilder.AppendFormat("SELECT top 1 * FROM {0}", tableName);
+                ps = ORM.AnonTypeToParams(type, conditions, sqlbuilder);
+            }
 
-            var result = new MyTuple<string, SqlParameter[]>();
+            var result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sqlbuilder.ToString();
             result.Item2 = ps;
             return result;
         }
 
-        public static MyTuple<string, SqlParameter[]> SingleById<T>(object idValue, string idField)
+        public static MyTuple<string, DbParameter[]> SingleById<T>(OrmLiteProviderType type, object idValue, string idField)
         {
-            SqlParameter sp = new SqlParameter("@" + idField, idValue);
-            var sql = string.Format("SELECT TOP 1 * FROM [{0}] WHERE [{1}]=@{1}", typeof(T).GetCachedTableName(), idField);
-            MyTuple<string, SqlParameter[]> result = new MyTuple<string, SqlParameter[]>();
+            var sp = OrmLite.GetProvider(type).CreateParameter("@" + idField, idValue);
+            var sql = "";
+            if (type == OrmLiteProviderType.MySql)
+            {
+                sql = string.Format("SELECT * FROM {0} WHERE {1}=@{1} limit 1", typeof(T).GetCachedTableName(), idField);
+            }
+            else if (type == OrmLiteProviderType.SqlServer)
+            {
+                sql = string.Format("SELECT top 1 * FROM {0} WHERE {1}=@{1}", typeof(T).GetCachedTableName(), idField);
+            }
+
+            MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sql;
-            result.Item2 = new SqlParameter[] { sp };
+            result.Item2 = new DbParameter[] { sp };
             return result;
         }
 
-        public static MyTuple<string, SqlParameter[]> SingleWhere<T>(string name, object value)
+        public static MyTuple<string, DbParameter[]> SingleWhere<T>(OrmLiteProviderType type, string name, object value)
         {
             var table = typeof(T).GetCachedTableName();
-            SqlParameter p = new SqlParameter("@" + name, value);
-            var sql = string.Format("SELECT TOP 1 * FROM [{0}] WHERE [{1}]=@{1}", table, name);
+            var p = OrmLite.GetProvider(type).CreateParameter("@" + name, value);
+            var sql = "";
+            if (type == OrmLiteProviderType.MySql)
+            {
+                sql = string.Format("SELECT * FROM {0} WHERE {1}=@{1} limit 1 ", table, name);
+            }
+            else if (type == OrmLiteProviderType.SqlServer)
+            {
+                sql = string.Format("SELECT top 1 * FROM {0} WHERE {1}=@{1} ", table, name);
+            }
 
-            MyTuple<string, SqlParameter[]> result = new MyTuple<string, SqlParameter[]>();
+            MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sql;
-            result.Item2 = new SqlParameter[] { p };
+            result.Item2 = new DbParameter[] { p };
             return result;
         }
 
-        public static MyTuple<string, SqlParameter[]> SingleWhere<T>(Dictionary<string, object> conditions)
+        public static MyTuple<string, DbParameter[]> SingleWhere<T>(OrmLiteProviderType type, Dictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT TOP 1 * FROM [{0}]", tableName);
-            var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
-
-            MyTuple<string, SqlParameter[]> result = new MyTuple<string, SqlParameter[]>();
+            DbParameter[] ps = null;
+            if (type == OrmLiteProviderType.MySql)
+            {
+                sqlbuilder.AppendFormat("SELECT * FROM {0}", tableName);
+                ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
+                sqlbuilder.Append(" limit 1");
+            }
+            else if (type == OrmLiteProviderType.SqlServer)
+            {
+                sqlbuilder.AppendFormat("SELECT top 1 * FROM {0}", tableName);
+                ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
+            }
+            MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sqlbuilder.ToString();
             result.Item2 = ps;
             return result;
         }
 
-        public static MyTuple<string, SqlParameter[]> SingleWhere<T>(object conditions)
+        public static MyTuple<string, DbParameter[]> SingleWhere<T>(OrmLiteProviderType type, object conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT TOP 1 * FROM [{0}]", tableName);
-            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
+            DbParameter[] ps = null;
+            if (type == OrmLiteProviderType.MySql)
+            {
+                sqlbuilder.AppendFormat("SELECT * FROM {0}", tableName);
+                ps = ORM.AnonTypeToParams(type, conditions, sqlbuilder);
+                sqlbuilder.Append(" limit 1");
+            }
+            else if (type == OrmLiteProviderType.SqlServer)
+            {
+                sqlbuilder.AppendFormat("SELECT top 1 * FROM {0}", tableName);
+                ps = ORM.AnonTypeToParams(type, conditions, sqlbuilder);
+            }
 
-            MyTuple<string, SqlParameter[]> result = new MyTuple<string, SqlParameter[]>();
+            MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sqlbuilder.ToString();
             result.Item2 = ps;
             return result;
@@ -193,63 +268,65 @@ namespace Loogn.OrmLite
         public static string Count<T>()
         {
             var table = typeof(T).GetCachedTableName();
-            return "SELECT COUNT(0) FROM [" + table + "]";
+            return "SELECT COUNT(0) FROM " + table;
         }
 
-        public static MyTuple<string, SqlParameter[]> CountWhere<T>(string name, object value)
+        public static MyTuple<string, DbParameter[]> CountWhere<T>(OrmLiteProviderType type, string name, object value)
         {
             var table = typeof(T).GetCachedTableName();
-            SqlParameter p = new SqlParameter("@" + name, value);
-            var sql = string.Format("SELECT COUNT(0) FROM [{0}] WHERE [{1}]=@{1}", table, name);
-            MyTuple<string, SqlParameter[]> result = new MyTuple<string, SqlParameter[]>();
+            var provider = OrmLite.GetProvider(type);
+            DbParameter p = provider.CreateParameter("@" + name, value);
+            var sql = string.Format("SELECT COUNT(0) FROM {0} WHERE {1}=@{1}", table, name);
+            MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sql;
-            result.Item2 = new SqlParameter[] { p };
+            result.Item2 = new DbParameter[] { p };
             return result;
         }
-        public static MyTuple<string, SqlParameter[]> CountWhere<T>(Dictionary<string, object> conditions)
+        public static MyTuple<string, DbParameter[]> CountWhere<T>(OrmLiteProviderType type, Dictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT COUNT(0) FROM [{0}]", tableName);
-            var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
+            sqlbuilder.AppendFormat("SELECT COUNT(0) FROM {0}", tableName);
+            var ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
 
-            MyTuple<string, SqlParameter[]> result = new MyTuple<string, SqlParameter[]>();
+            MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sqlbuilder.ToString();
             result.Item2 = ps;
             return result;
         }
 
-        public static MyTuple<string, SqlParameter[]> CountWhere<T>(object conditions)
+        public static MyTuple<string, DbParameter[]> CountWhere<T>(OrmLiteProviderType type, object conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("SELECT COUNT(0) FROM [{0}]", tableName);
-            var ps = ORM.AnonTypeToParams(conditions, sqlbuilder);
+            sqlbuilder.AppendFormat("SELECT COUNT(0) FROM {0}", tableName);
+            var ps = ORM.AnonTypeToParams(type, conditions, sqlbuilder);
 
-            MyTuple<string, SqlParameter[]> result = new MyTuple<string, SqlParameter[]>();
+            MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
             result.Item1 = sqlbuilder.ToString();
             result.Item2 = ps;
             return result;
         }
 
 
-        public static MyTuple<string, SqlParameter[]> Update(string tableName, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
-        {         
+        public static MyTuple<string, DbParameter[]> Update(OrmLiteProviderType type, string tableName, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
+        {
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("update [{0}] set ", tableName);
-            var ps = new List<SqlParameter>();
+            sbsql.AppendFormat("update {0} set ", tableName);
+            var ps = new List<DbParameter>();
             var nofield = true;
+            var provider = OrmLite.GetProvider(type);
             foreach (var field in updateFields)
             {
                 if (field.Key.StartsWith("$") || field.Key.StartsWith("_"))
                 {
-                    sbsql.AppendFormat("[{0}] = {1},", field.Key.Substring(1), field.Value);
+                    sbsql.AppendFormat("{0} = {1},", field.Key.Substring(1), field.Value);
                     nofield = false;
                 }
                 else
                 {
-                    sbsql.AppendFormat("[{0}] = @_{0},", field.Key);
-                    ps.Add(new SqlParameter("@_" + field.Key, field.Value));
+                    sbsql.AppendFormat("{0} = @_{0},", field.Key);
+                    ps.Add(provider.CreateParameter("@_" + field.Key, field.Value));
                 }
             }
             if (ps.Count == 0 && nofield)
@@ -261,12 +338,12 @@ namespace Loogn.OrmLite
             {
                 sbsql.AppendFormat(" where {0}", conditions);
             }
-            var conditionPS = ORM.DictionaryToParams(parameters);
+            var conditionPS = ORM.DictionaryToParams(type, parameters);
             if (conditionPS != null)
             {
                 ps.AddRange(conditionPS);
             }
-            return new MyTuple<string, SqlParameter[]>
+            return new MyTuple<string, DbParameter[]>
             {
                 Item1 = sbsql.ToString(),
                 Item2 = ps.ToArray()
@@ -275,16 +352,17 @@ namespace Loogn.OrmLite
         }
 
 
-        public static MyTuple<string, SqlParameter[]> Insert<T>(T obj, bool selectIdentity)
+        public static MyTuple<string, DbParameter[]> Insert<T>(OrmLiteProviderType type, T obj, bool selectIdentity)
         {
-            var type = typeof(T);
-            var table = type.GetCachedTableName();
-            var propertys = type.GetCachedProperties();
+            var objtype = typeof(T);
+            var table = objtype.GetCachedTableName();
+            var propertys = objtype.GetCachedProperties();
 
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("insert into [{0}] (", table);
+            sbsql.AppendFormat("insert into {0} (", table);
             StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
-            var ps = new List<SqlParameter>();
+            var ps = new List<DbParameter>();
+            var provider = OrmLite.GetProvider(type);
             foreach (var property in propertys)
             {
                 var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
@@ -319,9 +397,9 @@ namespace Loogn.OrmLite
                             val = DateTime.Now;
                         }
                     }
-                    sbsql.AppendFormat("[{0}],", fieldName);
+                    sbsql.AppendFormat("{0},", fieldName);
                     sbParams.AppendFormat("@{0},", fieldName);
-                    ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+                    ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                 }
             }
             if (ps.Count == 0)
@@ -335,27 +413,35 @@ namespace Loogn.OrmLite
 
             if (selectIdentity)
             {
-                sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
+                if (type == OrmLiteProviderType.MySql)
+                {
+                    sbsql.Append(";SELECT LAST_INSERT_ID()");
+                }
+                else if (type == OrmLiteProviderType.SqlServer)
+                {
+                    sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
+                }
             }
-
-            return new MyTuple<string, SqlParameter[]>
+            
+            return new MyTuple<string, DbParameter[]>
             {
                 Item1 = sbsql.ToString(),
                 Item2 = ps.ToArray()
             };
         }
 
-        public static MyTuple<string, SqlParameter[]> Insert(string table, Dictionary<string, object> fields, bool selectIdentity = false)
+        public static MyTuple<string, DbParameter[]> Insert(OrmLiteProviderType type, string table, Dictionary<string, object> fields, bool selectIdentity = false)
         {
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("insert into [{0}] (", table);
+            sbsql.AppendFormat("insert into {0} (", table);
             StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
-            var ps = new List<SqlParameter>();
+            var ps = new List<DbParameter>();
+            var provider = OrmLite.GetProvider(type);
             foreach (var field in fields)
             {
-                sbsql.AppendFormat("[{0}],", field.Key);
+                sbsql.AppendFormat("{0},", field.Key);
                 sbParams.AppendFormat("@{0},", field.Key);
-                ps.Add(new SqlParameter("@" + field.Key, field.Value));
+                ps.Add(provider.CreateParameter("@" + field.Key, field.Value));
             }
             if (ps.Count == 0)
             {
@@ -368,31 +454,39 @@ namespace Loogn.OrmLite
 
             if (selectIdentity)
             {
-                sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
+                if (type == OrmLiteProviderType.MySql)
+                {
+                    sbsql.Append(";SELECT LAST_INSERT_ID()");
+                }
+                else if (type == OrmLiteProviderType.SqlServer)
+                {
+                    sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
+                }
             }
-            return new MyTuple<string, SqlParameter[]>
+            return new MyTuple<string, DbParameter[]>
             {
                 Item1 = sbsql.ToString(),
                 Item2 = ps.ToArray()
             };
         }
 
-        public static MyTuple<string, SqlParameter[]> Insert(string table, object anonType, bool selectIdentity)
+        public static MyTuple<string, DbParameter[]> Insert(OrmLiteProviderType type, string table, object anonType, bool selectIdentity)
         {
-            var type = anonType.GetType();
-            var propertys = type.GetCachedProperties();
+            var objType = anonType.GetType();
+            var propertys = objType.GetCachedProperties();
 
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("insert into [{0}] (", table);
+            sbsql.AppendFormat("insert into {0} (", table);
             StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
-            var ps = new List<SqlParameter>();
+            var ps = new List<DbParameter>();
+            var provider = OrmLite.GetProvider(type);
             foreach (var property in propertys)
             {
                 var fieldName = property.Name;
                 var val = property.GetValue(anonType, null);
-                sbsql.AppendFormat("[{0}],", fieldName);
+                sbsql.AppendFormat("{0},", fieldName);
                 sbParams.AppendFormat("@{0},", fieldName);
-                ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+                ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
             }
             if (ps.Count == 0)
             {
@@ -405,24 +499,32 @@ namespace Loogn.OrmLite
 
             if (selectIdentity)
             {
-                sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
+                if (type == OrmLiteProviderType.MySql)
+                {
+                    sbsql.Append(";SELECT LAST_INSERT_ID()");
+                }
+                else if (type == OrmLiteProviderType.SqlServer)
+                {
+                    sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
+                }
             }
-            return new MyTuple<string, SqlParameter[]>
+            return new MyTuple<string, DbParameter[]>
             {
                 Item1 = sbsql.ToString(),
                 Item2 = ps.ToArray()
             };
         }
 
-        public static MyTuple<string, SqlParameter[]> Update<T>(T obj, params string[] updateFields)
+        public static MyTuple<string, DbParameter[]> Update<T>(OrmLiteProviderType type, T obj, params string[] updateFields)
         {
-            var type = typeof(T);
-            var table = type.GetCachedTableName();
-            var propertys = type.GetCachedProperties();
+            var objType = typeof(T);
+            var table = objType.GetCachedTableName();
+            var propertys = objType.GetCachedProperties();
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("update [{0}] set ", table);
+            sbsql.AppendFormat("update {0} set ", table);
             string condition = null;
-            var ps = new List<SqlParameter>();
+            var ps = new List<DbParameter>();
+            var provider = OrmLite.GetProvider(type);
             foreach (var property in propertys)
             {
                 var fieldName = property.Name;
@@ -435,17 +537,17 @@ namespace Loogn.OrmLite
                     }
                     if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
                     {
-                        condition = string.Format("[{0}] = @{0}", fieldName);
+                        condition = string.Format("{0} = @{0}", fieldName);
                         var val = property.GetValue(obj, null);
-                        ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+                        ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                     }
                     else
                     {
                         if (FieldsContains(updateFields, fieldName))
                         {
-                            sbsql.AppendFormat("[{0}] = @{0},", fieldName);
+                            sbsql.AppendFormat("{0} = @{0},", fieldName);
                             var val = property.GetValue(obj, null);
-                            ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+                            ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                         }
                     }
                 }
@@ -457,7 +559,7 @@ namespace Loogn.OrmLite
             sbsql.Remove(sbsql.Length - 1, 1);
             sbsql.AppendFormat(" where ");
             sbsql.Append(condition);
-            return new MyTuple<string, SqlParameter[]>
+            return new MyTuple<string, DbParameter[]>
             {
                 Item1 = sbsql.ToString(),
                 Item2 = ps.ToArray()
@@ -465,28 +567,31 @@ namespace Loogn.OrmLite
         }
 
 
-        public static MyTuple<string, SqlParameter[]> Update(string tableName, object anonymous)
+        public static MyTuple<string, DbParameter[]> Update(OrmLiteProviderType type, string tableName, object anonymous)
         {
-            var type = anonymous.GetType();
-            var propertys = type.GetCachedProperties();
+
+            var propertys = anonymous.GetType().GetCachedProperties();
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("update [{0}] set ", tableName);
+            sbsql.AppendFormat("update {0} set ", tableName);
             string condition = null;
-            var ps = new List<SqlParameter>();
+            var ps = new List<DbParameter>();
+
+            var provider = OrmLite.GetProvider(type);
+
             foreach (var property in propertys)
             {
                 var fieldName = property.Name;
                 if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase))
                 {
-                    condition = string.Format("[{0}] = @{0}", fieldName);
+                    condition = string.Format("{0} = @{0}", fieldName);
                     var val = property.GetValue(anonymous, null);
-                    ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+                    ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                 }
                 else
                 {
-                    sbsql.AppendFormat("[{0}] = @{0},", fieldName);
+                    sbsql.AppendFormat("{0} = @{0},", fieldName);
                     var val = property.GetValue(anonymous, null);
-                    ps.Add(new SqlParameter("@" + fieldName, val ?? DBNull.Value));
+                    ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                 }
             }
 
@@ -497,7 +602,7 @@ namespace Loogn.OrmLite
             sbsql.Remove(sbsql.Length - 1, 1);
             sbsql.AppendFormat(" where ");
             sbsql.Append(condition);
-            return new MyTuple<string, SqlParameter[]>
+            return new MyTuple<string, DbParameter[]>
             {
                 Item1 = sbsql.ToString(),
                 Item2 = ps.ToArray()
@@ -532,27 +637,28 @@ namespace Loogn.OrmLite
         }
 
 
-        public static MyTuple<string, SqlParameter[]> Delete<T>(Dictionary<string, object> conditions)
+        public static MyTuple<string, DbParameter[]> Delete<T>(OrmLiteProviderType type, Dictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(200);
             var tableName = typeof(T).GetCachedTableName();
-            sqlbuilder.AppendFormat("DELETE FROM [{0}]", tableName);
-            var ps = ORM.DictionaryToParams(conditions, sqlbuilder);
-            return new MyTuple<string, SqlParameter[]>
+            sqlbuilder.AppendFormat("DELETE FROM {0}", tableName);
+            var ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
+            return new MyTuple<string, DbParameter[]>
             {
                 Item1 = sqlbuilder.ToString(),
                 Item2 = ps
             };
         }
 
-        public static MyTuple<string, SqlParameter[]> DeleteById<T>(object id, string idField)
+        public static MyTuple<string, DbParameter[]> DeleteById<T>(OrmLiteProviderType type, object id, string idField)
         {
-            SqlParameter sp = new SqlParameter("@" + idField, id);
-            var sql = string.Format("DELETE FROM [{0}] WHERE [{1}]=@{1}", typeof(T).GetCachedTableName(), idField);
-            return new MyTuple<string, SqlParameter[]>
+            DbParameter sp = OrmLite.GetProvider(type).CreateParameter("@" + idField, id);
+
+            var sql = string.Format("DELETE FROM {0} WHERE {1}=@{1}", typeof(T).GetCachedTableName(), idField);
+            return new MyTuple<string, DbParameter[]>
             {
                 Item1 = sql,
-                Item2 = new SqlParameter[] { sp }
+                Item2 = new DbParameter[] { sp }
             };
         }
 
@@ -575,7 +681,7 @@ namespace Loogn.OrmLite
                     }
                     var table = typeof(T).GetCachedTableName();
                     sql = new StringBuilder(200);
-                    sql.AppendFormat("DELETE from [{0}] where [{1}] in (", table, idField);
+                    sql.AppendFormat("DELETE from {0} where {1} in (", table, idField);
                 }
                 if (needQuot)
                 {
@@ -600,7 +706,7 @@ namespace Loogn.OrmLite
         public static string Delete<T>()
         {
             var table = typeof(T).GetCachedTableName();
-            return "DELETE  FROM [" + table + "]";
+            return "DELETE  FROM " + table;
         }
     }
 }

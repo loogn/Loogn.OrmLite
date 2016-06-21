@@ -28,8 +28,8 @@ namespace Loogn.OrmLite
 
             if (inParams != null)
             {
-                var ps = inParams is Dictionary<string, object> ?
-                ORM.DictionaryToParams(providerType, inParams as Dictionary<string, object>)
+                var ps = inParams is IDictionary<string, object> ?
+                ORM.DictionaryToParams(providerType, inParams as IDictionary<string, object>)
                 : ORM.AnonTypeToParams(providerType, inParams);
                 cmd.Parameters.AddRange(ps);
             }
@@ -47,7 +47,7 @@ namespace Loogn.OrmLite
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             return SqlHelper.ExecuteNonQuery(dbConn, commandType, commandText, ps);
         }
-        public static int ExecuteNonQuery(this DbConnection dbConn, CommandType commandType, string commandText, Dictionary<string, object> parameters)
+        public static int ExecuteNonQuery(this DbConnection dbConn, CommandType commandType, string commandText, IDictionary<string, object> parameters)
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             return SqlHelper.ExecuteNonQuery(dbConn, commandType, commandText, ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
@@ -58,7 +58,7 @@ namespace Loogn.OrmLite
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             return SqlHelper.ExecuteScalar(dbConn, commandType, commandText, ps);
         }
-        public static object ExecuteScalar(this DbConnection dbConn, CommandType commandType, string commandText, Dictionary<string, object> parameters)
+        public static object ExecuteScalar(this DbConnection dbConn, CommandType commandType, string commandText, IDictionary<string, object> parameters)
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             return SqlHelper.ExecuteNonQuery(dbConn, commandType, commandText, ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
@@ -83,7 +83,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static int Insert(this DbConnection dbConn, string table, Dictionary<string, object> fields, bool selectIdentity = false)
+        public static int Insert(this DbConnection dbConn, string table, IDictionary<string, object> fields, bool selectIdentity = false)
         {
             var tuple = SqlCmd.Insert(dbConn.GetProviderType(), table, fields, selectIdentity);
             if (selectIdentity)
@@ -267,7 +267,7 @@ namespace Loogn.OrmLite
             return row;
         }
 
-        public static int Update<T>(this DbConnection dbConn, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
+        public static int Update<T>(this DbConnection dbConn, IDictionary<string, object> updateFields, string conditions, IDictionary<string, object> parameters)
         {
             var tuple = SqlCmd.Update(dbConn.GetProviderType(), typeof(T).GetCachedTableName(), updateFields, conditions, parameters);
 
@@ -275,7 +275,7 @@ namespace Loogn.OrmLite
             return c;
         }
 
-        public static int Update(this DbConnection dbConn, string tableName, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
+        public static int Update(this DbConnection dbConn, string tableName, IDictionary<string, object> updateFields, string conditions, IDictionary<string, object> parameters)
         {
             var tuple = SqlCmd.Update(dbConn.GetProviderType(), tableName, updateFields, conditions, parameters);
 
@@ -286,12 +286,12 @@ namespace Loogn.OrmLite
 
 
 
-        public static int UpdateById(this DbConnection dbConn, string tableName, Dictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
+        public static int UpdateById(this DbConnection dbConn, string tableName, IDictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
         {
             return Update(dbConn, tableName, updateFields, idname + "=@id", DictBuilder.Assign("id", id));
         }
 
-        public static int UpdateById<T>(this DbConnection dbConn, Dictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
+        public static int UpdateById<T>(this DbConnection dbConn, IDictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
         {
             return Update<T>(dbConn, updateFields, idname + "=@id", DictBuilder.Assign("id", id));
         }
@@ -301,12 +301,12 @@ namespace Loogn.OrmLite
             return Update<T>(dbConn, DictBuilder.Assign(fieldName, fieldValue), idname + "=@id", DictBuilder.Assign("id", id));
         }
 
-        public static int Delete(this DbConnection dbConn, string sql, Dictionary<string, object> parameters = null)
+        public static int Delete(this DbConnection dbConn, string sql, IDictionary<string, object> parameters = null)
         {
             return ExecuteNonQuery(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
 
-        public static int Delete<T>(this DbConnection dbConn, Dictionary<string, object> conditions)
+        public static int Delete<T>(this DbConnection dbConn, IDictionary<string, object> conditions)
         {
             var tuple = SqlCmd.Delete<T>(dbConn.GetProviderType(), conditions);
             return ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);

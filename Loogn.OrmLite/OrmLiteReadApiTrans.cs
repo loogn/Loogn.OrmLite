@@ -117,7 +117,7 @@ namespace Loogn.OrmLite
             return SelectOriginal<T>(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(dbTrans.GetProviderType(), sql, PartSqlType.Select), null);
         }
 
-        public static List<T> Select<T>(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
+        public static List<T> Select<T>(this DbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             return SelectOriginal<T>(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(dbTrans.GetProviderType(), sql, PartSqlType.Select), ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
@@ -132,7 +132,7 @@ namespace Loogn.OrmLite
             return SelectOriginal(dbTrans, CommandType.Text, sql, null);
         }
 
-        public static List<dynamic> Select(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
+        public static List<dynamic> Select(this DbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             return SelectOriginal(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
@@ -148,7 +148,7 @@ namespace Loogn.OrmLite
             return SelectOriginal<T>(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static List<T> SelectWhere<T>(this DbTransaction dbTrans, Dictionary<string, object> conditions)
+        public static List<T> SelectWhere<T>(this DbTransaction dbTrans, IDictionary<string, object> conditions)
         {
             var tuple = SqlCmd.SelectWhere<T>(dbTrans.GetProviderType(), conditions);
             return SelectOriginal<T>(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
@@ -197,8 +197,8 @@ namespace Loogn.OrmLite
             }
             var providerType = dbTrans.GetProviderType();
 
-            var ps = factor.Params is Dictionary<string, object> ?
-                ORM.DictionaryToParams(providerType, factor.Params as Dictionary<string, object>)
+            var ps = factor.Params is IDictionary<string, object> ?
+                ORM.DictionaryToParams(providerType, factor.Params as IDictionary<string, object>)
                 : ORM.AnonTypeToParams(providerType, factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
@@ -238,8 +238,8 @@ namespace Loogn.OrmLite
                 factor.Fields = "*";
             }
             var providerType = dbTrans.GetProviderType();
-            var ps = factor.Params is Dictionary<string, object> ?
-                ORM.DictionaryToParams(providerType, factor.Params as Dictionary<string, object>)
+            var ps = factor.Params is IDictionary<string, object> ?
+                ORM.DictionaryToParams(providerType, factor.Params as IDictionary<string, object>)
                 : ORM.AnonTypeToParams(providerType, factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
@@ -263,7 +263,7 @@ namespace Loogn.OrmLite
 
         #region Single
 
-        public static T Single<T>(this DbTransaction dbTrans, Dictionary<string, object> conditions)
+        public static T Single<T>(this DbTransaction dbTrans, IDictionary<string, object> conditions)
         {
             var tuple = SqlCmd.Single<T>(dbTrans.GetProviderType(), conditions);
             return SingleOriginal<T>(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
@@ -280,7 +280,7 @@ namespace Loogn.OrmLite
             return SingleOriginal<T>(dbTrans, CommandType.Text, SqlCmd.FullPartSqlSingle<T>(dbTrans.GetProviderType(), sql), null);
         }
 
-        public static T Single<T>(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
+        public static T Single<T>(this DbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             return SingleOriginal<T>(dbTrans, CommandType.Text, SqlCmd.FullPartSqlSingle<T>(dbTrans.GetProviderType(), sql), ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
@@ -290,7 +290,7 @@ namespace Loogn.OrmLite
             return SingleOriginal(dbTrans, CommandType.Text, sql, null);
         }
 
-        public static dynamic Single(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
+        public static dynamic Single(this DbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             return SingleOriginal(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
@@ -322,7 +322,7 @@ namespace Loogn.OrmLite
             return SingleOriginal<T>(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static T SingleWhere<T>(this DbTransaction dbTrans, Dictionary<string, object> conditions)
+        public static T SingleWhere<T>(this DbTransaction dbTrans, IDictionary<string, object> conditions)
         {
             var tuple = SqlCmd.SingleWhere<T>(dbTrans.GetProviderType(), conditions);
             return SingleOriginal<T>(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
@@ -343,7 +343,7 @@ namespace Loogn.OrmLite
             return ScalarOriginal<T>(dbTrans, CommandType.Text, sql, null);
         }
 
-        public static T Scalar<T>(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
+        public static T Scalar<T>(this DbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             return ScalarOriginal<T>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
@@ -373,7 +373,7 @@ namespace Loogn.OrmLite
             return ColumnOriginal<T>(dbTrans, CommandType.Text, sql, null);
         }
 
-        public static List<T> Column<T>(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
+        public static List<T> Column<T>(this DbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             return ColumnOriginal<T>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
@@ -393,7 +393,7 @@ namespace Loogn.OrmLite
             return ColumnDistinctOriginal<T>(dbTrans, CommandType.Text, sql);
         }
 
-        public static HashSet<T> ColumnDistinct<T>(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
+        public static HashSet<T> ColumnDistinct<T>(this DbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             return ColumnDistinctOriginal<T>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
@@ -415,7 +415,7 @@ namespace Loogn.OrmLite
         {
             return LookupOriginal<K, V>(dbTrans, CommandType.Text, sql, null);
         }
-        public static Dictionary<K, List<V>> Lookup<K, V>(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
+        public static Dictionary<K, List<V>> Lookup<K, V>(this DbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             return LookupOriginal<K, V>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
@@ -433,7 +433,7 @@ namespace Loogn.OrmLite
         {
             return DictionaryOriginal<K, V>(dbTrans, CommandType.Text, sql, null);
         }
-        public static Dictionary<K, V> Dictionary<K, V>(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
+        public static Dictionary<K, V> Dictionary<K, V>(this DbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             return DictionaryOriginal<K, V>(dbTrans, CommandType.Text, sql, ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
@@ -458,7 +458,7 @@ namespace Loogn.OrmLite
         {
             return CountOriginal(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(dbTrans.GetProviderType(), sql, PartSqlType.Count), null);
         }
-        public static int Count<T>(this DbTransaction dbTrans, string sql, Dictionary<string, object> parameters)
+        public static int Count<T>(this DbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             return CountOriginal(dbTrans, CommandType.Text, SqlCmd.FullPartSql<T>(dbTrans.GetProviderType(), sql, PartSqlType.Count), ORM.DictionaryToParams(dbTrans.GetProviderType(), parameters));
         }
@@ -473,7 +473,7 @@ namespace Loogn.OrmLite
             return CountOriginal(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static int CountWhere<T>(this DbTransaction dbTrans, Dictionary<string, object> conditions)
+        public static int CountWhere<T>(this DbTransaction dbTrans, IDictionary<string, object> conditions)
         {
             var tuple = SqlCmd.CountWhere<T>(dbTrans.GetProviderType(), conditions);
             return CountOriginal(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);

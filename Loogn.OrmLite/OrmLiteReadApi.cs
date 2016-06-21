@@ -117,7 +117,7 @@ namespace Loogn.OrmLite
             return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Select), null);
         }
 
-        public static List<T> Select<T>(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static List<T> Select<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Select), ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -132,7 +132,7 @@ namespace Loogn.OrmLite
             return SelectOriginal(dbConn, CommandType.Text, sql, null);
         }
 
-        public static List<dynamic> Select(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static List<dynamic> Select(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return SelectOriginal(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -148,7 +148,7 @@ namespace Loogn.OrmLite
             return SelectOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static List<T> SelectWhere<T>(this DbConnection dbConn, Dictionary<string, object> conditions)
+        public static List<T> SelectWhere<T>(this DbConnection dbConn, IDictionary<string, object> conditions)
         {
             var tuple = SqlCmd.SelectWhere<T>(dbConn.GetProviderType(), conditions);
             return SelectOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
@@ -198,8 +198,8 @@ namespace Loogn.OrmLite
 
             var providerType = dbConn.GetProviderType();
 
-            var ps = factor.Params is Dictionary<string, object> ?
-                ORM.DictionaryToParams(providerType, factor.Params as Dictionary<string, object>)
+            var ps = factor.Params is IDictionary<string, object> ?
+                ORM.DictionaryToParams(providerType, factor.Params as IDictionary<string, object>)
                 : ORM.AnonTypeToParams(providerType, factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
@@ -240,8 +240,8 @@ namespace Loogn.OrmLite
                 factor.Fields = "*";
             }
             var providerType = dbConn.GetProviderType();
-            var ps = factor.Params is Dictionary<string, object> ?
-                ORM.DictionaryToParams(providerType, factor.Params as Dictionary<string, object>)
+            var ps = factor.Params is IDictionary<string, object> ?
+                ORM.DictionaryToParams(providerType, factor.Params as IDictionary<string, object>)
                 : ORM.AnonTypeToParams(providerType, factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
@@ -291,7 +291,7 @@ namespace Loogn.OrmLite
 
         #region Single
 
-        public static T Single<T>(this DbConnection dbConn, Dictionary<string, object> conditions)
+        public static T Single<T>(this DbConnection dbConn, IDictionary<string, object> conditions)
         {
             var tuple = SqlCmd.Single<T>(dbConn.GetProviderType(), conditions);
             return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
@@ -308,7 +308,7 @@ namespace Loogn.OrmLite
             return SingleOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSqlSingle<T>(dbConn.GetProviderType(), sql), null);
         }
 
-        public static T Single<T>(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static T Single<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return SingleOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSqlSingle<T>(dbConn.GetProviderType(), sql), ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -318,7 +318,7 @@ namespace Loogn.OrmLite
             return SingleOriginal(dbConn, CommandType.Text, sql, null);
         }
 
-        public static dynamic Single(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static dynamic Single(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return SingleOriginal(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -350,7 +350,7 @@ namespace Loogn.OrmLite
             return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static T SingleWhere<T>(this DbConnection dbConn, Dictionary<string, object> conditions)
+        public static T SingleWhere<T>(this DbConnection dbConn, IDictionary<string, object> conditions)
         {
             var tuple = SqlCmd.SingleWhere<T>(dbConn.GetProviderType(), conditions);
             return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
@@ -371,7 +371,7 @@ namespace Loogn.OrmLite
             return ScalarOriginal<T>(dbConn, CommandType.Text, sql, null);
         }
 
-        public static T Scalar<T>(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static T Scalar<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return ScalarOriginal<T>(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -402,7 +402,7 @@ namespace Loogn.OrmLite
             return ColumnOriginal<T>(dbConn, CommandType.Text, sql, null);
         }
 
-        public static List<T> Column<T>(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static List<T> Column<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return ColumnOriginal<T>(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -422,7 +422,7 @@ namespace Loogn.OrmLite
             return ColumnDistinctOriginal<T>(dbConn, CommandType.Text, sql);
         }
 
-        public static HashSet<T> ColumnDistinct<T>(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static HashSet<T> ColumnDistinct<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return ColumnDistinctOriginal<T>(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -444,7 +444,7 @@ namespace Loogn.OrmLite
         {
             return LookupOriginal<K, V>(dbConn, CommandType.Text, sql, null);
         }
-        public static Dictionary<K, List<V>> Lookup<K, V>(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static Dictionary<K, List<V>> Lookup<K, V>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return LookupOriginal<K, V>(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -462,7 +462,7 @@ namespace Loogn.OrmLite
         {
             return DictionaryOriginal<K, V>(dbConn, CommandType.Text, sql, null);
         }
-        public static Dictionary<K, V> Dictionary<K, V>(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static Dictionary<K, V> Dictionary<K, V>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return DictionaryOriginal<K, V>(dbConn, CommandType.Text, sql, ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -487,7 +487,7 @@ namespace Loogn.OrmLite
         {
             return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Count), null);
         }
-        public static int Count<T>(this DbConnection dbConn, string sql, Dictionary<string, object> parameters)
+        public static int Count<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return CountOriginal(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Count), ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -502,7 +502,7 @@ namespace Loogn.OrmLite
             return CountOriginal(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static int CountWhere<T>(this DbConnection dbConn, Dictionary<string, object> conditions)
+        public static int CountWhere<T>(this DbConnection dbConn, IDictionary<string, object> conditions)
         {
             var tuple = SqlCmd.CountWhere<T>(dbConn.GetProviderType(), conditions);
             return CountOriginal(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);

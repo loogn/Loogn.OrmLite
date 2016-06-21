@@ -93,7 +93,7 @@ namespace Loogn.OrmLite
             return result;
         }
 
-        public static MyTuple<string, DbParameter[]> SelectWhere<T>(OrmLiteProviderType type, Dictionary<string, object> conditions)
+        public static MyTuple<string, DbParameter[]> SelectWhere<T>(OrmLiteProviderType type, IDictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
@@ -160,7 +160,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static MyTuple<string, DbParameter[]> Single<T>(OrmLiteProviderType type, Dictionary<string, object> conditions)
+        public static MyTuple<string, DbParameter[]> Single<T>(OrmLiteProviderType type, IDictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
@@ -245,7 +245,7 @@ namespace Loogn.OrmLite
             return result;
         }
 
-        public static MyTuple<string, DbParameter[]> SingleWhere<T>(OrmLiteProviderType type, Dictionary<string, object> conditions)
+        public static MyTuple<string, DbParameter[]> SingleWhere<T>(OrmLiteProviderType type, IDictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();
@@ -334,7 +334,7 @@ namespace Loogn.OrmLite
         }
 
 
-        public static MyTuple<string, DbParameter[]> Update(OrmLiteProviderType type, string tableName, Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
+        public static MyTuple<string, DbParameter[]> Update(OrmLiteProviderType type, string tableName, IDictionary<string, object> updateFields, string conditions, IDictionary<string, object> parameters)
         {
             var l = L(type);
             var r = R(type);
@@ -459,12 +459,11 @@ namespace Loogn.OrmLite
             };
         }
 
-        public static MyTuple<string, DbParameter[]> Insert(OrmLiteProviderType type, string table, Dictionary<string, object> fields, bool selectIdentity = false)
+        public static MyTuple<string, DbParameter[]> Insert(OrmLiteProviderType type, string table, IDictionary<string, object> fields, bool selectIdentity = false)
         {
             var l = L(type);
             var r = R(type);
-
-            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
+             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             sbsql.AppendFormat("insert into {1}{0}{2} (", table, l, r);
             StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
             var ps = new List<DbParameter>();
@@ -675,7 +674,7 @@ namespace Loogn.OrmLite
         }
 
 
-        public static MyTuple<string, DbParameter[]> Delete<T>(OrmLiteProviderType type, Dictionary<string, object> conditions)
+        public static MyTuple<string, DbParameter[]> Delete<T>(OrmLiteProviderType type, IDictionary<string, object> conditions)
         {
             var l = L(type);
             var r = R(type);

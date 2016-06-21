@@ -319,7 +319,7 @@ namespace Loogn.OrmLite
             return null;
         }
 
-        public static DbParameter[] DictionaryToParams(OrmLiteProviderType type, Dictionary<string, object> dict)
+        public static DbParameter[] DictionaryToParams(OrmLiteProviderType type, IDictionary<string, object> dict)
         {
             if (dict != null)
             {
@@ -337,7 +337,7 @@ namespace Loogn.OrmLite
             return null;
         }
 
-        public static DbParameter[] DictionaryToParams(OrmLiteProviderType type, Dictionary<string, object> conditions, StringBuilder appendWhere)
+        public static DbParameter[] DictionaryToParams(OrmLiteProviderType type, IDictionary<string, object> conditions, StringBuilder appendWhere)
         {
             if (conditions != null && conditions.Count > 0)
             {

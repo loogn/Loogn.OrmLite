@@ -18,16 +18,5 @@ namespace ConsoleApplication1.GeneralParadigm.Service
         {
             return new MySqlConnection(ConnectionString);
         }
-
-        public static MySqlConnection Open(bool open)
-        {
-            var conn = new MySqlConnection(ConnectionString);
-            if (open)
-            {
-                conn.Open();
-            }
-
-            return conn;
-        }
     }
 }

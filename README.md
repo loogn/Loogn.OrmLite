@@ -3,10 +3,10 @@
 
 # 特点
 1. 支持sqlserver、mysql数据库；
-2. 通过扩展方法扩展_DbConnection_和_DbTransaction_；
+2. 通过扩展方法扩展 _DbConnection_ 和 _DbTransaction_ ；
 3. 支持数据库事务和批量插入
-4. 支持_dynamic_类型的模型（不同定义模型也可使用此ORM）
-5. 超高的效率，超小的体积，比Dapper快，比Dapper小，Loogn.OrmLite.dll只有**61kb**
+4. 支持 _dynamic_ 类型的模型（不同定义模型也可使用此ORM）
+5. 超高的效率，超小的体积，比Dapper快，比Dapper小，Loogn.OrmLite.dll只有 **61kb** 
 
 # 支持mysql
 1. 引入MySql.Data.dll
@@ -24,7 +24,7 @@ public class MySqlOrmLiteProvider : IOrmLiteProvider
     }
 }
 ```
-3. 注册mysql *(只用在程序启动时执行一次)*
+3. 注册mysql  **(只用在程序启动时执行一次)** 
 ```
 OrmLite.RegisterProvider(OrmLiteProviderType.MySql, MySqlOrmLiteProvider.Instance);
 ```

@@ -28,7 +28,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public int ExecuteNonQuery(string sql, Dictionary<string, object> ps = null)
+        public int ExecuteNonQuery(string sql, IDictionary<string, object> ps = null)
         {
             using (var db = openDb())
             {
@@ -47,7 +47,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public int Insert(string table, Dictionary<string, object> fields, bool selectIdentity = false)
+        public int Insert(string table, IDictionary<string, object> fields, bool selectIdentity = false)
         {
             using (var db = openDb())
             {
@@ -141,7 +141,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public int Update(Dictionary<string, object> updateFields, string conditions, Dictionary<string, object> parameters)
+        public int Update(IDictionary<string, object> updateFields, string conditions, IDictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
@@ -149,7 +149,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public int UpdateById(Dictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
+        public int UpdateById(IDictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
         {
             using (var db = openDb())
             {
@@ -168,7 +168,7 @@ namespace Loogn.OrmLite
         #endregion
 
         #region delete
-        public int Delete(string sql, Dictionary<string, object> parameters = null)
+        public int Delete(string sql, IDictionary<string, object> parameters = null)
         {
             using (var db = openDb())
             {
@@ -176,7 +176,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public int Delete(Dictionary<string, object> conditions)
+        public int Delete(IDictionary<string, object> conditions)
         {
             using (var db = openDb())
             {
@@ -226,7 +226,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public List<T> Select(string sql, Dictionary<string, object> parameters)
+        public List<T> Select(string sql, IDictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
@@ -250,7 +250,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public List<T> SelectWhere(Dictionary<string, object> conditions)
+        public List<T> SelectWhere(IDictionary<string, object> conditions)
         {
             using (var db = openDb())
             {
@@ -293,7 +293,7 @@ namespace Loogn.OrmLite
         #endregion
 
         #region single
-        public T Single(Dictionary<string, object> conditions)
+        public T Single(IDictionary<string, object> conditions)
         {
             using (var db = openDb())
             {
@@ -317,7 +317,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public T Single(string sql, Dictionary<string, object> parameters)
+        public T Single(string sql, IDictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
@@ -349,7 +349,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public T SingleWhere(Dictionary<string, object> conditions)
+        public T SingleWhere(IDictionary<string, object> conditions)
         {
             using (var db = openDb())
             {
@@ -376,7 +376,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public RetType Scalar<RetType>(string sql, Dictionary<string, object> parameters)
+        public RetType Scalar<RetType>(string sql, IDictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
@@ -412,7 +412,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public List<TField> Column<TField>(string sql, Dictionary<string, object> parameters)
+        public List<TField> Column<TField>(string sql, IDictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
@@ -444,7 +444,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public HashSet<TField> ColumnDistinct<TField>(string sql, Dictionary<string, object> parameters)
+        public HashSet<TField> ColumnDistinct<TField>(string sql, IDictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
@@ -479,7 +479,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public Dictionary<K, List<V>> Lookup<K, V>(string sql, Dictionary<string, object> parameters)
+        public Dictionary<K, List<V>> Lookup<K, V>(string sql, IDictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
@@ -511,7 +511,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public Dictionary<K, V> Dictionary<K, V>(string sql, Dictionary<string, object> parameters)
+        public Dictionary<K, V> Dictionary<K, V>(string sql, IDictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
@@ -552,7 +552,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public int Count(string sql, Dictionary<string, object> parameters)
+        public int Count(string sql, IDictionary<string, object> parameters)
         {
             using (var db = openDb())
             {
@@ -576,7 +576,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public int CountWhere(Dictionary<string, object> conditions)
+        public int CountWhere(IDictionary<string, object> conditions)
         {
             using (var db = openDb())
             {

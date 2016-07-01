@@ -15,6 +15,12 @@ namespace Loogn.OrmLite
     /// </summary>
     public static class ORM
     {
+        /// <summary>
+        /// 用reader填充T类型的对象，并返回
+        /// </summary>
+        /// <typeparam name="T">类型参数</typeparam>
+        /// <param name="reader">dataReader</param>
+        /// <returns></returns>
         public static T ReaderToObject<T>(DbDataReader reader)
         {
             if (reader.Read())

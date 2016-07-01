@@ -361,7 +361,14 @@ namespace Loogn.OrmLite
         public static T MaxID<T>(this DbTransaction dbTrans, string tableName, string field = "id")
         {
             tableName = SqlInjection.Filter(tableName);
-            var sql = string.Format("SELECT ISNULL(MAX({0}), 0) FROM {1}", field, tableName);
+            
+            var providerType = dbTrans.GetProviderType();
+            var isnull = "ISNULL";
+            if (providerType == OrmLiteProviderType.MySql)
+            {
+                isnull = "IFNULL";
+            }
+            var sql = string.Format("SELECT {2}(MAX({0}), 0) FROM {1}", field, tableName, isnull);
             return ScalarOriginal<T>(dbTrans, CommandType.Text, sql);
         }
         #endregion

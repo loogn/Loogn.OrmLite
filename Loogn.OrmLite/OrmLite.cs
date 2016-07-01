@@ -10,7 +10,6 @@ using System.Data.SqlClient;
 namespace Loogn.OrmLite
 {
 
-
     public class OrmLite
     {
         private static IOrmLiteProvider SqlServerProvider;
@@ -62,11 +61,16 @@ namespace Loogn.OrmLite
             get { return updateIgnoreFields; }
         }
 
-        public static bool WriteSqlLog
+
+
+        public static Action<int, int, string> LogGeneratedSql;
+        public static readonly Action<int, int, string> ConsoleLogGeneratedSql = new Action<int, int, string>((capacity, length, sql) =>
         {
-            get;
-            set;
-        }
+            Console.WriteLine("Capacity:{0}", capacity);
+            Console.WriteLine("Sql  Length:{0}", length);
+            Console.WriteLine("Sql Content:{0}", sql);
+        });
+
 
 
         public static int SqlStringBuilderCapacity = 100;
@@ -88,17 +92,8 @@ namespace Loogn.OrmLite
         public static void SetSqlStringBuilderCapacity(string sql, bool enforce = false)
         {
             var capacity = sql.Length;
-            if (WriteSqlLog)
-            {
-                File.AppendAllText("ormlite.sqllog.txt",
-                    string.Format("Sql Leng:{0}\tSql Capacity:{1}{2}{3}{2}{4}{2}",
-                    capacity,
-                    SqlStringBuilderCapacity,
-                    Environment.NewLine,
-                    sql,
-                    DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")));
-            }
             SetSqlStringBuilderCapacity(capacity, enforce);
+            LogGeneratedSql?.BeginInvoke(SqlStringBuilderCapacity, capacity, sql, null, null);
         }
     }
 }

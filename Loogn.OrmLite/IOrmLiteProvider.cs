@@ -7,15 +7,32 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
+    /// <summary>
+    /// 提供程序类型
+    /// </summary>
     public enum OrmLiteProviderType
     {
+        /// <summary>
+        /// MS SqlServer 数据库
+        /// </summary>
         SqlServer,
+        /// <summary>
+        /// MySql数据库
+        /// </summary>
         MySql
     }
 
-
+    /// <summary>
+    /// 提供程序接口
+    /// </summary>
     public interface IOrmLiteProvider
     {
+        /// <summary>
+        /// 创建对应提供程序的参数
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         DbParameter CreateParameter(string name, object value);
     }
 

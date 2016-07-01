@@ -115,8 +115,12 @@ namespace Loogn.OrmLite
             var table = objtype.GetCachedTableName();
             var propertys = objtype.GetCachedProperties();
 
+
+            var l = SqlCmd.L(type);
+            var r = SqlCmd.R(type);
+
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("insert into {0} (", table);
+            sbsql.AppendFormat("insert into {1}{0}{2} (", table,l,r);
             StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
             var ps = new List<DbParameter>();
             var provider = OrmLite.GetProvider(type);
@@ -153,7 +157,7 @@ namespace Loogn.OrmLite
                             val = DateTime.Now;
                         }
                     }
-                    sbsql.AppendFormat("{0},", fieldName);
+                    sbsql.AppendFormat("{1}{0}{2},", fieldName,l,r);
                     sbParams.AppendFormat("@{0},", fieldName);
                     ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                 }

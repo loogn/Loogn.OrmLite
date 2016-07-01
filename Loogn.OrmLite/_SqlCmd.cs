@@ -307,7 +307,7 @@ namespace Loogn.OrmLite
             result.Item2 = new DbParameter[] { p };
             return result;
         }
-        public static MyTuple<string, DbParameter[]> CountWhere<T>(OrmLiteProviderType type, Dictionary<string, object> conditions)
+        public static MyTuple<string, DbParameter[]> CountWhere<T>(OrmLiteProviderType type, IDictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = typeof(T).GetCachedTableName();

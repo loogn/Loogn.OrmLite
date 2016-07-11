@@ -36,6 +36,7 @@ namespace Loogn.OrmLite
             ^ -> [^]
             */
             return value == null ? string.Empty : value.Replace("[", "[[]")
+                .Replace("'", "''")
                 .Replace("%", "[%]")
                 .Replace("_", "[_]")
                 .Replace("^", "[^]");

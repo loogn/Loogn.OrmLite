@@ -17,7 +17,7 @@ namespace Loogn.OrmLite
             return SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps);
         }
 
-        public static List<T> SelectOriginal<T>(this DbConnection dbConn, CommandType commandType, string commandText, params DbParameter[] ps)
+        public static List<T> SelectOriginal<T>(this DbConnection dbConn, CommandType commandType, string commandText, params DbParameter[] ps) 
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
@@ -35,7 +35,7 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static T SingleOriginal<T>(this DbConnection dbConn, CommandType commandType, string commandText, params DbParameter[] ps)
+        public static T SingleOriginal<T>(this DbConnection dbConn, CommandType commandType, string commandText, params DbParameter[] ps) 
         {
             OrmLite.SetSqlStringBuilderCapacity(commandText);
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
@@ -107,22 +107,22 @@ namespace Loogn.OrmLite
         #endregion
 
         #region Select
-        public static List<T> Select<T>(this DbConnection dbConn)
+        public static List<T> Select<T>(this DbConnection dbConn) 
         {
             return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.Select<T>(dbConn.GetProviderType()));
         }
 
-        public static List<T> Select<T>(this DbConnection dbConn, string sql)
+        public static List<T> Select<T>(this DbConnection dbConn, string sql) 
         {
             return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Select), null);
         }
 
-        public static List<T> Select<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
+        public static List<T> Select<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters) 
         {
             return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Select), ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
 
-        public static List<T> Select<T>(this DbConnection dbConn, string sql, object parameters)
+        public static List<T> Select<T>(this DbConnection dbConn, string sql, object parameters) 
         {
             return SelectOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSql<T>(dbConn.GetProviderType(), sql, PartSqlType.Select), ORM.AnonTypeToParams(dbConn.GetProviderType(), parameters));
         }
@@ -142,25 +142,25 @@ namespace Loogn.OrmLite
             return SelectOriginal(dbConn, CommandType.Text, sql, ORM.AnonTypeToParams(dbConn.GetProviderType(), parameters));
         }
 
-        public static List<T> SelectWhere<T>(this DbConnection dbConn, string name, object value)
+        public static List<T> SelectWhere<T>(this DbConnection dbConn, string name, object value) 
         {
             var tuple = SqlCmd.SelectWhere<T>(dbConn.GetProviderType(), name, value);
             return SelectOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static List<T> SelectWhere<T>(this DbConnection dbConn, IDictionary<string, object> conditions)
+        public static List<T> SelectWhere<T>(this DbConnection dbConn, IDictionary<string, object> conditions) 
         {
             var tuple = SqlCmd.SelectWhere<T>(dbConn.GetProviderType(), conditions);
             return SelectOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static List<T> SelectWhere<T>(this DbConnection dbConn, object conditions)
+        public static List<T> SelectWhere<T>(this DbConnection dbConn, object conditions) 
         {
             var tuple = SqlCmd.SelectWhere<T>(dbConn.GetProviderType(), conditions);
             return SelectOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static List<T> SelectFmt<T>(this DbConnection dbConn, string sqlFormat, params object[] parameters)
+        public static List<T> SelectFmt<T>(this DbConnection dbConn, string sqlFormat, params object[] parameters) 
         {
             return SelectOriginal<T>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
@@ -170,14 +170,14 @@ namespace Loogn.OrmLite
             return SelectOriginal(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
-        public static List<T> SelectByIds<T>(this DbConnection dbConn, IEnumerable idValues, string idField = OrmLite.KeyName, string selectFields = "*")
+        public static List<T> SelectByIds<T>(this DbConnection dbConn, IEnumerable idValues, string idField = OrmLite.KeyName, string selectFields = "*") 
         {
             var sql = SqlCmd.SelectByIds<T>(dbConn.GetProviderType(), idValues, idField, selectFields);
             if (sql == null) return new List<T>();
             return SelectOriginal<T>(dbConn, CommandType.Text, sql);
         }
 
-        public static List<T> SelectPage<T>(this DbConnection dbConn, OrmLitePageFactor factor, out int totalCount)
+        public static List<T> SelectPage<T>(this DbConnection dbConn, OrmLitePageFactor factor, out int totalCount) 
         {
             if (factor.PageIndex < 1)
             {
@@ -291,24 +291,24 @@ namespace Loogn.OrmLite
 
         #region Single
 
-        public static T Single<T>(this DbConnection dbConn, IDictionary<string, object> conditions)
+        public static T Single<T>(this DbConnection dbConn, IDictionary<string, object> conditions) 
         {
             var tuple = SqlCmd.Single<T>(dbConn.GetProviderType(), conditions);
             return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static T Single<T>(this DbConnection dbConn, object conditions)
+        public static T Single<T>(this DbConnection dbConn, object conditions) 
         {
             var tuple = SqlCmd.Single<T>(dbConn.GetProviderType(), conditions);
             return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static T Single<T>(this DbConnection dbConn, string sql)
+        public static T Single<T>(this DbConnection dbConn, string sql) 
         {
             return SingleOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSqlSingle<T>(dbConn.GetProviderType(), sql), null);
         }
 
-        public static T Single<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
+        public static T Single<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters) 
         {
             return SingleOriginal<T>(dbConn, CommandType.Text, SqlCmd.FullPartSqlSingle<T>(dbConn.GetProviderType(), sql), ORM.DictionaryToParams(dbConn.GetProviderType(), parameters));
         }
@@ -328,7 +328,7 @@ namespace Loogn.OrmLite
             return SingleOriginal(dbConn, CommandType.Text, sql, ORM.AnonTypeToParams(dbConn.GetProviderType(), parameters));
         }
 
-        public static T SingleFmt<T>(this DbConnection dbConn, string sqlFormat, params object[] parameters)
+        public static T SingleFmt<T>(this DbConnection dbConn, string sqlFormat, params object[] parameters) 
         {
             return SingleOriginal<T>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
@@ -338,25 +338,25 @@ namespace Loogn.OrmLite
             return SingleOriginal(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
-        public static T SingleById<T>(this DbConnection dbConn, object idValue, string idField = OrmLite.KeyName)
+        public static T SingleById<T>(this DbConnection dbConn, object idValue, string idField = OrmLite.KeyName) 
         {
             var tuple = SqlCmd.SingleById<T>(dbConn.GetProviderType(), idValue, idField);
             return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static T SingleWhere<T>(this DbConnection dbConn, string name, object value)
+        public static T SingleWhere<T>(this DbConnection dbConn, string name, object value) 
         {
             var tuple = SqlCmd.SingleWhere<T>(dbConn.GetProviderType(), name, value);
             return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static T SingleWhere<T>(this DbConnection dbConn, IDictionary<string, object> conditions)
+        public static T SingleWhere<T>(this DbConnection dbConn, IDictionary<string, object> conditions) 
         {
             var tuple = SqlCmd.SingleWhere<T>(dbConn.GetProviderType(), conditions);
             return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
         }
 
-        public static T SingleWhere<T>(this DbConnection dbConn, object conditions)
+        public static T SingleWhere<T>(this DbConnection dbConn, object conditions) 
         {
             var tuple = SqlCmd.SingleWhere<T>(dbConn.GetProviderType(), conditions);
             return SingleOriginal<T>(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
@@ -391,7 +391,7 @@ namespace Loogn.OrmLite
             tableName = SqlInjection.Filter(tableName);
             var providerType = dbConn.GetProviderType();
             var isnull = "ISNULL";
-            if(providerType== OrmLiteProviderType.MySql)
+            if (providerType == OrmLiteProviderType.MySql)
             {
                 isnull = "IFNULL";
             }

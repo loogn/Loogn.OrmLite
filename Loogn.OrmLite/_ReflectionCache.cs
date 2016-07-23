@@ -181,7 +181,7 @@ namespace Loogn.OrmLite
                 }
                 else
                 {
-                    action = Delegate.CreateDelegate(typeof(Action<TObject, object>), null, prop.GetSetMethod());
+                    action = null;
                 }
                 var val = new Tuple<PropertyInfo, Delegate>(prop, action);
 

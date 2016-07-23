@@ -184,9 +184,9 @@ namespace Loogn.OrmLite
                     string fieldName = null;
                     if (first)
                     {
+                        fieldName = reader.GetName(i);
                         tuple = ReflectionCache.GetCachedPP<T>(type, fieldName);
                         tupleArr[i] = tuple;
-                        fieldName = reader.GetName(i);
                         nameArr[i] = fieldName;
                     }
                     else

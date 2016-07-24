@@ -189,7 +189,7 @@ namespace Loogn.OrmLite
             }
             if (factor.TableName == null || factor.TableName.Length == 0)
             {
-                factor.TableName = typeof(T).GetCachedTableName();
+                factor.TableName = ReflectionHelper.GetInfo<T>().TableName;
             }
             if (string.IsNullOrEmpty(factor.Fields))
             {

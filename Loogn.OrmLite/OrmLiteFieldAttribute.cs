@@ -10,17 +10,8 @@ namespace Loogn.OrmLite
     public class OrmLiteFieldAttribute : Attribute
     {
         public OrmLiteFieldAttribute()
-            : this(string.Empty)
         {
         }
-        public OrmLiteFieldAttribute(string name)
-        {
-            this.Name = name;
-        }
-        /// <summary>
-        /// 指定字段名，推荐属性名和字段名一样，不用指定
-        /// </summary>
-        public string Name { get; set; }
 
         /// <summary>
         /// 为Ture时，ID列也会插入

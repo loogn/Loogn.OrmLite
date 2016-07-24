@@ -37,7 +37,7 @@ namespace Loogn.OrmLite
 
         public static string Select<T>(OrmLiteProviderType type)
         {
-            var table = typeof(T).GetCachedTableName();
+            var table = ReflectionHelper.GetInfo<T>().TableName;
             return "SELECT * FROM " + L(type) + table + R(type);
         }
 
@@ -48,7 +48,7 @@ namespace Loogn.OrmLite
             {
                 return sql;
             }
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             StringBuilder sb = new StringBuilder(sql.Length + 50);
             switch (type)
             {
@@ -67,7 +67,7 @@ namespace Loogn.OrmLite
             {
                 return sql;
             }
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             StringBuilder sb = new StringBuilder(sql.Length + 50);
             if (type == OrmLiteProviderType.MySql)
             {
@@ -83,7 +83,7 @@ namespace Loogn.OrmLite
 
         public static MyTuple<string, DbParameter[]> SelectWhere<T>(OrmLiteProviderType type, string name, object value)
         {
-            var table = typeof(T).GetCachedTableName();
+            var table = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter p = OrmLite.GetProvider(type).CreateParameter("@" + name, value);
 
 
@@ -96,7 +96,7 @@ namespace Loogn.OrmLite
         public static MyTuple<string, DbParameter[]> SelectWhere<T>(OrmLiteProviderType type, IDictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             sqlbuilder.AppendFormat("SELECT * FROM {1}{0}{2}", tableName, L(type), R(type));
             var ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
 
@@ -109,7 +109,7 @@ namespace Loogn.OrmLite
         public static MyTuple<string, DbParameter[]> SelectWhere<T>(OrmLiteProviderType type, object conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             sqlbuilder.AppendFormat("SELECT * FROM {1}{0}{2}", tableName, L(type), R(type));
             var ps = ORM.AnonTypeToParams(type, conditions, sqlbuilder);
 
@@ -136,7 +136,7 @@ namespace Loogn.OrmLite
                     {
                         needQuot = true;
                     }
-                    var table = typeof(T).GetCachedTableName();
+                    var table = ReflectionHelper.GetInfo<T>().TableName;
                     sql = new StringBuilder(50);
                     sql.AppendFormat("Select {2} from {3}{0}{4} where {3}{1}{4} in (", table, idField, selectFields, L(providerType), R(providerType));
                 }
@@ -163,7 +163,7 @@ namespace Loogn.OrmLite
         public static MyTuple<string, DbParameter[]> Single<T>(OrmLiteProviderType type, IDictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
             if (type == OrmLiteProviderType.MySql)
             {
@@ -186,7 +186,7 @@ namespace Loogn.OrmLite
         public static MyTuple<string, DbParameter[]> Single<T>(OrmLiteProviderType type, object conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
             if (type == OrmLiteProviderType.MySql)
             {
@@ -212,11 +212,11 @@ namespace Loogn.OrmLite
             var sql = "";
             if (type == OrmLiteProviderType.MySql)
             {
-                sql = string.Format("SELECT * FROM `{0}` WHERE `{1}`=@{1} limit 1", typeof(T).GetCachedTableName(), idField);
+                sql = string.Format("SELECT * FROM `{0}` WHERE `{1}`=@{1} limit 1", ReflectionHelper.GetInfo<T>().TableName, idField);
             }
             else if (type == OrmLiteProviderType.SqlServer)
             {
-                sql = string.Format("SELECT top 1 * FROM [{0}] WHERE [{1}]=@{1}", typeof(T).GetCachedTableName(), idField);
+                sql = string.Format("SELECT top 1 * FROM [{0}] WHERE [{1}]=@{1}", ReflectionHelper.GetInfo<T>().TableName, idField);
             }
 
             MyTuple<string, DbParameter[]> result = new MyTuple<string, DbParameter[]>();
@@ -227,7 +227,7 @@ namespace Loogn.OrmLite
 
         public static MyTuple<string, DbParameter[]> SingleWhere<T>(OrmLiteProviderType type, string name, object value)
         {
-            var table = typeof(T).GetCachedTableName();
+            var table = ReflectionHelper.GetInfo<T>().TableName;
             var p = OrmLite.GetProvider(type).CreateParameter("@" + name, value);
             var sql = "";
             if (type == OrmLiteProviderType.MySql)
@@ -248,7 +248,7 @@ namespace Loogn.OrmLite
         public static MyTuple<string, DbParameter[]> SingleWhere<T>(OrmLiteProviderType type, IDictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
             if (type == OrmLiteProviderType.MySql)
             {
@@ -270,7 +270,7 @@ namespace Loogn.OrmLite
         public static MyTuple<string, DbParameter[]> SingleWhere<T>(OrmLiteProviderType type, object conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
             if (type == OrmLiteProviderType.MySql)
             {
@@ -292,13 +292,13 @@ namespace Loogn.OrmLite
 
         public static string Count<T>(OrmLiteProviderType providerType)
         {
-            var table = typeof(T).GetCachedTableName();
+            var table = ReflectionHelper.GetInfo<T>().TableName;
             return "SELECT COUNT(0) FROM " + L(providerType) + table + R(providerType);
         }
 
         public static MyTuple<string, DbParameter[]> CountWhere<T>(OrmLiteProviderType type, string name, object value)
         {
-            var table = typeof(T).GetCachedTableName();
+            var table = ReflectionHelper.GetInfo<T>().TableName;
             var provider = OrmLite.GetProvider(type);
             DbParameter p = provider.CreateParameter("@" + name, value);
             var sql = string.Format("SELECT COUNT(0) FROM {2}{0}{3} WHERE {2}{1}{3}=@{1}", table, name, L(type), R(type));
@@ -310,7 +310,7 @@ namespace Loogn.OrmLite
         public static MyTuple<string, DbParameter[]> CountWhere<T>(OrmLiteProviderType type, IDictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             sqlbuilder.AppendFormat("SELECT COUNT(0) FROM {1}{0}{2}", tableName, L(type), R(type));
             var ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
 
@@ -323,7 +323,7 @@ namespace Loogn.OrmLite
         public static MyTuple<string, DbParameter[]> CountWhere<T>(OrmLiteProviderType type, object conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             sqlbuilder.AppendFormat("SELECT COUNT(0) FROM {1}{0}{2}", tableName, L(type), R(type));
             var ps = ORM.AnonTypeToParams(type, conditions, sqlbuilder);
 
@@ -381,9 +381,10 @@ namespace Loogn.OrmLite
 
         public static MyTuple<string, DbParameter[]> Insert<T>(OrmLiteProviderType type, T obj, bool selectIdentity)
         {
-            var objtype = typeof(T);
-            var table = objtype.GetCachedTableName();
-            var propertys = objtype.GetCachedProperties();
+            var refInfo = ReflectionHelper.GetInfo<T>();
+
+            var table = refInfo.TableName;
+            var propertys = refInfo.Properties;
             var l = L(type);
             var r = R(type);
 
@@ -394,7 +395,7 @@ namespace Loogn.OrmLite
             var provider = OrmLite.GetProvider(type);
             foreach (var property in propertys)
             {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
+                var fieldAttr = refInfo.GetFieldAttr(property);
                 if (property.Name.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase))
                 {
                     if (fieldAttr == null || (!fieldAttr.InsertRequire))
@@ -406,12 +407,10 @@ namespace Loogn.OrmLite
                 if (fieldAttr == null || (!fieldAttr.InsertIgnore && !fieldAttr.Ignore))
                 {
                     var fieldName = property.Name;
+                    var getter = refInfo.GetGetter(fieldName);
+                    if (getter == null) continue;
 
-                    if (fieldAttr != null && fieldAttr.Name != null && fieldAttr.Name.Length > 0)
-                    {
-                        fieldName = fieldAttr.Name;
-                    }
-                    var val = property.GetValue(obj, null);
+                    var val = getter.Get(obj);
                     if (val == null)
                     {
                         if (property.PropertyType == typeof(string))
@@ -463,7 +462,7 @@ namespace Loogn.OrmLite
         {
             var l = L(type);
             var r = R(type);
-             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
+            StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             sbsql.AppendFormat("insert into {1}{0}{2} (", table, l, r);
             StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
             var ps = new List<DbParameter>();
@@ -503,8 +502,7 @@ namespace Loogn.OrmLite
 
         public static MyTuple<string, DbParameter[]> Insert(OrmLiteProviderType type, string table, object anonType, bool selectIdentity)
         {
-            var objType = anonType.GetType();
-            var propertys = objType.GetCachedProperties();
+            var propertys = ReflectionHelper.GetCachedProperties(anonType.GetType());
             var l = L(type);
             var r = R(type);
 
@@ -550,12 +548,12 @@ namespace Loogn.OrmLite
 
         public static MyTuple<string, DbParameter[]> Update<T>(OrmLiteProviderType type, T obj, params string[] updateFields)
         {
-
             var l = L(type);
             var r = R(type);
-            var objType = typeof(T);
-            var table = objType.GetCachedTableName();
-            var propertys = objType.GetCachedProperties();
+            var refInfo = ReflectionHelper.GetInfo<T>();
+
+            var table = refInfo.TableName;
+            var propertys = refInfo.Properties;
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             sbsql.AppendFormat("update {1}{0}{2} set ", table, l, r);
             string condition = null;
@@ -564,17 +562,16 @@ namespace Loogn.OrmLite
             foreach (var property in propertys)
             {
                 var fieldName = property.Name;
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
+                var fieldAttr = refInfo.GetFieldAttr(property);
                 if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
                 {
-                    if (fieldAttr != null && fieldAttr.Name != null && fieldAttr.Name.Length > 0)
-                    {
-                        fieldName = fieldAttr.Name;
-                    }
+                    var getter = refInfo.GetGetter(fieldName);
+                    if (getter == null) continue;
+
                     if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
                     {
                         condition = string.Format("{1}{0}{2} = @{0}", fieldName, l, r);
-                        var val = property.GetValue(obj, null);
+                        var val = getter.Get(obj);
                         ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                     }
                     else
@@ -582,7 +579,7 @@ namespace Loogn.OrmLite
                         if (FieldsContains(updateFields, fieldName))
                         {
                             sbsql.AppendFormat("{1}{0}{2} = @{0},", fieldName, l, r);
-                            var val = property.GetValue(obj, null);
+                            var val = getter.Get(obj);
                             ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                         }
                     }
@@ -607,7 +604,7 @@ namespace Loogn.OrmLite
         {
             var l = L(type);
             var r = R(type);
-            var propertys = anonymous.GetType().GetCachedProperties();
+            var propertys = ReflectionHelper.GetCachedProperties(anonymous.GetType());
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             sbsql.AppendFormat("update {1}{0}{2} set ", tableName, l, r);
             string condition = null;
@@ -679,7 +676,7 @@ namespace Loogn.OrmLite
             var l = L(type);
             var r = R(type);
             StringBuilder sqlbuilder = new StringBuilder(200);
-            var tableName = typeof(T).GetCachedTableName();
+            var tableName = ReflectionHelper.GetInfo<T>().TableName;
             sqlbuilder.AppendFormat("DELETE FROM {1}{0}{2}", tableName, l, r);
             var ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
             return new MyTuple<string, DbParameter[]>
@@ -694,7 +691,7 @@ namespace Loogn.OrmLite
             var l = L(type);
             var r = R(type);
             DbParameter sp = OrmLite.GetProvider(type).CreateParameter("@" + idField, id);
-            var sql = string.Format("DELETE FROM {2}{0}{3} WHERE {2}{1}{3}=@{1}", typeof(T).GetCachedTableName(), idField, l, r);
+            var sql = string.Format("DELETE FROM {2}{0}{3} WHERE {2}{1}{3}=@{1}", ReflectionHelper.GetInfo<T>().TableName, idField, l, r);
             return new MyTuple<string, DbParameter[]>
             {
                 Item1 = sql,
@@ -721,7 +718,7 @@ namespace Loogn.OrmLite
                     {
                         needQuot = true;
                     }
-                    var table = typeof(T).GetCachedTableName();
+                    var table = ReflectionHelper.GetInfo<T>().TableName;
                     sql = new StringBuilder(200);
                     sql.AppendFormat("DELETE from {2}{0}{3} where {2}{1}{3} in (", table, idField, l, r);
                 }
@@ -749,7 +746,7 @@ namespace Loogn.OrmLite
         {
             var l = L(type);
             var r = R(type);
-            var table = typeof(T).GetCachedTableName();
+            var table = ReflectionHelper.GetInfo<T>().TableName;
             return "DELETE  FROM " + l + table + r;
         }
     }

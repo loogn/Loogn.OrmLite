@@ -111,23 +111,28 @@ namespace Loogn.OrmLite
 
         private static int InsertTrans<T>(this DbTransaction dbTrans, OrmLiteProviderType type, T obj)
         {
+
+
+            var refInfo = ReflectionHelper.GetInfo<T>();
+
             var objtype = typeof(T);
-            var table = objtype.GetCachedTableName();
-            var propertys = objtype.GetCachedProperties();
+            var table = refInfo.TableName;
+            var propertys = refInfo.Properties;
 
 
             var l = SqlCmd.L(type);
             var r = SqlCmd.R(type);
 
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("insert into {1}{0}{2} (", table,l,r);
+            sbsql.AppendFormat("insert into {1}{0}{2} (", table, l, r);
             StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
             var ps = new List<DbParameter>();
             var provider = OrmLite.GetProvider(type);
             foreach (var property in propertys)
             {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
-                if (property.Name.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase))
+                var fieldName = property.Name;
+                var fieldAttr = refInfo.GetFieldAttr(property);
+                if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase))
                 {
                     if (fieldAttr == null || (!fieldAttr.InsertRequire))
                     {
@@ -136,28 +141,22 @@ namespace Loogn.OrmLite
                 }
                 if (fieldAttr == null || (!fieldAttr.InsertIgnore && !fieldAttr.Ignore))
                 {
-                    var fieldName = property.Name;
+                    var getter = refInfo.GetGetter(fieldName);
+                    if (getter == null) continue;
 
-                    if (fieldAttr != null && fieldAttr.Name != null && fieldAttr.Name.Length > 0)
-                    {
-                        fieldName = fieldAttr.Name;
-                    }
-                    var val = property.GetValue(obj, null);
+                    var val = getter.Get(obj);
                     if (val == null)
                     {
                         if (property.PropertyType == typeof(string))
                         {
-                            val = string.Empty;
+                            continue;
                         }
                     }
-                    else
+                    if (property.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
                     {
-                        if (property.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
-                        {
-                            val = DateTime.Now;
-                        }
+                        continue;
                     }
-                    sbsql.AppendFormat("{1}{0}{2},", fieldName,l,r);
+                    sbsql.AppendFormat("{1}{0}{2},", fieldName, l, r);
                     sbParams.AppendFormat("@{0},", fieldName);
                     ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                 }
@@ -176,12 +175,11 @@ namespace Loogn.OrmLite
 
         private static int InsertTrans(this DbTransaction dbTrans, OrmLiteProviderType type, string table, object anonType)
         {
-            var objtype = anonType.GetType();
-            var propertys = objtype.GetCachedProperties();
+            var propertys = ReflectionHelper.GetCachedProperties(anonType.GetType());
             var l = SqlCmd.L(type);
             var r = SqlCmd.R(type);
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("insert into {1}{0}{2} (", table,l,r);
+            sbsql.AppendFormat("insert into {1}{0}{2} (", table, l, r);
             StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
             var ps = new List<DbParameter>();
             var provider = OrmLite.GetProvider(type);
@@ -189,7 +187,7 @@ namespace Loogn.OrmLite
             {
                 var fieldName = property.Name;
                 var val = property.GetValue(anonType, null);
-                sbsql.AppendFormat("{1}{0}{2},", fieldName,l,r);
+                sbsql.AppendFormat("{1}{0}{2},", fieldName, l, r);
                 sbParams.AppendFormat("@{0},", fieldName);
                 ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
             }
@@ -264,43 +262,34 @@ namespace Loogn.OrmLite
 
         public static int UpdateAnonymous<T>(this DbTransaction dbTrans, object anonymous)
         {
-            var tuple = SqlCmd.Update(dbTrans.GetProviderType(), typeof(T).GetCachedTableName(), anonymous);
-            int c = ExecuteNonQuery(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
-            return c;
-        }
-
-        public static int UpdateAnonymous(this DbTransaction dbTrans, object model, object anonymous)
-        {
-            var tuple = SqlCmd.Update(dbTrans.GetProviderType(), model.GetType().GetCachedTableName(), anonymous);
+            var tuple = SqlCmd.Update(dbTrans.GetProviderType(), ReflectionHelper.GetInfo<T>().TableName, anonymous);
             int c = ExecuteNonQuery(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;
         }
 
         private static int UpdateTrans<T>(this DbTransaction dbTrans, OrmLiteProviderType type, T obj)
         {
-            var objtype = typeof(T);
-            var table = objtype.GetCachedTableName();
-            var propertys = objtype.GetCachedProperties();
+            var refInfo = ReflectionHelper.GetInfo<T>();
+
+            var table = refInfo.TableName;
+            var propertys = refInfo.Properties;
             var l = SqlCmd.L(type);
             var r = SqlCmd.R(type);
 
             StringBuilder sbsql = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
-            sbsql.AppendFormat("update {1}{0}{2} set ", table,l,r);
+            sbsql.AppendFormat("update {1}{0}{2} set ", table, l, r);
             string condition = null;
             var ps = new List<DbParameter>();
             var provider = OrmLite.GetProvider(type);
             foreach (var property in propertys)
             {
-                var fieldAttr = (OrmLiteFieldAttribute)property.GetCachedCustomAttributes(typeof(OrmLiteFieldAttribute)).FirstOrDefault();
+                var fieldAttr = refInfo.GetFieldAttr(property);
                 if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
                 {
                     var fieldName = property.Name;
-                    if (fieldAttr != null && fieldAttr.Name != null && fieldAttr.Name.Length > 0)
-                    {
-                        fieldName = fieldAttr.Name;
-                    }
-
-                    var val = property.GetValue(obj, null);
+                    var getter = refInfo.GetGetter(fieldName);
+                    if (getter == null) continue;
+                    var val = getter.Get(obj);
                     if (val == null)
                     {
                         if (property.PropertyType == typeof(string))
@@ -314,11 +303,11 @@ namespace Loogn.OrmLite
                     }
                     if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
                     {
-                        condition = string.Format("{1}{0}{2} = @{0}", fieldName,l,r);
+                        condition = string.Format("{1}{0}{2} = @{0}", fieldName, l, r);
                     }
                     else
                     {
-                        sbsql.AppendFormat("{1}{0}{2} = @{0},", fieldName,l,r);
+                        sbsql.AppendFormat("{1}{0}{2} = @{0},", fieldName, l, r);
                     }
                     ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                 }
@@ -353,7 +342,7 @@ namespace Loogn.OrmLite
 
         public static int Update<T>(this DbTransaction dbTrans, IDictionary<string, object> updateFields, string conditions, IDictionary<string, object> parameters)
         {
-            var tuple = SqlCmd.Update(dbTrans.GetProviderType(), typeof(T).GetCachedTableName(), updateFields, conditions, parameters);
+            var tuple = SqlCmd.Update(dbTrans.GetProviderType(), ReflectionHelper.GetInfo<T>().TableName, updateFields, conditions, parameters);
             int c = ExecuteNonQuery(dbTrans, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;
         }

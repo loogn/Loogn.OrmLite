@@ -214,14 +214,7 @@ namespace Loogn.OrmLite
         }
         public static int UpdateAnonymous<T>(this DbConnection dbConn, object anonymous)
         {
-            var tuple = SqlCmd.Update(dbConn.GetProviderType(), typeof(T).GetCachedTableName(), anonymous);
-            int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
-            return c;
-        }
-
-        public static int UpdateAnonymous(this DbConnection dbConn, object model, object anonymous)
-        {
-            var tuple = SqlCmd.Update(dbConn.GetProviderType(), model.GetType().GetCachedTableName(), anonymous);
+            var tuple = SqlCmd.Update(dbConn.GetProviderType(), ReflectionHelper.GetInfo<T>().TableName, anonymous);
             int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;
         }
@@ -269,7 +262,7 @@ namespace Loogn.OrmLite
 
         public static int Update<T>(this DbConnection dbConn, IDictionary<string, object> updateFields, string conditions, IDictionary<string, object> parameters)
         {
-            var tuple = SqlCmd.Update(dbConn.GetProviderType(), typeof(T).GetCachedTableName(), updateFields, conditions, parameters);
+            var tuple = SqlCmd.Update(dbConn.GetProviderType(), ReflectionHelper.GetInfo<T>().TableName, updateFields, conditions, parameters);
 
             int c = ExecuteNonQuery(dbConn, CommandType.Text, tuple.Item1, tuple.Item2);
             return c;

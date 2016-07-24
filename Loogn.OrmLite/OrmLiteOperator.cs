@@ -119,15 +119,7 @@ namespace Loogn.OrmLite
                 return db.UpdateAnonymous<T>(anonymous);
             }
         }
-
-        public int UpdateAnonymous(object model, object anonymous)
-        {
-            using (var db = openDb())
-            {
-                return db.UpdateAnonymous(model, anonymous);
-            }
-        }
-
+        
         public int Update(params T[] objs)
         {
             return UpdateAll(objs);
@@ -604,7 +596,7 @@ namespace Loogn.OrmLite
         {
             using (var db = openDb())
             {
-                var tableName = typeof(T).GetCachedTableName();
+                var tableName = ReflectionHelper.GetInfo<T>().TableName;
                 return db.MaxID<TField>(tableName, field);
             }
         }

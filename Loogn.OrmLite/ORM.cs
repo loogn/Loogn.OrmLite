@@ -21,16 +21,19 @@ namespace Loogn.OrmLite
         /// <typeparam name="T">类型参数</typeparam>
         /// <param name="reader">dataReader</param>
         /// <returns></returns>
-        public static T ReaderToObject<T>(DbDataReader reader) 
+        public static T ReaderToObject<T>(DbDataReader reader)
         {
             if (reader.Read())
             {
                 T obj = Activator.CreateInstance<T>();
-                var type = typeof(T);
+                var refInfo = ReflectionHelper.GetInfo<T>();
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    var tuple = ReflectionCache.GetCachedPP<T>(type, reader.GetName(i));
-                    SetPropertyValue(tuple, type, obj, reader.GetName(i), reader.GetValue(i));
+                    var setter = refInfo.GetSetter(reader.GetName(i));
+                    if (setter != null)
+                    {
+                        setter.Set(obj, reader.GetValue(i));
+                    }
                 }
                 return obj;
             }
@@ -39,109 +42,53 @@ namespace Loogn.OrmLite
                 return default(T);
             }
         }
-
-        private static void SetPropertyValue<TObject>(Tuple<PropertyInfo, Delegate> tuple, Type objType, TObject obj, string fieldName, object value)
+        
+        /// <summary>
+        /// 用render填充T类型列表
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        public static List<T> ReaderToObjectList<T>(DbDataReader reader)
         {
-            var fieldType = tuple.Item1.PropertyType;
+            if (!reader.HasRows)
+            {
+                return new List<T>();
+            }
+            var refInfo = ReflectionHelper.GetInfo<T>();
+            ReflectionInfo<T>.Setter[] setterArr = new ReflectionInfo<T>.Setter[reader.FieldCount];
 
-            if (fieldType == typeof(string))
+            PropertyInfo[] propArr = new PropertyInfo[reader.FieldCount];
+
+            List<T> list = new List<T>();
+            var first = true;
+            while (reader.Read())
             {
-                ((Action<TObject, string>)tuple.Item2)(obj, (string)value);
-            }
-            else if (fieldType == typeof(int))
-            {
-                ((Action<TObject, int>)tuple.Item2)(obj, (int)value);
-            }
-            else if (fieldType == typeof(int?))
-            {
-                ((Action<TObject, int?>)tuple.Item2)(obj, (int)value);
-            }
-            else if (fieldType == typeof(DateTime))
-            {
-                ((Action<TObject, DateTime>)tuple.Item2)(obj, (DateTime)value);
-            }
-            else if (fieldType == typeof(DateTime?))
-            {
-                ((Action<TObject, DateTime?>)tuple.Item2)(obj, (DateTime)value);
-            }
-            else if (fieldType == typeof(long))
-            {
-                ((Action<TObject, long>)tuple.Item2)(obj, (long)value);
-            }
-            else if (fieldType == typeof(long?))
-            {
-                ((Action<TObject, long?>)tuple.Item2)(obj, (long)value);
-            }
-            else if (fieldType == typeof(double))
-            {
-                ((Action<TObject, double>)tuple.Item2)(obj, (double)value);
-            }
-            else if (fieldType == typeof(double?))
-            {
-                ((Action<TObject, double?>)tuple.Item2)(obj, (double)value);
-            }
-            else if (fieldType == typeof(Guid))
-            {
-                ((Action<TObject, Guid>)tuple.Item2)(obj, (Guid)value);
-            }
-            else if (fieldType == typeof(Guid?))
-            {
-                ((Action<TObject, Guid?>)tuple.Item2)(obj, (Guid)value);
-            }
-            else if (fieldType == typeof(float))
-            {
-                ((Action<TObject, float>)tuple.Item2)(obj, (float)value);
-            }
-            else if (fieldType == typeof(float?))
-            {
-                ((Action<TObject, float?>)tuple.Item2)(obj, (float)value);
-            }
-            else if (fieldType == typeof(byte))
-            {
-                ((Action<TObject, byte>)tuple.Item2)(obj, Convert.ToByte(value));
-            }
-            else if (fieldType == typeof(byte?))
-            {
-                ((Action<TObject, byte?>)tuple.Item2)(obj, (byte)value);
-            }
-            else if (fieldType == typeof(char))
-            {
-                ((Action<TObject, char>)tuple.Item2)(obj, (char)value);
-            }
-            else if (fieldType == typeof(char?))
-            {
-                ((Action<TObject, char?>)tuple.Item2)(obj, (char)value);
-            }
-            else if (fieldType == typeof(bool))
-            {
-                bool theValue = false;
-                if (value is bool)
+                T obj = Activator.CreateInstance<T>();
+                for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    theValue = (bool)value;
+
+                    ReflectionInfo<T>.Setter setter = null;
+                    if (first)
+                    {
+                        var fieldName = reader.GetName(i);
+                        setter = refInfo.GetSetter(fieldName);
+                        setterArr[i] = setter;
+                    }
+                    else
+                    {
+                        setter = setterArr[i];
+                    }
+                    if (setter != null)
+                    {
+                        setter.Set(obj, reader[i]);
+                    }
                 }
-                else
-                {
-                    var intValue = Convert.ToInt32(value);
-                    theValue = intValue > 0;
-                }
-                ((Action<TObject, bool>)tuple.Item2)(obj, theValue);
+                list.Add(obj);
+                first = false;
             }
-            else if (fieldType == typeof(bool?))
-            {
-                ((Action<TObject, bool?>)tuple.Item2)(obj, (bool)value);
-            }
-            else if (fieldType == typeof(decimal))
-            {
-                ((Action<TObject, decimal>)tuple.Item2)(obj, (decimal)value);
-            }
-            else if (fieldType == typeof(decimal?))
-            {
-                ((Action<TObject, decimal?>)tuple.Item2)(obj, (decimal)value);
-            }
-            else if (value is byte[])
-            {
-                ((Action<TObject, byte[]>)tuple.Item2)(obj, (byte[])value);
-            }
+
+            return list;
         }
 
         internal static T ConvertToType<T>(object obj)
@@ -161,54 +108,6 @@ namespace Loogn.OrmLite
                 return (T)newobj;
 
             }
-        }
-
-        public static List<T> ReaderToObjectList<T>(DbDataReader reader) 
-        {
-            if (!reader.HasRows)
-            {
-                return new List<T>();
-            }
-            var type = typeof(T);
-            List<T> list = new List<T>();
-            var first = true;
-            Tuple<PropertyInfo, Delegate>[] tupleArr = new Tuple<PropertyInfo, Delegate>[reader.FieldCount];
-            string[] nameArr = new string[reader.FieldCount];
-
-            while (reader.Read())
-            {
-                T obj = Activator.CreateInstance<T>();
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
-                    Tuple<PropertyInfo, Delegate> tuple = null;
-                    string fieldName = null;
-                    if (first)
-                    {
-                        fieldName = reader.GetName(i);
-                        tuple = ReflectionCache.GetCachedPP<T>(type, fieldName);
-                        tupleArr[i] = tuple;
-                        nameArr[i] = fieldName;
-                    }
-                    else
-                    {
-                        tuple = tupleArr[i];
-                        fieldName = nameArr[i];
-                    }
-                    if (tuple != null)
-                    {
-                        var value = reader.GetValue(i);
-                        if (value == null || value is DBNull)
-                        {
-                            continue;
-                        }
-                        SetPropertyValue(tuple, type, obj, fieldName, value);
-                    }
-                }
-                list.Add(obj);
-                first = false;
-            }
-
-            return list;
         }
 
         internal static List<MyTuple<T1, T2>> ReaderToTupleList<T1, T2>(DbDataReader reader)
@@ -359,10 +258,8 @@ namespace Loogn.OrmLite
         {
             if (anonType != null)
             {
-
                 var provider = OrmLite.GetProvider(type);
-
-                var props = anonType.GetType().GetCachedProperties();
+                var props = ReflectionHelper.GetCachedProperties(anonType.GetType());
                 var ps = new DbParameter[props.Length];
                 for (int i = 0, len = props.Length; i < len; i++)
                 {
@@ -378,7 +275,7 @@ namespace Loogn.OrmLite
 
         public static DbParameter[] AnonTypeToParams(OrmLiteProviderType type, object anonType, StringBuilder appendWhere)
         {
-            var props = anonType.GetType().GetCachedProperties();
+            var props = ReflectionHelper.GetCachedProperties(anonType.GetType());
 
             if (props.Length > 0)
             {

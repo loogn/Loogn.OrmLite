@@ -94,134 +94,140 @@ namespace Loogn.OrmLite
                 Delegate getter = null;
                 Delegate setter = null;
                 string propName = prop.Name.ToUpper();
+                var propType = prop.PropertyType;
 
-                if (typeof(string) == prop.PropertyType)
+                if (propType.IsEnum)
+                {
+                    propType = propType.GetEnumUnderlyingType();
+                }
+                
+                if (typeof(string) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, string>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, string>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(int) == prop.PropertyType)
+                else if (typeof(int) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, int>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, int>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(int?) == prop.PropertyType)
+                else if (typeof(int?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, int?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, int?>), null, prop.GetSetMethod(true));
                 }
 
-                else if (typeof(DateTime) == prop.PropertyType)
+                else if (typeof(DateTime) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, DateTime>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, DateTime>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(DateTime?) == prop.PropertyType)
+                else if (typeof(DateTime?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, DateTime?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, DateTime?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(long) == prop.PropertyType)
+                else if (typeof(long) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, long>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, long>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(long?) == prop.PropertyType)
+                else if (typeof(long?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, long?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, long?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(float) == prop.PropertyType)
+                else if (typeof(float) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, float>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, float>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(float?) == prop.PropertyType)
+                else if (typeof(float?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, float?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, float?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(double) == prop.PropertyType)
+                else if (typeof(double) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, double>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, double>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(double?) == prop.PropertyType)
+                else if (typeof(double?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, double?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, double?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(Guid) == prop.PropertyType)
+                else if (typeof(Guid) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, Guid>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, Guid>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(Guid?) == prop.PropertyType)
+                else if (typeof(Guid?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, Guid?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, Guid?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(short) == prop.PropertyType)
+                else if (typeof(short) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, short>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, short>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(short?) == prop.PropertyType)
+                else if (typeof(short?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, short?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, short?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(byte) == prop.PropertyType)
+                else if (typeof(byte) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, byte>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, byte>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(byte?) == prop.PropertyType)
+                else if (typeof(byte?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, byte?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, byte?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(char) == prop.PropertyType)
+                else if (typeof(char) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, char>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, char>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(char?) == prop.PropertyType)
+                else if (typeof(char?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, char?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, char?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(decimal) == prop.PropertyType)
+                else if (typeof(decimal) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, decimal>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, decimal>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(decimal?) == prop.PropertyType)
+                else if (typeof(decimal?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, decimal?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, decimal?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(byte[]) == prop.PropertyType)
+                else if (typeof(byte[]) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, byte[]>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, byte[]>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(bool) == prop.PropertyType)
+                else if (typeof(bool) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, bool>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, bool>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(bool?) == prop.PropertyType)
+                else if (typeof(bool?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, bool?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, bool?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(TimeSpan?) == prop.PropertyType)
+                else if (typeof(TimeSpan?) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, TimeSpan?>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, TimeSpan?>), null, prop.GetSetMethod(true));
                 }
-                else if (typeof(TimeSpan) == prop.PropertyType)
+                else if (typeof(TimeSpan) == propType)
                 {
                     getter = Delegate.CreateDelegate(typeof(Func<TObject, TimeSpan>), null, prop.GetGetMethod(true));
                     setter = Delegate.CreateDelegate(typeof(Action<TObject, TimeSpan>), null, prop.GetSetMethod(true));
@@ -232,8 +238,8 @@ namespace Loogn.OrmLite
                     getter = null;
                 }
 
-                setterDict[propName] = new Setter(setter, prop.PropertyType);
-                getterDict[propName] = new Getter(getter, prop.PropertyType);
+                setterDict[propName] = new Setter(setter, propType);
+                getterDict[propName] = new Getter(getter, propType);
 
 
                 //自定义属性

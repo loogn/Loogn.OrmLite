@@ -29,10 +29,10 @@ namespace Loogn.OrmLite
                 var refInfo = ReflectionHelper.GetInfo<T>();
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    var setter = refInfo.GetSetter(reader.GetName(i));
-                    if (setter != null)
+                    var accessor = refInfo.GetAccessor(reader.GetName(i));
+                    if (accessor != null)
                     {
-                        setter.Set(obj, reader.GetValue(i));
+                        accessor.Set(obj, reader.GetValue(i));
                     }
                 }
                 return obj;
@@ -42,7 +42,7 @@ namespace Loogn.OrmLite
                 return default(T);
             }
         }
-        
+
         /// <summary>
         /// 用render填充T类型列表
         /// </summary>
@@ -56,11 +56,12 @@ namespace Loogn.OrmLite
                 return new List<T>();
             }
             var refInfo = ReflectionHelper.GetInfo<T>();
-            ReflectionInfo<T>.Setter[] setterArr = new ReflectionInfo<T>.Setter[reader.FieldCount];
+            ReflectionInfo<T>.Accessor[] setterArr = new ReflectionInfo<T>.Accessor[reader.FieldCount];
 
             PropertyInfo[] propArr = new PropertyInfo[reader.FieldCount];
 
             List<T> list = new List<T>();
+
             var first = true;
             while (reader.Read())
             {
@@ -68,20 +69,20 @@ namespace Loogn.OrmLite
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
 
-                    ReflectionInfo<T>.Setter setter = null;
+                    ReflectionInfo<T>.Accessor accessor = null;
                     if (first)
                     {
                         var fieldName = reader.GetName(i);
-                        setter = refInfo.GetSetter(fieldName);
-                        setterArr[i] = setter;
+                        accessor = refInfo.GetAccessor(fieldName);
+                        setterArr[i] = accessor;
                     }
                     else
                     {
-                        setter = setterArr[i];
+                        accessor = setterArr[i];
                     }
-                    if (setter != null)
+                    if (accessor != null)
                     {
-                        setter.Set(obj, reader[i]);
+                        accessor.Set(obj, reader[i]);
                     }
                 }
                 list.Add(obj);

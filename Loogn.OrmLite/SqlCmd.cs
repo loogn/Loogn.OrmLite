@@ -407,10 +407,10 @@ namespace Loogn.OrmLite
                 if (fieldAttr == null || (!fieldAttr.InsertIgnore && !fieldAttr.Ignore))
                 {
                     var fieldName = property.Name;
-                    var getter = refInfo.GetGetter(fieldName);
-                    if (getter == null) continue;
+                    var accessor = refInfo.GetAccessor(fieldName);
+                    if (accessor == null) continue;
 
-                    var val = getter.Get(obj);
+                    var val = accessor.Get(obj);
                     if (val == null)
                     {
                         if (property.PropertyType == typeof(string))
@@ -565,13 +565,13 @@ namespace Loogn.OrmLite
                 var fieldAttr = refInfo.GetFieldAttr(property);
                 if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
                 {
-                    var getter = refInfo.GetGetter(fieldName);
-                    if (getter == null) continue;
+                    var accessor = refInfo.GetAccessor(fieldName);
+                    if (accessor == null) continue;
 
                     if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
                     {
                         condition = string.Format("{1}{0}{2} = @{0}", fieldName, l, r);
-                        var val = getter.Get(obj);
+                        var val = accessor.Get(obj);
                         ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                     }
                     else
@@ -579,7 +579,7 @@ namespace Loogn.OrmLite
                         if (FieldsContains(updateFields, fieldName))
                         {
                             sbsql.AppendFormat("{1}{0}{2} = @{0},", fieldName, l, r);
-                            var val = getter.Get(obj);
+                            var val = accessor.Get(obj);
                             ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
                         }
                     }

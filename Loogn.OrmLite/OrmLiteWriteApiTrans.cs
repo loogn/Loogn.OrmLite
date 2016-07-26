@@ -141,10 +141,10 @@ namespace Loogn.OrmLite
                 }
                 if (fieldAttr == null || (!fieldAttr.InsertIgnore && !fieldAttr.Ignore))
                 {
-                    var getter = refInfo.GetGetter(fieldName);
-                    if (getter == null) continue;
+                    var accessor = refInfo.GetAccessor(fieldName);
+                    if (accessor == null) continue;
 
-                    var val = getter.Get(obj);
+                    var val = accessor.Get(obj);
                     if (val == null)
                     {
                         if (property.PropertyType == typeof(string))
@@ -287,9 +287,9 @@ namespace Loogn.OrmLite
                 if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
                 {
                     var fieldName = property.Name;
-                    var getter = refInfo.GetGetter(fieldName);
-                    if (getter == null) continue;
-                    var val = getter.Get(obj);
+                    var accessor = refInfo.GetAccessor(fieldName);
+                    if (accessor == null) continue;
+                    var val = accessor.Get(obj);
                     if (val == null)
                     {
                         if (property.PropertyType == typeof(string))

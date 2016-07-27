@@ -409,7 +409,7 @@ namespace Loogn.OrmLite
             public DoubleAccessor(PropertyInfo prop)
             {
                 setter = (Action<TObject, double>)Delegate.CreateDelegate(typeof(Action<TObject, double>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, double>)Delegate.CreateDelegate(typeof(Func<TObject, double>), null, prop.GetSetMethod(true));
+                getter = (Func<TObject, double>)Delegate.CreateDelegate(typeof(Func<TObject, double>), null, prop.GetGetMethod(true));
             }
             protected override void DoSet(TObject obj, object value)
             {

@@ -10,6 +10,7 @@ using System.Data.Common;
 namespace Loogn.OrmLite
 {
 
+
     /// <summary>
     /// ORM映射类，从reader到模型
     /// </summary>
@@ -56,37 +57,44 @@ namespace Loogn.OrmLite
                 return new List<T>();
             }
             var refInfo = ReflectionHelper.GetInfo<T>();
-            ReflectionInfo<T>.Accessor[] setterArr = new ReflectionInfo<T>.Accessor[reader.FieldCount];
-
-            PropertyInfo[] propArr = new PropertyInfo[reader.FieldCount];
-
             List<T> list = new List<T>();
-
             var first = true;
+            ReflectionInfo<T>.Accessor firstAccessor = null;
             while (reader.Read())
             {
                 T obj = Activator.CreateInstance<T>();
-                for (int i = 0; i < reader.FieldCount; i++)
-                {
 
-                    ReflectionInfo<T>.Accessor accessor = null;
-                    if (first)
+                if (first)
+                {
+                    ReflectionInfo<T>.Accessor current = null;
+                    for (int i = 0; i < reader.FieldCount; i++)
                     {
                         var fieldName = reader.GetName(i);
-                        accessor = refInfo.GetAccessor(fieldName);
-                        setterArr[i] = accessor;
-                    }
-                    else
-                    {
-                        accessor = setterArr[i];
-                    }
-                    if (accessor != null)
-                    {
+                        ReflectionInfo<T>.Accessor accessor = refInfo.GetAccessor(fieldName);
                         accessor.Set(obj, reader[i]);
+                        if (firstAccessor == null)
+                        {
+                            firstAccessor = current = accessor;
+                        }
+                        else
+                        {
+                            current.Next = accessor;
+                            current = accessor;
+                        }
+                    }
+                    first = false;
+                }
+                else
+                {
+                    ReflectionInfo<T>.Accessor current = firstAccessor;
+                    var index = 0;
+                    while (current != null)
+                    {
+                        current.Set(obj, reader[index++]);
+                        current = current.Next;
                     }
                 }
                 list.Add(obj);
-                first = false;
             }
 
             return list;

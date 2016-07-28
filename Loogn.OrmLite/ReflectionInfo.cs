@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
 
 namespace Loogn.OrmLite
 {
@@ -262,6 +261,8 @@ namespace Loogn.OrmLite
 
             protected abstract void DoSet(TObject obj, object value);
             protected abstract object DoGet(TObject obj);
+
+            public Accessor Next { get; set; }
         }
 
         #region Accessor
@@ -330,16 +331,25 @@ namespace Loogn.OrmLite
             Func<TObject, DateTime> getter;
             public DateTimeAccessor(PropertyInfo prop)
             {
-                setter = (Action<TObject, DateTime>)Delegate.CreateDelegate(typeof(Action<TObject, DateTime>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, DateTime>)Delegate.CreateDelegate(typeof(Func<TObject, DateTime>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, DateTime>)Delegate.CreateDelegate(typeof(Action<TObject, DateTime>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, DateTime>)Delegate.CreateDelegate(typeof(Func<TObject, DateTime>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (DateTime)value);
+                setter?.Invoke(obj, (DateTime)value);
+
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter?.Invoke(obj);
             }
         }
 

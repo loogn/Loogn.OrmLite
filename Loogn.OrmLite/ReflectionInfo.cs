@@ -161,22 +161,18 @@ namespace Loogn.OrmLite
                 else if (typeof(byte?) == propType)
                 {
                     accessor = new ByteNullableAccessor(prop);
-
                 }
                 else if (typeof(char) == propType)
                 {
                     accessor = new CharAccessor(prop);
-
                 }
                 else if (typeof(char?) == propType)
                 {
                     accessor = new CharNullableAccessor(prop);
-
                 }
                 else if (typeof(decimal) == propType)
                 {
                     accessor = new DecimalAccessor(prop);
-
                 }
                 else if (typeof(decimal?) == propType)
                 {
@@ -189,12 +185,10 @@ namespace Loogn.OrmLite
                 else if (typeof(bool) == propType)
                 {
                     accessor = new BoolAccessor(prop);
-
                 }
                 else if (typeof(bool?) == propType)
                 {
                     accessor = new BoolNullableAccessor(prop);
-
                 }
                 else if (typeof(TimeSpan) == propType)
                 {
@@ -203,7 +197,6 @@ namespace Loogn.OrmLite
                 else if (typeof(TimeSpan?) == propType)
                 {
                     accessor = new TimeSpanNullableAccessor(prop);
-
                 }
                 accessorDict[propName] = accessor;
                 //自定义属性
@@ -226,7 +219,7 @@ namespace Loogn.OrmLite
             {
                 return accessor;
             }
-            return null;
+            return new EmptyAccessor();
         }
 
         public OrmLiteFieldAttribute GetFieldAttr(PropertyInfo prop)
@@ -261,11 +254,23 @@ namespace Loogn.OrmLite
 
             protected abstract void DoSet(TObject obj, object value);
             protected abstract object DoGet(TObject obj);
-
-            public Accessor Next { get; set; }
+            
         }
 
         #region Accessor
+        public class EmptyAccessor : Accessor
+        {
+
+            protected override object DoGet(TObject obj)
+            {
+                return null;
+            }
+
+            protected override void DoSet(TObject obj, object value)
+            {
+                return;
+            }
+        }
 
         public class StringAccessor : Accessor
         {

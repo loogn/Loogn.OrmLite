@@ -10,6 +10,15 @@ using System.Data.Common;
 namespace Loogn.OrmLite
 {
 
+    internal class AccessorNode<T>
+    {
+        public AccessorNode(ReflectionInfo<T>.Accessor accessor)
+        {
+            Entity = accessor;
+        }
+        public ReflectionInfo<T>.Accessor Entity;
+        public AccessorNode<T> Next;
+    }
 
     /// <summary>
     /// ORM映射类，从reader到模型
@@ -59,38 +68,43 @@ namespace Loogn.OrmLite
             var refInfo = ReflectionHelper.GetInfo<T>();
             List<T> list = new List<T>();
             var first = true;
-            ReflectionInfo<T>.Accessor firstAccessor = null;
+            AccessorNode<T> firstAccessor = null;
+            //ReflectionInfo<T>.Accessor firstAccessor = null;
             while (reader.Read())
             {
                 T obj = Activator.CreateInstance<T>();
 
                 if (first)
                 {
-                    ReflectionInfo<T>.Accessor current = null;
+                    AccessorNode<T> current = null;
+                    //ReflectionInfo<T>.Accessor current = null;
                     for (int i = 0; i < reader.FieldCount; i++)
                     {
                         var fieldName = reader.GetName(i);
                         ReflectionInfo<T>.Accessor accessor = refInfo.GetAccessor(fieldName);
+
                         accessor.Set(obj, reader[i]);
                         if (firstAccessor == null)
                         {
-                            firstAccessor = current = accessor;
+                            firstAccessor = new AccessorNode<T>(accessor);
+                            current = firstAccessor;
                         }
                         else
                         {
-                            current.Next = accessor;
-                            current = accessor;
+
+                            current.Next = new AccessorNode<T>(accessor);
+                            current = current.Next;
                         }
                     }
                     first = false;
                 }
                 else
                 {
-                    ReflectionInfo<T>.Accessor current = firstAccessor;
+                    AccessorNode<T> current = firstAccessor;
                     var index = 0;
                     while (current != null)
                     {
-                        current.Set(obj, reader[index++]);
+                        current.Entity.Set(obj, reader[index++]);
                         current = current.Next;
                     }
                 }

@@ -10,16 +10,6 @@ using System.Data.Common;
 namespace Loogn.OrmLite
 {
 
-    internal class AccessorNode<T>
-    {
-        public AccessorNode(ReflectionInfo<T>.Accessor accessor)
-        {
-            Entity = accessor;
-        }
-        public ReflectionInfo<T>.Accessor Entity;
-        public AccessorNode<T> Next;
-    }
-
     /// <summary>
     /// ORM映射类，从reader到模型
     /// </summary>
@@ -54,7 +44,7 @@ namespace Loogn.OrmLite
         }
 
         /// <summary>
-        /// 用render填充T类型列表
+        /// 用Reader填充T类型列表
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader"></param>
@@ -68,50 +58,39 @@ namespace Loogn.OrmLite
             var refInfo = ReflectionHelper.GetInfo<T>();
             List<T> list = new List<T>();
             var first = true;
-            AccessorNode<T> firstAccessor = null;
-            //ReflectionInfo<T>.Accessor firstAccessor = null;
+            int length = reader.FieldCount;
+            ReflectionInfo<T>.Accessor[] accessorArray = new ReflectionInfo<T>.Accessor[length];
             while (reader.Read())
             {
                 T obj = Activator.CreateInstance<T>();
 
                 if (first)
                 {
-                    AccessorNode<T> current = null;
-                    //ReflectionInfo<T>.Accessor current = null;
-                    for (int i = 0; i < reader.FieldCount; i++)
+                    for (int i = 0; i < length; i++)
                     {
                         var fieldName = reader.GetName(i);
-                        ReflectionInfo<T>.Accessor accessor = refInfo.GetAccessor(fieldName);
-
+                        var accessor = refInfo.GetAccessor(fieldName);
+                        accessorArray[i] = accessor;
                         accessor.Set(obj, reader[i]);
-                        if (firstAccessor == null)
-                        {
-                            firstAccessor = new AccessorNode<T>(accessor);
-                            current = firstAccessor;
-                        }
-                        else
-                        {
-
-                            current.Next = new AccessorNode<T>(accessor);
-                            current = current.Next;
-                        }
                     }
                     first = false;
                 }
                 else
                 {
-                    AccessorNode<T> current = firstAccessor;
-                    var index = 0;
-                    while (current != null)
+                    for (var i = 0; i < length; i++)
                     {
-                        current.Entity.Set(obj, reader[index++]);
-                        current = current.Next;
+                        accessorArray[i].Set(obj, reader[i]);
                     }
                 }
                 list.Add(obj);
             }
 
             return list;
+        }
+
+        static void FillRaw(params Task[] tasks)
+        {
+            Task.WaitAll(tasks);
         }
 
         internal static T ConvertToType<T>(object obj)
@@ -310,7 +289,6 @@ namespace Loogn.OrmLite
                 foreach (var prop in props)
                 {
                     var p = provider.CreateParameter("@" + prop.Name, prop.GetValue(anonType, null));
-
                     ps[i++] = p;
                     appendWhere.AppendFormat(" {0}=@{0} and ", prop.Name);
                 }
@@ -389,9 +367,8 @@ namespace Loogn.OrmLite
             }
             return dict;
         }
-
-
     }
+
     internal class MyTuple<T1, T2>
     {
         public T1 Item1 { get; set; }

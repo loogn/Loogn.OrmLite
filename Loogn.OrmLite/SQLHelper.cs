@@ -1,31 +1,5 @@
-// ===============================================================================
-// Microsoft Data Access Application Block for .NET
-// http://msdn.microsoft.com/library/en-us/dnbda/html/daab-rm.asp
-//
-// SQLHelper.cs
-//
-// This file contains the implementations of the SqlHelper and SqlHelperParameterCache
-// classes.
-//
-// For more information see the Data Access Application Block Implementation Overview. 
-// ===============================================================================
-// Release history
-// VERSION	DESCRIPTION
-//   2.0	Added support for FillDataset, UpdateDataset and "Param" helper methods
-//
-// ===============================================================================
-// Copyright (C) 2000-2001 Microsoft Corporation
-// All rights reserved.
-// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY
-// OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT
-// LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR
-// FITNESS FOR A PARTICULAR PURPOSE.
-// ==============================================================================
-
 using System;
 using System.Data;
-using System.Xml;
-using System.Collections;
 using System.Data.Common;
 
 namespace Loogn.OrmLite

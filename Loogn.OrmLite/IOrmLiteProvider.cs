@@ -19,7 +19,12 @@ namespace Loogn.OrmLite
         /// <summary>
         /// MySql数据库
         /// </summary>
-        MySql
+        MySql,
+
+        /// <summary>
+        /// sqlite数据库
+        /// </summary>
+        Sqlite,
     }
 
     /// <summary>
@@ -51,6 +56,11 @@ namespace Loogn.OrmLite
             {
                 return OrmLiteProviderType.MySql;
             }
+            else if (connTypeName == "SQLiteConnection")
+            {
+                return OrmLiteProviderType.Sqlite;
+            }
+
             throw new ArgumentException("OrmLiteProviderType 参数错误");
         }
 
@@ -66,6 +76,10 @@ namespace Loogn.OrmLite
             else if (transTypeName == "MySqlTransaction")
             {
                 return OrmLiteProviderType.MySql;
+            }
+            else if (transTypeName == "SQLiteTransaction")
+            {
+                return OrmLiteProviderType.Sqlite;
             }
             throw new ArgumentException("OrmLiteProviderType 参数错误");
         }

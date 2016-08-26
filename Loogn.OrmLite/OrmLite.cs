@@ -14,6 +14,7 @@ namespace Loogn.OrmLite
     {
         private static IOrmLiteProvider SqlServerProvider;
         private static IOrmLiteProvider MySqlProvider;
+        private static IOrmLiteProvider SqliteProvider;
 
         public static void RegisterProvider(OrmLiteProviderType type, IOrmLiteProvider provider)
         {
@@ -24,6 +25,10 @@ namespace Loogn.OrmLite
             else if (type == OrmLiteProviderType.MySql && MySqlProvider == null)
             {
                 MySqlProvider = provider;
+            }
+            else if (type == OrmLiteProviderType.Sqlite && SqliteProvider == null)
+            {
+                SqliteProvider = provider;
             }
         }
 
@@ -42,6 +47,10 @@ namespace Loogn.OrmLite
             else if (type == OrmLiteProviderType.MySql)
             {
                 return MySqlProvider;
+            }
+            else if (type == OrmLiteProviderType.Sqlite)
+            {
+                return SqliteProvider;
             }
             throw new ArgumentException("OrmLiteProviderType 参数错误");
         }

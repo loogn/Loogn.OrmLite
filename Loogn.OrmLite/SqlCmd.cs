@@ -12,7 +12,7 @@ namespace Loogn.OrmLite
     {
         public static string L(OrmLiteProviderType providerType)
         {
-            if (providerType == OrmLiteProviderType.MySql)
+            if (providerType == OrmLiteProviderType.MySql || providerType == OrmLiteProviderType.Sqlite)
             {
                 return "`";
             }
@@ -24,7 +24,7 @@ namespace Loogn.OrmLite
         }
         public static string R(OrmLiteProviderType providerType)
         {
-            if (providerType == OrmLiteProviderType.MySql)
+            if (providerType == OrmLiteProviderType.MySql || providerType == OrmLiteProviderType.Sqlite)
             {
                 return "`";
             }
@@ -69,7 +69,7 @@ namespace Loogn.OrmLite
             }
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             StringBuilder sb = new StringBuilder(sql.Length + 50);
-            if (type == OrmLiteProviderType.MySql)
+            if (type == OrmLiteProviderType.MySql || type == OrmLiteProviderType.Sqlite)
             {
                 return sb.AppendFormat("SELECT * FROM `{0}` where {1} limit 1", tableName, sql).ToString();
             }
@@ -165,7 +165,7 @@ namespace Loogn.OrmLite
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
-            if (type == OrmLiteProviderType.MySql)
+            if (type == OrmLiteProviderType.MySql || type == OrmLiteProviderType.Sqlite)
             {
                 sqlbuilder.AppendFormat("SELECT * FROM `{0}`", tableName);
                 ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
@@ -188,7 +188,7 @@ namespace Loogn.OrmLite
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
-            if (type == OrmLiteProviderType.MySql)
+            if (type == OrmLiteProviderType.MySql || type == OrmLiteProviderType.Sqlite)
             {
                 sqlbuilder.AppendFormat("SELECT * FROM `{0}`", tableName);
                 ps = ORM.AnonTypeToParams(type, conditions, sqlbuilder);
@@ -210,7 +210,7 @@ namespace Loogn.OrmLite
         {
             var sp = OrmLite.GetProvider(type).CreateParameter("@" + idField, idValue);
             var sql = "";
-            if (type == OrmLiteProviderType.MySql)
+            if (type == OrmLiteProviderType.MySql || type == OrmLiteProviderType.Sqlite)
             {
                 sql = string.Format("SELECT * FROM `{0}` WHERE `{1}`=@{1} limit 1", ReflectionHelper.GetInfo<T>().TableName, idField);
             }
@@ -230,7 +230,7 @@ namespace Loogn.OrmLite
             var table = ReflectionHelper.GetInfo<T>().TableName;
             var p = OrmLite.GetProvider(type).CreateParameter("@" + name, value);
             var sql = "";
-            if (type == OrmLiteProviderType.MySql)
+            if (type == OrmLiteProviderType.MySql || type == OrmLiteProviderType.Sqlite)
             {
                 sql = string.Format("SELECT * FROM `{0}` WHERE `{1}`=@{1} limit 1 ", table, name);
             }
@@ -250,7 +250,7 @@ namespace Loogn.OrmLite
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
-            if (type == OrmLiteProviderType.MySql)
+            if (type == OrmLiteProviderType.MySql || type == OrmLiteProviderType.Sqlite)
             {
                 sqlbuilder.AppendFormat("SELECT * FROM `{0}`", tableName);
                 ps = ORM.DictionaryToParams(type, conditions, sqlbuilder);
@@ -272,7 +272,7 @@ namespace Loogn.OrmLite
             StringBuilder sqlbuilder = new StringBuilder(OrmLite.SqlStringBuilderCapacity);
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
-            if (type == OrmLiteProviderType.MySql)
+            if (type == OrmLiteProviderType.MySql || type == OrmLiteProviderType.Sqlite)
             {
                 sqlbuilder.AppendFormat("SELECT * FROM `{0}`", tableName);
                 ps = ORM.AnonTypeToParams(type, conditions, sqlbuilder);
@@ -445,6 +445,10 @@ namespace Loogn.OrmLite
                 {
                     sbsql.Append(";SELECT LAST_INSERT_ID()");
                 }
+                else if (type == OrmLiteProviderType.Sqlite)
+                {
+                    sbsql.Append("; select last_insert_rowid()");
+                }
                 else if (type == OrmLiteProviderType.SqlServer)
                 {
                     sbsql.Append(";SELECT ISNULL(SCOPE_IDENTITY(),@@rowcount)");
@@ -487,6 +491,10 @@ namespace Loogn.OrmLite
                 if (type == OrmLiteProviderType.MySql)
                 {
                     sbsql.Append(";SELECT LAST_INSERT_ID()");
+                }
+                else if (type == OrmLiteProviderType.Sqlite)
+                {
+                    sbsql.Append("; select last_insert_rowid()");
                 }
                 else if (type == OrmLiteProviderType.SqlServer)
                 {
@@ -533,6 +541,10 @@ namespace Loogn.OrmLite
                 if (type == OrmLiteProviderType.MySql)
                 {
                     sbsql.Append(";SELECT LAST_INSERT_ID()");
+                }
+                else if (type == OrmLiteProviderType.Sqlite)
+                {
+                    sbsql.Append("; select last_insert_rowid()");
                 }
                 else if (type == OrmLiteProviderType.SqlServer)
                 {

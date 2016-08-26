@@ -2,13 +2,13 @@
    ***Loogn.OrmLite是一个简单、高效的基于.NET Framework 4.0的数据访问组件！***   
 
 # 特点
-1. 支持sqlserver、mysql数据库；
+1. 支持sqlserver、mysql、sqlite3数据库；
 2. 通过扩展方法扩展 _DbConnection_ 和 _DbTransaction_ ；
 3. 支持数据库事务和批量插入
 4. 支持 _dynamic_ 类型的模型（不同定义模型也可使用此ORM）
 5. 超高的效率，超小的体积，比Dapper快，比Dapper小，Loogn.OrmLite.dll只有 **61kb** 
 
-# 支持mysql
+# 支持mysql(sqlite3基本一样，可用nuget引入System.Data.SQLite.Core)
 1. 引入MySql.Data.dll
 2. 实现IOrmLiteProvider
 ```

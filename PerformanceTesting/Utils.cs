@@ -15,11 +15,5 @@ namespace PerformanceTesting
         {
             return new SqlConnection(ConnStr);
         }
-
-        public static void ShowObject(object obj)
-        {
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(obj, Newtonsoft.Json.Formatting.Indented);
-            Console.WriteLine(json);
-        }
     }
 }

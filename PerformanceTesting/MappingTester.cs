@@ -68,7 +68,7 @@ namespace PerformanceTesting
         {
             using (var context = new MsSqlContext(Utils.ConnStr))
             {
-                var list = context.Query<TestEntity_Chloe>().Take(limit).ToList();
+                var list = context.Query<TestEntity>().Take(limit).ToList();
 
             }
         }
@@ -77,7 +77,7 @@ namespace PerformanceTesting
         {
             using (var context = new MsSqlContext(Utils.ConnStr))
             {
-                var list = context.SqlQuery<TestEntity_Chloe>(string.Format("select top {0} * from TestEntity", limit.ToString())).ToList();
+                var list = context.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit.ToString())).ToList();
 
             }
         }

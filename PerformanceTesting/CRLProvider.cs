@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PerformanceTesting
 {
-    public class CRLProvider : CRL.BaseProvider<TestEntity_CRL>
+    public class CRLProvider : CRL.BaseProvider<testentity>
     {
         
     }

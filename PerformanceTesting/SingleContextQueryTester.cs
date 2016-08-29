@@ -78,7 +78,7 @@ namespace PerformanceTesting
             {
                 for (int i = 0; i < queryCount; i++)
                 {
-                    var list = context.Query<TestEntity_Chloe>().Where(a => a.Id > minId).Take(limit).ToList();
+                    var list = context.Query<TestEntity>().Where(a => a.Id > minId).Take(limit).ToList();
                 }
             }
         }
@@ -89,7 +89,7 @@ namespace PerformanceTesting
             {
                 for (int i = 0; i < queryCount; i++)
                 {
-                    var list = context.SqlQuery<TestEntity_Chloe>(string.Format("select top {0} * from TestEntity where Id>@Id", limit.ToString()), DbParam.Create("@Id", minId)).ToList();
+                    var list = context.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity where Id>@Id", limit.ToString()), DbParam.Create("@Id", minId)).ToList();
                 }
             }
         }

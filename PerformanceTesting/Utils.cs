@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace PerformanceTesting
 {
+
+    enum TableNames
+    {
+        TestEntity
+    }
     class Utils
     {
         public static string ConnStr = System.Configuration.ConfigurationManager.ConnectionStrings["test"].ConnectionString;

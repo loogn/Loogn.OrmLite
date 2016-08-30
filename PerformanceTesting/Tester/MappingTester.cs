@@ -8,6 +8,7 @@ using Dapper;
 using Loogn.OrmLite;
 using CRL.LambdaQuery;
 using Loogn.Utils;
+using ServiceStack.OrmLite;
 
 namespace PerformanceTesting
 {
@@ -16,6 +17,8 @@ namespace PerformanceTesting
         static int limit = 5000000;
         public static void Test()
         {
+
+            //预热
             Chloe(2);
             ChloeSql(2);
             Dapper(2);
@@ -23,7 +26,9 @@ namespace PerformanceTesting
             EFSql(2);
             Loogn(2);
             CRL(2);
-            
+            ServiceStack(2);
+            //return;
+
             Console.WriteLine("Mapping count: " + limit);
             CodeTimer.Initialize();
 
@@ -61,6 +66,12 @@ namespace PerformanceTesting
             {
                 CRL(limit);
             });
+
+            CodeTimer.Time("Mapping-ServiceStack", 1, () =>
+            {
+                ServiceStack(limit);
+            });
+
 
         }
 
@@ -124,6 +135,15 @@ namespace PerformanceTesting
             var query = provider.GetLambdaQuery();
             query.Top(limit);
             var list = query.ToList();
+        }
+
+        static void ServiceStack(int limit)
+        {
+            var dbFactory = new OrmLiteConnectionFactory(Utils.ConnStr, SqlServerDialect.Provider);
+            using (var db = dbFactory.Open())
+            {
+                var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
+            }
         }
     }
 }

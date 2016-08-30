@@ -3,6 +3,7 @@ using Chloe.SqlServer;
 using Dapper;
 using Loogn.OrmLite;
 using Loogn.Utils;
+using ServiceStack.OrmLite;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -29,6 +30,7 @@ namespace PerformanceTesting
             EFSql(2);
             Loogn(2);
             CRL(2);
+            ServiceStack(2);
 
             queryCount = 20000;
 
@@ -69,6 +71,12 @@ namespace PerformanceTesting
             {
                 CRL(limit);
             });
+
+            CodeTimer.Time("SingleContextQuery-ServiceStack", 1, () =>
+            {
+                ServiceStack(limit);
+            });
+
 
         }
 
@@ -133,7 +141,7 @@ namespace PerformanceTesting
             {
                 for (int i = 0; i < queryCount; i++)
                 {
-                    var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where Id>@Id", limit.ToString()), DictBuilder.Assign("Id", minId));
+                    var list = db.SelectFmt<TestEntity>("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId);
                 }
             }
         }
@@ -150,5 +158,16 @@ namespace PerformanceTesting
             }
         }
 
+        static void ServiceStack(int limit)
+        {
+            var dbFactory = new OrmLiteConnectionFactory(Utils.ConnStr, SqlServerDialect.Provider);
+            using (var db = dbFactory.Open())
+            {
+                for (int i = 0; i < queryCount; i++)
+                {
+                    var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where ID>@id", limit), DictBuilder.Assign("id", minId));
+                }
+            }
+        }
     }
 }

@@ -23,9 +23,7 @@ namespace ConsoleApplication1
             return;
             OrmLite.RegisterProvider(OrmLiteProviderType.MySql, MySqlOrmLiteProvider.Instance);
             
-            OrmLite.WriteSqlLog = true;
-
-
+         
 
 
             using (var db = new MySqlConnection(MySqlConnstr))

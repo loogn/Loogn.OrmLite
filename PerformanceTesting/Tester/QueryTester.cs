@@ -9,16 +9,18 @@ using System.Threading.Tasks;
 using Dapper;
 using Loogn.OrmLite;
 using System.Data.SqlClient;
+using ServiceStack.OrmLite;
 
 namespace PerformanceTesting
 {
     class QueryTester
     {
         static int queryCount = 20000;
-        static int limit = 1;
+        static int limit = 10;
         static int minId = 1;
         public static void Test()
         {
+            //预热
             Chloe(2);
             ChloeSql(2);
             Dapper(2);
@@ -26,6 +28,8 @@ namespace PerformanceTesting
             EFSql(2);
             Loogn(2);
             CRL(2);
+            ServiceStack(2);
+            
 
             Console.WriteLine(string.Format("Query count:{0},Limit {1} ", queryCount, limit));
             CodeTimer.Initialize();
@@ -64,7 +68,10 @@ namespace PerformanceTesting
             {
                 CRL(limit);
             });
-
+            CodeTimer.Time("Query-ServiceStack", queryCount, () =>
+            {
+                ServiceStack(limit);
+            });
         }
 
         static void Chloe(int limit)
@@ -111,7 +118,7 @@ namespace PerformanceTesting
         {
             using (var db = Utils.CreateConnection())
             {
-                var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where Id>@Id", limit.ToString()), DictBuilder.Assign("Id", minId));
+                var list = db.SelectFmt<TestEntity>("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId.ToString());
             }
         }
 
@@ -122,6 +129,15 @@ namespace PerformanceTesting
             query.Where(x => x.Id > minId);
             query.Top(limit);
             var list = query.ToList();
+        }
+
+        static void ServiceStack(int limit)
+        {
+            var dbFactory = new OrmLiteConnectionFactory(Utils.ConnStr, SqlServerDialect.Provider);
+            using (var db = dbFactory.Open())
+            {
+                var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where ID>@id", limit), DictBuilder.Assign("id", minId));
+            }
         }
     }
 }

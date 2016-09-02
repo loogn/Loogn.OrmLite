@@ -144,7 +144,7 @@ namespace PerformanceTesting
             var db = new SqlSugarClient(Utils.ConnStr);
             using (db)
             {
-                var list = db.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
+                var list = db.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId.ToString()));
             }
         }
 

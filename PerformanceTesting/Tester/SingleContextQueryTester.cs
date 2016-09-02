@@ -173,7 +173,7 @@ namespace PerformanceTesting
             {
                 for (int i = 0; i < queryCount; i++)
                 {
-                    var list = db.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity   where ID>{1}", limit, minId));
+                    var list = db.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId));
                 }
 
             }

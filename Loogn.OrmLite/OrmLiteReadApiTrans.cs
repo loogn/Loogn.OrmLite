@@ -196,13 +196,15 @@ namespace Loogn.OrmLite
                 factor.Fields = "*";
             }
             var providerType = dbTrans.GetProviderType();
+            var l = SqlCmd.L(providerType);
+            var r = SqlCmd.R(providerType);
 
             var ps = factor.Params is IDictionary<string, object> ?
                 ORM.DictionaryToParams(providerType, factor.Params as IDictionary<string, object>)
                 : ORM.AnonTypeToParams(providerType, factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
-            sb.AppendFormat("select count(0) from {0}", factor.TableName);
+            sb.AppendFormat("select count(0) from {1}{0}{2}", factor.TableName,l,r);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);
@@ -238,12 +240,14 @@ namespace Loogn.OrmLite
                 factor.Fields = "*";
             }
             var providerType = dbTrans.GetProviderType();
+            var l = SqlCmd.L(providerType);
+            var r = SqlCmd.R(providerType);
             var ps = factor.Params is IDictionary<string, object> ?
                 ORM.DictionaryToParams(providerType, factor.Params as IDictionary<string, object>)
                 : ORM.AnonTypeToParams(providerType, factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
-            sb.AppendFormat("select count(0) from {0}", factor.TableName);
+            sb.AppendFormat("select count(0) from {1}{0}{2}", factor.TableName,l,r);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);
@@ -363,12 +367,14 @@ namespace Loogn.OrmLite
             tableName = SqlInjection.Filter(tableName);
             
             var providerType = dbTrans.GetProviderType();
+            var l = SqlCmd.L(providerType);
+            var r = SqlCmd.R(providerType);
             var isnull = "ISNULL";
             if (providerType == OrmLiteProviderType.MySql)
             {
                 isnull = "IFNULL";
             }
-            var sql = string.Format("SELECT {2}(MAX({0}), 0) FROM {1}", field, tableName, isnull);
+            var sql = string.Format("SELECT {2}(MAX({3}{0}{4}), 0) FROM {3}{1}{4}", field, tableName, isnull,l,r);
             return ScalarOriginal<T>(dbTrans, CommandType.Text, sql);
         }
         #endregion

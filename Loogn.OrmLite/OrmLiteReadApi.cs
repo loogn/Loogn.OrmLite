@@ -197,13 +197,16 @@ namespace Loogn.OrmLite
             }
 
             var providerType = dbConn.GetProviderType();
+            var l = SqlCmd.L(providerType);
+            var r = SqlCmd.R(providerType);
 
             var ps = factor.Params is IDictionary<string, object> ?
                 ORM.DictionaryToParams(providerType, factor.Params as IDictionary<string, object>)
                 : ORM.AnonTypeToParams(providerType, factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
-            sb.AppendFormat("select count(0) from {0}", factor.TableName);
+
+            sb.AppendFormat("select count(0) from {1}{0}{2}", factor.TableName, l, r);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);
@@ -240,12 +243,15 @@ namespace Loogn.OrmLite
                 factor.Fields = "*";
             }
             var providerType = dbConn.GetProviderType();
+            var l = SqlCmd.L(providerType);
+            var r = SqlCmd.R(providerType);
+
             var ps = factor.Params is IDictionary<string, object> ?
                 ORM.DictionaryToParams(providerType, factor.Params as IDictionary<string, object>)
                 : ORM.AnonTypeToParams(providerType, factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
-            sb.AppendFormat("select count(0) from {0}", factor.TableName);
+            sb.AppendFormat("select count(0) from {1}{0}{2}", factor.TableName, l, r);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);
@@ -269,16 +275,16 @@ namespace Loogn.OrmLite
             if (providerType == OrmLiteProviderType.SqlServer)
             {
                 sb.AppendFormat("select * from (");
-                sb.AppendFormat(" select top {0} {1},ROW_NUMBER() over(order by {2}) rowid from {3}", factor.PageIndex * factor.PageSize, factor.Fields, factor.OrderBy, factor.TableName);
+                sb.AppendFormat(" select top {0} {1},ROW_NUMBER() over(order by {2}) rowid from [{3}]", factor.PageIndex * factor.PageSize, factor.Fields, factor.OrderBy, factor.TableName);
                 if (!string.IsNullOrEmpty(factor.Conditions))
                 {
                     sb.AppendFormat(" where {0}", factor.Conditions);
                 }
                 sb.AppendFormat(")t where t.rowid>{0}", (factor.PageIndex - 1) * factor.PageSize);
             }
-            else if (providerType == OrmLiteProviderType.MySql || providerType== OrmLiteProviderType.Sqlite)
+            else if (providerType == OrmLiteProviderType.MySql || providerType == OrmLiteProviderType.Sqlite)
             {
-                sb.AppendFormat("select {0} from {1}", factor.Fields, factor.TableName);
+                sb.AppendFormat("select {0} from `{1}`", factor.Fields, factor.TableName);
                 if (!string.IsNullOrEmpty(factor.Conditions))
                 {
                     sb.AppendFormat(" where {0}", factor.Conditions);
@@ -394,13 +400,14 @@ namespace Loogn.OrmLite
         {
             tableName = SqlInjection.Filter(tableName);
             var providerType = dbConn.GetProviderType();
+            var l = SqlCmd.L(providerType);
+            var r = SqlCmd.R(providerType);
             var isnull = "ISNULL";
             if (providerType == OrmLiteProviderType.MySql)
             {
                 isnull = "IFNULL";
             }
-
-            var sql = string.Format("SELECT {2}(MAX({0}), 0) FROM {1}", field, tableName, isnull);
+            var sql = string.Format("SELECT {2}(MAX({3}{0}{4}), 0) FROM {3}{1}{4}", field, tableName, isnull, l, r);
             return ScalarOriginal<T>(dbConn, CommandType.Text, sql);
         }
 

@@ -9,6 +9,7 @@ using Loogn.OrmLite;
 using CRL.LambdaQuery;
 using Loogn.Utils;
 using ServiceStack.OrmLite;
+using SqlSugar;
 
 namespace PerformanceTesting
 {
@@ -27,7 +28,9 @@ namespace PerformanceTesting
             Loogn(2);
             CRL(2);
             ServiceStack(2);
-            //return;
+
+            SqlSugar(2);
+
 
             Console.WriteLine("Mapping count: " + limit);
             CodeTimer.Initialize();
@@ -67,12 +70,15 @@ namespace PerformanceTesting
                 CRL(limit);
             });
 
+            CodeTimer.Time("Mapping-SqlSugar", 1, () =>
+            {
+                SqlSugar(limit);
+            });
+
             CodeTimer.Time("Mapping-ServiceStack", 1, () =>
             {
                 ServiceStack(limit);
             });
-
-
         }
 
         static void Chloe(int limit)
@@ -143,6 +149,14 @@ namespace PerformanceTesting
             using (var db = dbFactory.Open())
             {
                 var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
+            }
+        }
+
+        static void SqlSugar(int limit)
+        {
+            using (SqlSugarClient db = new SqlSugarClient(Utils.ConnStr))
+            {
+                var list = db.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
             }
         }
     }

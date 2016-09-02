@@ -4,6 +4,7 @@ using Dapper;
 using Loogn.OrmLite;
 using Loogn.Utils;
 using ServiceStack.OrmLite;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -71,6 +72,13 @@ namespace PerformanceTesting
             {
                 CRL(limit);
             });
+
+            
+            CodeTimer.Time("SingleContextQuery-SqlSugar", 1, () =>
+            {
+                SqlSugar(limit);
+            });
+
 
             CodeTimer.Time("SingleContextQuery-ServiceStack", 1, () =>
             {
@@ -155,6 +163,19 @@ namespace PerformanceTesting
             for (int i = 0; i < queryCount; i++)
             {
                 var list = query.ToList();
+            }
+        }
+
+        static void SqlSugar(int limit)
+        {
+            var db = new SqlSugarClient(Utils.ConnStr);
+            using (db)
+            {
+                for (int i = 0; i < queryCount; i++)
+                {
+                    var list = db.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity   where ID>{1}", limit, minId));
+                }
+
             }
         }
 

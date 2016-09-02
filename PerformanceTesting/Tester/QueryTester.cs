@@ -10,6 +10,7 @@ using Dapper;
 using Loogn.OrmLite;
 using System.Data.SqlClient;
 using ServiceStack.OrmLite;
+using SqlSugar;
 
 namespace PerformanceTesting
 {
@@ -29,7 +30,7 @@ namespace PerformanceTesting
             Loogn(2);
             CRL(2);
             ServiceStack(2);
-            
+
 
             Console.WriteLine(string.Format("Query count:{0},Limit {1} ", queryCount, limit));
             CodeTimer.Initialize();
@@ -68,6 +69,12 @@ namespace PerformanceTesting
             {
                 CRL(limit);
             });
+
+            CodeTimer.Time("Query-SqlSugar", queryCount, () =>
+            {
+                SqlSugar(limit);
+            });
+            
             CodeTimer.Time("Query-ServiceStack", queryCount, () =>
             {
                 ServiceStack(limit);
@@ -129,6 +136,16 @@ namespace PerformanceTesting
             query.Where(x => x.Id > minId);
             query.Top(limit);
             var list = query.ToList();
+        }
+
+
+        static void SqlSugar(int limit)
+        {
+            var db = new SqlSugarClient(Utils.ConnStr);
+            using (db)
+            {
+                var list = db.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
+            }
         }
 
         static void ServiceStack(int limit)

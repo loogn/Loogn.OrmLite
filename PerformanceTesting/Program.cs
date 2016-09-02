@@ -24,7 +24,7 @@ namespace PerformanceTesting
 
             //MappingTester.Test();
             //QueryTester.Test();
-            //SingleContextQueryTester.Test();
+            SingleContextQueryTester.Test();
         }
     }
 }

@@ -58,7 +58,15 @@ namespace Loogn.OrmLite
         {
             using (var db = openDb())
             {
-                return db.Insert(table, anonType, selectIdentity);
+                if (anonType is IDictionary<string, object>)
+                {
+                    return db.Insert(table, (IDictionary<string, object>)anonType, selectIdentity);
+                }
+                else
+                {
+                    return db.Insert(table, anonType, selectIdentity);
+                }
+
             }
         }
 
@@ -119,7 +127,7 @@ namespace Loogn.OrmLite
                 return db.UpdateAnonymous<T>(anonymous);
             }
         }
-        
+
         public int Update(params T[] objs)
         {
             return UpdateAll(objs);

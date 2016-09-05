@@ -183,14 +183,29 @@ namespace Loogn.OrmLite
             StringBuilder sbParams = new StringBuilder(") values (", OrmLite.SqlStringBuilderCapacity);
             var ps = new List<DbParameter>();
             var provider = OrmLite.GetProvider(type);
-            foreach (var property in propertys)
+            if (anonType is IDictionary<string, object>)
             {
-                var fieldName = property.Name;
-                var val = property.GetValue(anonType, null);
-                sbsql.AppendFormat("{1}{0}{2},", fieldName, l, r);
-                sbParams.AppendFormat("@{0},", fieldName);
-                ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
+                foreach (var kv in anonType as IDictionary<string, object>)
+                {
+                    var fieldName = kv.Key;
+                    var val = kv.Value;
+                    sbsql.AppendFormat("{1}{0}{2},", fieldName, l, r);
+                    sbParams.AppendFormat("@{0},", fieldName);
+                    ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
+                }
             }
+            else
+            {
+                foreach (var property in propertys)
+                {
+                    var fieldName = property.Name;
+                    var val = property.GetValue(anonType, null);
+                    sbsql.AppendFormat("{1}{0}{2},", fieldName, l, r);
+                    sbParams.AppendFormat("@{0},", fieldName);
+                    ps.Add(provider.CreateParameter("@" + fieldName, val ?? DBNull.Value));
+                }
+            }
+
             if (ps.Count == 0)
             {
                 throw new ArgumentException("model里没有字段，无法插入");

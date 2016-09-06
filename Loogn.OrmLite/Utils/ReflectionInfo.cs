@@ -76,7 +76,6 @@ namespace Loogn.OrmLite
 
             Properties = modelType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             InitInfo();
-            // PrimaryKey = primaryKey;
         }
 
         private void InitInfo()

@@ -13,7 +13,7 @@ namespace Loogn.OrmLite
     /// <summary>
     /// ORM映射类，从reader到模型
     /// </summary>
-    public static class ORM
+    public static class Mapping
     {
         /// <summary>
         /// 用reader填充T类型的对象，并返回
@@ -88,11 +88,6 @@ namespace Loogn.OrmLite
             return list;
         }
 
-        static void FillRaw(params Task[] tasks)
-        {
-            Task.WaitAll(tasks);
-        }
-
         internal static T ConvertToType<T>(object obj)
         {
             if (obj == null || obj is DBNull)
@@ -112,16 +107,13 @@ namespace Loogn.OrmLite
             }
         }
 
-        internal static List<MyTuple<T1, T2>> ReaderToTupleList<T1, T2>(DbDataReader reader)
+        internal static List<Tuple<T1, T2>> ReaderToTupleList<T1, T2>(DbDataReader reader)
         {
-            if (!reader.HasRows) return new List<MyTuple<T1, T2>>();
-            var list = new List<MyTuple<T1, T2>>();
+            if (!reader.HasRows) return new List<Tuple<T1, T2>>();
+            var list = new List<Tuple<T1, T2>>();
             while (reader.Read())
             {
-                var tuple = new MyTuple<T1, T2>();
-                tuple.Item1 = (T1)reader[0];
-                tuple.Item2 = (T2)reader[1];
-                list.Add(tuple);
+                list.Add(new Tuple<T1, T2>((T1)reader[0], (T2)reader[1]));
             }
             return list;
         }
@@ -186,158 +178,6 @@ namespace Loogn.OrmLite
             return list;
         }
 
-        private static void ReaderToJson(DbDataReader reader, StringBuilder result)
-        {
-            result.Append("{");
-            for (int i = 0; i < reader.FieldCount; i++)
-            {
-                var val = reader.GetValue(i);
-                if (val is DBNull)
-                {
-                    result.AppendFormat("\"{0}\":null", reader.GetName(i));
-                }
-                else
-                {
-                    var type = val.GetType();
-                    if (type == typeof(DateTime) || type == typeof(string))
-                    {
-                        result.AppendFormat("\"{0}\":\"{1}\"", reader.GetName(i), val.ToString());
-                    }
-                    else if (type == typeof(bool))
-                    {
-                        result.AppendFormat("\"{0}\":{1}", reader.GetName(i), true.Equals(val) ? "true" : "false");
-                    }
-                    else
-                    {
-                        result.AppendFormat("\"{0}\":{1}", reader.GetName(i), val.ToString());
-                    }
-                }
-
-                if (i < reader.FieldCount - 1)
-                {
-                    result.Append(",");
-                }
-            }
-            result.Append("}");
-        }
-
-        public static string ReaderToJsonArray(DbDataReader reader)
-        {
-            StringBuilder json = new StringBuilder(500);
-            while (reader.Read())
-            {
-                ReaderToJson(reader, json);
-                json.Append(",");
-            }
-            if (json.Length == 0)
-            {
-                json.Append("[]");
-            }
-            else
-            {
-                json.Remove(json.Length - 1, 1);
-                json.Insert(0, "[");
-                json.Append("]");
-            }
-            return json.ToString();
-        }
-
-        public static string ReaderToJsonObject(DbDataReader reader)
-        {
-            if (reader.Read())
-            {
-                StringBuilder sb = new StringBuilder(100);
-                ReaderToJson(reader, sb);
-                return sb.ToString();
-            }
-            else
-            {
-                return "{}";
-            }
-        }
-
-        public static DbParameter[] AnonTypeToParams(OrmLiteProviderType type, object anonType)
-        {
-            if (anonType != null)
-            {
-                var provider = OrmLite.GetProvider(type);
-                var props = ReflectionHelper.GetCachedProperties(anonType.GetType());
-                var ps = new DbParameter[props.Length];
-                for (int i = 0, len = props.Length; i < len; i++)
-                {
-                    var prop = props[i];
-                    var p = provider.CreateParameter("@" + prop.Name, prop.GetValue(anonType, null));
-
-                    ps[i] = p;
-                }
-                return ps;
-            }
-            return null;
-        }
-
-        public static DbParameter[] AnonTypeToParams(OrmLiteProviderType type, object anonType, StringBuilder appendWhere)
-        {
-            var props = ReflectionHelper.GetCachedProperties(anonType.GetType());
-
-            if (props.Length > 0)
-            {
-                var provider = OrmLite.GetProvider(type);
-
-                DbParameter[] ps = new DbParameter[props.Length];
-                int i = 0;
-                appendWhere.Append(" where ");
-                foreach (var prop in props)
-                {
-                    var p = provider.CreateParameter("@" + prop.Name, prop.GetValue(anonType, null));
-                    ps[i++] = p;
-                    appendWhere.AppendFormat(" {0}=@{0} and ", prop.Name);
-                }
-                appendWhere.Length -= 4;
-                return ps;
-            }
-            return null;
-        }
-
-        public static DbParameter[] DictionaryToParams(OrmLiteProviderType type, IDictionary<string, object> dict)
-        {
-            if (dict != null)
-            {
-                var provider = OrmLite.GetProvider(type);
-
-                DbParameter[] ps = new DbParameter[dict.Count];
-                int i = 0;
-                foreach (var kv in dict)
-                {
-                    var p = provider.CreateParameter("@" + kv.Key, kv.Value);
-                    ps[i++] = p;
-                }
-                return ps;
-            }
-            return null;
-        }
-
-        public static DbParameter[] DictionaryToParams(OrmLiteProviderType type, IDictionary<string, object> conditions, StringBuilder appendWhere)
-        {
-            if (conditions != null && conditions.Count > 0)
-            {
-                var provider = OrmLite.GetProvider(type);
-
-                DbParameter[] ps = new DbParameter[conditions.Count];
-                int i = 0;
-                appendWhere.Append(" where ");
-                foreach (var kv in conditions)
-                {
-                    var p = provider.CreateParameter("@" + kv.Key, kv.Value);
-
-                    ps[i++] = p;
-                    appendWhere.AppendFormat(" {0}=@{0} and ", kv.Key);
-                }
-                appendWhere.Length -= 4;
-                return ps;
-            }
-            return null;
-        }
-
         public static Dictionary<K, List<V>> ReaderToLookup<K, V>(DbDataReader reader)
         {
             if (!reader.HasRows) return new Dictionary<K, List<V>>();
@@ -368,17 +208,4 @@ namespace Loogn.OrmLite
             return dict;
         }
     }
-
-    internal class MyTuple<T1, T2>
-    {
-        public T1 Item1 { get; set; }
-        public T2 Item2 { get; set; }
-    }
-
-    internal enum PartSqlType
-    {
-        Select,
-        Count
-    }
-
 }

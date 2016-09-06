@@ -17,7 +17,7 @@ namespace Loogn.OrmLite
         Func<DbConnection> openDb;
         public OrmLiteOperator(Func<DbConnection> connFunc)
         {
-            this.openDb = connFunc;
+            openDb = connFunc;
         }
 
         public DbCommand Proc(string name, object inParams = null, bool execute = false)
@@ -32,7 +32,7 @@ namespace Loogn.OrmLite
         {
             using (var db = openDb())
             {
-                return db.ExecuteNonQuery(System.Data.CommandType.Text, sql, ORM.DictionaryToParams(db.GetProviderType(), ps));
+                return db.ExecuteNonQuery(System.Data.CommandType.Text, sql, BaseCmd.GetCmd(db.GetProviderType()).DictionaryToParams(ps));
             }
         }
 

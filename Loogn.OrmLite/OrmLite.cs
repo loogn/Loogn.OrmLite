@@ -35,6 +35,7 @@ namespace Loogn.OrmLite
 
         static OrmLite()
         {
+            //默认注册sqlserver
             RegisterProvider(OrmLiteProviderType.SqlServer, SqlServerOrmLiteProvider.Instance);
         }
 
@@ -70,39 +71,5 @@ namespace Loogn.OrmLite
             get { return updateIgnoreFields; }
         }
 
-
-
-        public static Action<int, int, string> LogGeneratedSql;
-        public static readonly Action<int, int, string> ConsoleLogGeneratedSql = new Action<int, int, string>((capacity, length, sql) =>
-        {
-            Console.WriteLine("Capacity:{0}", capacity);
-            Console.WriteLine("Sql  Length:{0}", length);
-            Console.WriteLine("Sql Content:{0}", sql);
-        });
-
-
-
-        public static int SqlStringBuilderCapacity = 100;
-        public static void SetSqlStringBuilderCapacity(int capacity, bool enforce = false)
-        {
-            if (enforce)
-            {
-                SqlStringBuilderCapacity = capacity;
-            }
-            else
-            {
-                if (capacity > SqlStringBuilderCapacity)
-                {
-                    SqlStringBuilderCapacity = capacity;
-                }
-            }
-        }
-
-        public static void SetSqlStringBuilderCapacity(string sql, bool enforce = false)
-        {
-            var capacity = sql.Length;
-            SetSqlStringBuilderCapacity(capacity, enforce);
-            LogGeneratedSql?.BeginInvoke(SqlStringBuilderCapacity, capacity, sql, null, null);
-        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Loogn.OrmLite
@@ -50,7 +51,7 @@ namespace Loogn.OrmLite
         private Dictionary<string, Accessor> accessorDict;
         public Dictionary<PropertyInfo, OrmLiteFieldAttribute> FieldAttrDict { get; private set; }
         public PropertyInfo[] Properties { get; }
-
+        public Func<TObject> NewInstance;
         public ReflectionInfo(Type modelType)
         {
             var tableAttr = modelType.GetCustomAttributes(typeof(OrmLiteTableAttribute), true).FirstOrDefault() as OrmLiteTableAttribute;
@@ -75,6 +76,10 @@ namespace Loogn.OrmLite
             }
 
             Properties = modelType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+
+            //构造委托
+            var constructor = modelType.GetConstructor(Type.EmptyTypes);
+            NewInstance = Expression.Lambda<Func<TObject>>(Expression.New(constructor)).Compile();
             InitInfo();
         }
 
@@ -211,6 +216,10 @@ namespace Loogn.OrmLite
             }
         }
 
+
+
+
+
         public Accessor GetAccessor(string fieldName)
         {
             Accessor accessor;
@@ -220,6 +229,20 @@ namespace Loogn.OrmLite
             }
             return new EmptyAccessor();
         }
+
+
+
+        //Func<object> CreateObjectGenerator(ConstructorInfo constructor)
+        //{
+        //    Func<object> ret = null;
+        //    ParameterInfo[] parameters = constructor.GetParameters();
+        //    List<Expression> arguments = new List<Expression>(parameters.Length);
+        //    var body = Expression.New(constructor, arguments);
+        //    ret = Expression.Lambda<Func<object>>(body).Compile();
+        //    return ret;
+        //}
+
+
 
         public OrmLiteFieldAttribute GetFieldAttr(PropertyInfo prop)
         {

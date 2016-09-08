@@ -25,8 +25,10 @@ namespace Loogn.OrmLite
         {
             if (reader.Read())
             {
-                T obj = Activator.CreateInstance<T>();
                 var refInfo = ReflectionHelper.GetInfo<T>();
+
+                T obj = refInfo.NewInstance(); //Activator.CreateInstance<T>();
+
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
                     var accessor = refInfo.GetAccessor(reader.GetName(i));
@@ -62,7 +64,7 @@ namespace Loogn.OrmLite
             ReflectionInfo<T>.Accessor[] accessorArray = new ReflectionInfo<T>.Accessor[length];
             while (reader.Read())
             {
-                T obj = Activator.CreateInstance<T>();
+                T obj = refInfo.NewInstance();// Activator.CreateInstance<T>();
 
                 if (first)
                 {

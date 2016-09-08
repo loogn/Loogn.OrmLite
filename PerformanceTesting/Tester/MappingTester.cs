@@ -131,7 +131,6 @@ namespace PerformanceTesting
             using (var db = Utils.CreateConnection())
             {
                 var list = db.SelectFmt<TestEntity>("select top {0} * from TestEntity", limit);
-
             }
         }
 

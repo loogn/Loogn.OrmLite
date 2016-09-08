@@ -16,6 +16,8 @@ namespace PerformanceTesting
             {
                 return new CoreHelper.SqlHelper(Utils.ConnStr);
             };
+            CRL.SettingConfig.AutoTrackingModel = false;
+
         }
 
         static void Main(string[] args)

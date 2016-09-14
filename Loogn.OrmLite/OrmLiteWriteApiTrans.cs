@@ -111,8 +111,6 @@ namespace Loogn.OrmLite
 
         private static int InsertTrans<T>(this DbTransaction dbTrans, OrmLiteProviderType type, T obj)
         {
-
-
             var refInfo = ReflectionHelper.GetInfo<T>();
 
             var objtype = typeof(T);
@@ -178,7 +176,7 @@ namespace Loogn.OrmLite
         {
             var propertys = ReflectionHelper.GetCachedProperties(anonType.GetType());
             var theCmd = BaseCmd.GetCmd(dbTrans.GetProviderType());
-
+            
             var l = theCmd.L();
             var r = theCmd.R();
             StringBuilder sbsql = new StringBuilder(50);

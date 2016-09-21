@@ -19,7 +19,7 @@ namespace Loogn.OrmLite
 
         public static List<T> SelectOriginal<T>(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
                 return Mapping.ReaderToObjectList<T>(reader);
@@ -29,7 +29,7 @@ namespace Loogn.OrmLite
         public static List<dynamic> SelectOriginal(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
 
-           
+
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
                 return Mapping.ReaderToDynamicList(reader);
@@ -38,7 +38,7 @@ namespace Loogn.OrmLite
 
         public static T SingleOriginal<T>(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
                 return Mapping.ReaderToObject<T>(reader);
@@ -47,7 +47,7 @@ namespace Loogn.OrmLite
 
         public static dynamic SingleOriginal(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
                 return Mapping.ReaderToDynamic(reader);
@@ -56,14 +56,14 @@ namespace Loogn.OrmLite
 
         public static T ScalarOriginal<T>(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             var obj = SqlHelper.ExecuteScalar(dbTrans, commandType, commandText, ps);
             return Mapping.ConvertToType<T>(obj);
         }
 
         public static List<T> ColumnOriginal<T>(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
                 return Mapping.ReaderToColumnList<T>(reader);
@@ -72,7 +72,7 @@ namespace Loogn.OrmLite
 
         public static HashSet<T> ColumnDistinctOriginal<T>(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
                 return Mapping.ReaderToColumnSet<T>(reader);
@@ -81,7 +81,7 @@ namespace Loogn.OrmLite
 
         public static Dictionary<K, List<V>> LookupOriginal<K, V>(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
                 return Mapping.ReaderToLookup<K, V>(reader);
@@ -90,7 +90,7 @@ namespace Loogn.OrmLite
 
         public static Dictionary<K, V> DictionaryOriginal<K, V>(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
                 return Mapping.ReaderToDictionary<K, V>(reader);
@@ -99,7 +99,7 @@ namespace Loogn.OrmLite
 
         public static int CountOriginal(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             var obj = SqlHelper.ExecuteScalar(dbTrans, commandType, commandText, ps);
             return Mapping.ConvertToType<int>(obj);
         }
@@ -270,6 +270,29 @@ namespace Loogn.OrmLite
             var list = SelectOriginal(dbTrans, CommandType.Text, sql, ps);
             return list;
         }
+
+        public static OrmLitePageResult<T> Page<T>(this DbTransaction dbTrans, OrmLitePageFactor factor)
+        {
+            int totalCount;
+            OrmLitePageResult<T> pageInfo = new OrmLitePageResult<T>();
+            pageInfo.List = dbTrans.SelectPage<T>(factor, out totalCount);
+            pageInfo.PageIndex = factor.PageIndex;
+            pageInfo.PageSize = factor.PageSize;
+            pageInfo.TotalCount = totalCount;
+            return pageInfo;
+        }
+
+        public static OrmLitePageResult<dynamic> Page(this DbTransaction dbTrans, OrmLitePageFactor factor)
+        {
+            int totalCount;
+            OrmLitePageResult<dynamic> pageInfo = new OrmLitePageResult<dynamic>();
+            pageInfo.List = dbTrans.SelectPage(factor, out totalCount);
+            pageInfo.PageIndex = factor.PageIndex;
+            pageInfo.PageSize = factor.PageSize;
+            pageInfo.TotalCount = totalCount;
+            return pageInfo;
+        }
+
         #endregion
 
         #region Single

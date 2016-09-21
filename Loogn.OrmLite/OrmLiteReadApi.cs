@@ -271,7 +271,28 @@ namespace Loogn.OrmLite
             var list = SelectOriginal<dynamic>(dbConn, CommandType.Text, sql, ps);
             return list;
         }
-        
+
+        public static OrmLitePageResult<T> Page<T>(this DbConnection dbConn, OrmLitePageFactor factor)
+        {
+            int totalCount;
+            OrmLitePageResult<T> pageInfo = new OrmLitePageResult<T>();
+            pageInfo.List = dbConn.SelectPage<T>(factor, out totalCount);
+            pageInfo.PageIndex = factor.PageIndex;
+            pageInfo.PageSize = factor.PageSize;
+            pageInfo.TotalCount = totalCount;
+            return pageInfo;
+        }
+
+        public static OrmLitePageResult<dynamic> Page(this DbConnection dbConn, OrmLitePageFactor factor)
+        {
+            int totalCount;
+            OrmLitePageResult<dynamic> pageInfo = new OrmLitePageResult<dynamic>();
+            pageInfo.List = dbConn.SelectPage(factor, out totalCount);
+            pageInfo.PageIndex = factor.PageIndex;
+            pageInfo.PageSize = factor.PageSize;
+            pageInfo.TotalCount = totalCount;
+            return pageInfo;
+        }
         #endregion
 
         #region Single

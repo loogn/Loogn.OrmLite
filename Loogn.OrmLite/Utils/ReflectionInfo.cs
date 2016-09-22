@@ -539,7 +539,15 @@ namespace Loogn.OrmLite
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, Convert.ToByte(value));
+                if (value is byte)
+                {
+                    setter(obj, (byte)value);
+                }
+                else
+                {
+                    setter(obj, Convert.ToByte(value));
+                }
+
             }
             protected override object DoGet(TObject obj)
             {
@@ -558,7 +566,14 @@ namespace Loogn.OrmLite
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, Convert.ToByte(value));
+                if (value is byte)
+                {
+                    setter(obj, (byte)value);
+                }
+                else
+                {
+                    setter(obj, Convert.ToByte(value));
+                }
             }
             protected override object DoGet(TObject obj)
             {
@@ -652,17 +667,14 @@ namespace Loogn.OrmLite
             }
             protected override void DoSet(TObject obj, object value)
             {
-                bool theValue = false;
-                if (value.GetType() == typeof(bool))
+                if (value is bool)
                 {
-                    theValue = (bool)value;
+                    setter(obj, (bool)value);
                 }
                 else
                 {
-                    var intValue = Convert.ToInt32(value);
-                    theValue = intValue > 0;
+                    setter(obj, Convert.ToUInt16(value) > 0);
                 }
-                setter(obj, theValue);
             }
             protected override object DoGet(TObject obj)
             {
@@ -681,17 +693,14 @@ namespace Loogn.OrmLite
             }
             protected override void DoSet(TObject obj, object value)
             {
-                bool theValue = false;
-                if (value.GetType() == typeof(bool))
+                if (value is bool)
                 {
-                    theValue = (bool)value;
+                    setter(obj, (bool)value);
                 }
                 else
                 {
-                    var intValue = Convert.ToInt32(value);
-                    theValue = intValue > 0;
+                    setter(obj, Convert.ToUInt16(value) > 0);
                 }
-                setter(obj, theValue);
             }
             protected override object DoGet(TObject obj)
             {

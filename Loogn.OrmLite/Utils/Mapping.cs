@@ -28,13 +28,16 @@ namespace Loogn.OrmLite
                 var refInfo = ReflectionHelper.GetInfo<T>();
 
                 T obj = refInfo.NewInstance(); //Activator.CreateInstance<T>();
+                var length = reader.FieldCount;
+                object[] values = new object[length];
+                reader.GetValues(values);
 
-                for (int i = 0; i < reader.FieldCount; i++)
+                for (int i = 0; i < length; i++)
                 {
                     var accessor = refInfo.GetAccessor(reader.GetName(i));
                     if (accessor != null)
                     {
-                        accessor.Set(obj, reader.GetValue(i));
+                        accessor.Set(obj, values[i]);
                     }
                 }
                 return obj;
@@ -62,10 +65,11 @@ namespace Loogn.OrmLite
             var first = true;
             int length = reader.FieldCount;
             ReflectionInfo<T>.Accessor[] accessorArray = new ReflectionInfo<T>.Accessor[length];
+            object[] values = new object[length];
             while (reader.Read())
             {
+                reader.GetValues(values);
                 T obj = refInfo.NewInstance();// Activator.CreateInstance<T>();
-
                 if (first)
                 {
                     for (int i = 0; i < length; i++)
@@ -73,7 +77,8 @@ namespace Loogn.OrmLite
                         var fieldName = reader.GetName(i);
                         var accessor = refInfo.GetAccessor(fieldName);
                         accessorArray[i] = accessor;
-                        accessor.Set(obj, reader[i]);
+
+                        accessor.Set(obj, values[i]);
                     }
                     first = false;
                 }
@@ -81,7 +86,7 @@ namespace Loogn.OrmLite
                 {
                     for (var i = 0; i < length; i++)
                     {
-                        accessorArray[i].Set(obj, reader[i]);
+                        accessorArray[i].Set(obj, values[i]);
                     }
                 }
                 list.Add(obj);
@@ -115,7 +120,9 @@ namespace Loogn.OrmLite
             var list = new List<Tuple<T1, T2>>();
             while (reader.Read())
             {
-                list.Add(new Tuple<T1, T2>((T1)reader[0], (T2)reader[1]));
+                var values = new object[2];
+                reader.GetValues(values);
+                list.Add(new Tuple<T1, T2>((T1)values[0], (T2)values[1]));
             }
             return list;
         }

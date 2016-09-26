@@ -44,23 +44,23 @@ namespace Loogn.OrmLite
 
         public static int ExecuteNonQuery(this DbConnection dbConn, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             return SqlHelper.ExecuteNonQuery(dbConn, commandType, commandText, ps);
         }
         public static int ExecuteNonQuery(this DbConnection dbConn, CommandType commandType, string commandText, IDictionary<string, object> parameters)
         {
-           
+
             return SqlHelper.ExecuteNonQuery(dbConn, commandType, commandText, BaseCmd.GetCmd(dbConn.GetProviderType()).DictionaryToParams(parameters));
         }
 
         public static object ExecuteScalar(this DbConnection dbConn, CommandType commandType, string commandText, params DbParameter[] ps)
         {
-           
+
             return SqlHelper.ExecuteScalar(dbConn, commandType, commandText, ps);
         }
         public static object ExecuteScalar(this DbConnection dbConn, CommandType commandType, string commandText, IDictionary<string, object> parameters)
         {
-           
+
             return SqlHelper.ExecuteNonQuery(dbConn, commandType, commandText, BaseCmd.GetCmd(dbConn.GetProviderType()).DictionaryToParams(parameters));
         }
 
@@ -275,9 +275,6 @@ namespace Loogn.OrmLite
             int c = ExecuteNonQuery(dbConn, CommandType.Text, cmd.CmdText, cmd.Params);
             return c;
         }
-
-
-
 
         public static int UpdateById(this DbConnection dbConn, string tableName, IDictionary<string, object> updateFields, object id, string idname = OrmLite.KeyName)
         {

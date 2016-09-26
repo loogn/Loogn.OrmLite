@@ -54,7 +54,7 @@ namespace Loogn.OrmLite
         public Func<TObject> NewInstance;
         public ReflectionInfo(Type modelType)
         {
-            var tableAttr = modelType.GetCustomAttributes(typeof(OrmLiteTableAttribute), true).FirstOrDefault() as OrmLiteTableAttribute;
+            var tableAttr = modelType.GetCustomAttributes(PrimitiveTypes.OrmLiteTable, true).FirstOrDefault() as OrmLiteTableAttribute;
             if (tableAttr != null && tableAttr.Name != null && tableAttr.Name.Length != 0)
             {
                 TableName = tableAttr.Name;
@@ -97,113 +97,113 @@ namespace Loogn.OrmLite
                 {
                     propType = propType.GetEnumUnderlyingType();
                 }
-                if (typeof(string) == propType)
+                if (PrimitiveTypes.String == propType)
                 {
                     accessor = new StringAccessor(prop);
                 }
-                else if (typeof(int) == propType)
+                else if (PrimitiveTypes.Int32 == propType)
                 {
                     accessor = new IntAccessor(prop);
                 }
-                else if (typeof(int?) == propType)
+                else if (PrimitiveTypes.NullableInt32 == propType)
                 {
                     accessor = new IntNullableAccessor(prop);
                 }
-                else if (typeof(DateTime) == propType)
+                else if (PrimitiveTypes.DateTime == propType)
                 {
                     accessor = new DateTimeAccessor(prop);
                 }
-                else if (typeof(DateTime?) == propType)
+                else if (PrimitiveTypes.NullableDateTime == propType)
                 {
                     accessor = new DateTimeNullableAccessor(prop);
                 }
-                else if (typeof(long) == propType)
+                else if (PrimitiveTypes.Int64 == propType)
                 {
                     accessor = new LongAccessor(prop);
                 }
-                else if (typeof(long?) == propType)
+                else if (PrimitiveTypes.NullableInt64 == propType)
                 {
                     accessor = new LongNullableAccessor(prop);
                 }
-                else if (typeof(float) == propType)
+                else if (PrimitiveTypes.Single == propType)
                 {
                     accessor = new FloatAccessor(prop);
                 }
-                else if (typeof(float?) == propType)
+                else if (PrimitiveTypes.NullableSingle == propType)
                 {
                     accessor = new FloatNullableAccessor(prop);
                 }
-                else if (typeof(double) == propType)
+                else if (PrimitiveTypes.Double == propType)
                 {
                     accessor = new DoubleAccessor(prop);
                 }
-                else if (typeof(double?) == propType)
+                else if (PrimitiveTypes.NullableDouble == propType)
                 {
                     accessor = new DoubleNullableAccessor(prop);
                 }
-                else if (typeof(Guid) == propType)
+                else if (PrimitiveTypes.Guid == propType)
                 {
                     accessor = new GuidAccessor(prop);
                 }
-                else if (typeof(Guid?) == propType)
+                else if (PrimitiveTypes.NullableGuid == propType)
                 {
                     accessor = new GuidNullableAccessor(prop);
                 }
-                else if (typeof(short) == propType)
+                else if (PrimitiveTypes.Int16 == propType)
                 {
                     accessor = new ShortAccessor(prop);
                 }
-                else if (typeof(short?) == propType)
+                else if (PrimitiveTypes.NullableInt16 == propType)
                 {
                     accessor = new ShortNullableAccessor(prop);
                 }
-                else if (typeof(byte) == propType)
+                else if (PrimitiveTypes.Byte == propType)
                 {
                     accessor = new ByteAccessor(prop);
                 }
-                else if (typeof(byte?) == propType)
+                else if (PrimitiveTypes.NullableByte == propType)
                 {
                     accessor = new ByteNullableAccessor(prop);
                 }
-                else if (typeof(char) == propType)
+                else if (PrimitiveTypes.Char == propType)
                 {
                     accessor = new CharAccessor(prop);
                 }
-                else if (typeof(char?) == propType)
+                else if (PrimitiveTypes.NullableChar == propType)
                 {
                     accessor = new CharNullableAccessor(prop);
                 }
-                else if (typeof(decimal) == propType)
+                else if (PrimitiveTypes.Decimal == propType)
                 {
                     accessor = new DecimalAccessor(prop);
                 }
-                else if (typeof(decimal?) == propType)
+                else if (PrimitiveTypes.NullableDecimal == propType)
                 {
                     accessor = new DecimalNullableAccessor(prop);
                 }
-                else if (typeof(byte[]) == propType)
+                else if (PrimitiveTypes.ByteArray == propType)
                 {
                     accessor = new ByteArrayAccessor(prop);
                 }
-                else if (typeof(bool) == propType)
+                else if (PrimitiveTypes.Bool == propType)
                 {
                     accessor = new BoolAccessor(prop);
                 }
-                else if (typeof(bool?) == propType)
+                else if (PrimitiveTypes.NullableBool == propType)
                 {
                     accessor = new BoolNullableAccessor(prop);
                 }
-                else if (typeof(TimeSpan) == propType)
+                else if (PrimitiveTypes.TimeSpan == propType)
                 {
                     accessor = new TimeSpanAccessor(prop);
                 }
-                else if (typeof(TimeSpan?) == propType)
+                else if (PrimitiveTypes.NullableTimeSpan == propType)
                 {
                     accessor = new TimeSpanNullableAccessor(prop);
                 }
                 accessorDict[propName] = accessor;
                 //自定义属性
-                var customerAttributes = prop.GetCustomAttributes(typeof(OrmLiteFieldAttribute), false);
+                var customerAttributes = prop.GetCustomAttributes(PrimitiveTypes.OrmLiteField, false);
                 if (customerAttributes == null || customerAttributes.Length == 0)
                 {
                     FieldAttrDict[prop] = null;

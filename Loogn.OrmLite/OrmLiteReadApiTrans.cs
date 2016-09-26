@@ -58,7 +58,7 @@ namespace Loogn.OrmLite
         {
 
             var obj = SqlHelper.ExecuteScalar(dbTrans, commandType, commandText, ps);
-            return Mapping.ConvertToType<T>(obj);
+            return Mapping.ConvertToPrimitiveType<T>(obj);
         }
 
         public static List<T> ColumnOriginal<T>(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
@@ -101,7 +101,7 @@ namespace Loogn.OrmLite
         {
 
             var obj = SqlHelper.ExecuteScalar(dbTrans, commandType, commandText, ps);
-            return Mapping.ConvertToType<int>(obj);
+            return Mapping.ConvertToPrimitiveType<int>(obj);
         }
 
         #endregion

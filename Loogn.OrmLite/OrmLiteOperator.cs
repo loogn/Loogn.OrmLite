@@ -8,6 +8,9 @@ using System.Data.Common;
 
 namespace Loogn.OrmLite
 {
+
+
+
     /// <summary>
     /// 便捷操作类
     /// </summary>

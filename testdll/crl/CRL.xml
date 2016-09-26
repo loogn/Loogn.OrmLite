@@ -1273,7 +1273,7 @@
             </summary>
             <param name="obj"></param>
         </member>
-        <member name="M:CRL.DBExtend.RelationDB.DBExtend.Page``1(CRL.LambdaQuery.LambdaQuery{``0})">
+        <member name="M:CRL.DBExtend.RelationDB.DBExtend.PageDynamic``1(CRL.LambdaQuery.LambdaQuery{``0})">
             <summary>
             动态对象分页
             </summary>
@@ -1763,7 +1763,7 @@
         </member>
         <member name="M:CRL.AbsDBExtend.Page``2(CRL.LambdaQuery.LambdaQuery{``0})">
             <summary>
-            获取分页
+            返回指定类型分页
             </summary>
             <typeparam name="TModel"></typeparam>
             <typeparam name="TResult"></typeparam>
@@ -1771,6 +1771,14 @@
             <returns></returns>
         </member>
         <member name="M:CRL.AbsDBExtend.Page``1(CRL.LambdaQuery.LambdaQuery{``0})">
+            <summary>
+            返回当前类型分页
+            </summary>
+            <typeparam name="TModel"></typeparam>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CRL.AbsDBExtend.PageDynamic``1(CRL.LambdaQuery.LambdaQuery{``0})">
             <summary>
             返回动态对象分页
             </summary>
@@ -2802,6 +2810,13 @@
             <param name="top"></param>
             <returns></returns>
         </member>
+        <member name="M:CRL.LambdaQuery.LambdaQuery`1.Take(System.Int32)">
+            <summary>
+            设置查询TOP
+            </summary>
+            <param name="top"></param>
+            <returns></returns>
+        </member>
         <member name="M:CRL.LambdaQuery.LambdaQuery`1.Expire(System.Int32)">
             <summary>
             投置缓存查询过期时间
@@ -3356,7 +3371,7 @@
             排序
             </summary>
         </member>
-        <member name="M:CRL.LambdaQuery.LambdaQueryBase.GetSelectField(System.Linq.Expressions.Expression,System.Boolean,System.Type[])">
+        <member name="M:CRL.LambdaQuery.LambdaQueryBase.GetSelectField(System.Boolean,System.Linq.Expressions.Expression,System.Boolean,System.Type[])">
             <summary>
             解析选择的字段
             </summary>
@@ -3689,6 +3704,11 @@
             创建表时的初始数据,可重写
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:CRL.IModel.BeginTracking">
+            <summary>
+            手动跟踪对象状态,使更新时能识别
+            </summary>
         </member>
         <member name="P:CRL.IModel.CheckRepeatedInsert">
             <summary>
@@ -4269,6 +4289,12 @@
         <member name="F:CRL.SettingConfig.CheckModelTableMaping">
             <summary>
             是否检测表结构,生产服务器可将此值设为FALSE
+            </summary>
+        </member>
+        <member name="F:CRL.SettingConfig.AutoTrackingModel">
+            <summary>
+            是否自动跟踪对象状态
+            为否则需要调用对象BeginTracking,使更新时能识别
             </summary>
         </member>
         <member name="T:CRL.Sharding.BaseProvider`1">

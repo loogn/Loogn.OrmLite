@@ -20,10 +20,11 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             
+
             return;
             OrmLite.RegisterProvider(OrmLiteProviderType.MySql, MySqlOrmLiteProvider.Instance);
-            
-         
+
+
 
 
             using (var db = new MySqlConnection(MySqlConnstr))
@@ -66,7 +67,7 @@ namespace ConsoleApplication1
                 //List<Person> list7 = db.Select<Person>("select ID,Name from Person where ID>@id limit 2", DictBuilder.Assign("id", 3));
                 ////select top 10 ID,Name from Person where ID>@id
 
-            
+
                 //List<Person> list8 = db.SelectWhere<Person>(new { ID = 2, Name = "loogn" });
                 //List<Person> list9 = db.SelectWhere<Person>(DictBuilder.Assign("ID", 2).Assign("Name", "p1"));
                 ////select * from Person where id=@ID and name=@Name

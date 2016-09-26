@@ -1,5 +1,6 @@
 ﻿using Chloe;
 using Chloe.SqlServer;
+using CRL;
 using Dapper;
 using Loogn.OrmLite;
 using Loogn.Utils;
@@ -24,10 +25,10 @@ namespace PerformanceTesting
         {
             queryCount = 1;
 
-            Chloe(2);
+            //Chloe(2);
             ChloeSql(2);
             Dapper(2);
-            EF(2);
+            //EF(2);
             EFSql(2);
             Loogn(2);
             CRL(2);
@@ -39,10 +40,10 @@ namespace PerformanceTesting
             CodeTimer.Initialize();
 
 
-            CodeTimer.Time("SingleContextQuery-Chloe", 1, () =>
-            {
-                Chloe(limit);
-            });
+            //CodeTimer.Time("SingleContextQuery-Chloe", 1, () =>
+            //{
+            //    Chloe(limit);
+            //});
 
             CodeTimer.Time("SingleContextQuery-ChloeSql", 1, () =>
             {
@@ -54,10 +55,10 @@ namespace PerformanceTesting
                 Dapper(limit);
             });
 
-            CodeTimer.Time("SingleContextQuery-EF", 1, () =>
-            {
-                EF(limit);
-            });
+            //CodeTimer.Time("SingleContextQuery-EF", 1, () =>
+            //{
+            //    EF(limit);
+            //});
             CodeTimer.Time("SingleContextQuery-EFSql", 1, () =>
             {
                 EFSql(limit);
@@ -73,7 +74,7 @@ namespace PerformanceTesting
                 CRL(limit);
             });
 
-            
+
             CodeTimer.Time("SingleContextQuery-SqlSugar", 1, () =>
             {
                 SqlSugar(limit);
@@ -156,13 +157,11 @@ namespace PerformanceTesting
 
         static void CRL(int limit)
         {
-            CRLProvider provider = new CRLProvider();
-            var query = provider.GetLambdaQuery();
-            query.Where(x => x.Id > minId);
-            query.Top(limit);
+            var dbContext = new CRL.DbContext(new CoreHelper.SqlHelper(Utils.ConnStr), new DBLocation() { ManageType = typeof(SingleContextQueryTester) });
+            var db = DBExtendFactory.CreateDBExtend(dbContext);
             for (int i = 0; i < queryCount; i++)
             {
-                var list = query.ToList();
+                var list = db.ExecList<testentity>(string.Format("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId));
             }
         }
 

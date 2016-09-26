@@ -95,7 +95,7 @@ namespace Loogn.OrmLite
             return list;
         }
 
-        internal static T ConvertToType<T>(object obj)
+        internal static T ConvertToPrimitiveType<T>(object obj)
         {
             if (obj == null || obj is DBNull)
             {
@@ -105,7 +105,8 @@ namespace Loogn.OrmLite
             {
                 var type = typeof(T);
                 object newobj = obj;
-                if (type == typeof(int))
+
+                if (type == PrimitiveTypes.Int32)
                 {
                     newobj = Convert.ToInt32(obj);
                 }
@@ -133,7 +134,7 @@ namespace Loogn.OrmLite
             List<T> list = new List<T>();
             while (reader.Read())
             {
-                list.Add(ConvertToType<T>(reader[0]));
+                list.Add(ConvertToPrimitiveType<T>(reader[0]));
             }
             return list;
         }
@@ -144,7 +145,7 @@ namespace Loogn.OrmLite
             HashSet<T> set = new HashSet<T>();
             while (reader.Read())
             {
-                set.Add(ConvertToType<T>(reader[0]));
+                set.Add(ConvertToPrimitiveType<T>(reader[0]));
             }
             return set;
         }

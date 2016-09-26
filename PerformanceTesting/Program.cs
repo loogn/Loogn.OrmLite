@@ -23,10 +23,9 @@ namespace PerformanceTesting
         static void Main(string[] args)
         {
             init();
-
-            MappingTester.Test();
+            //MappingTester.Test();
             //QueryTester.Test();
-            //SingleContextQueryTester.Test();
+            SingleContextQueryTester.Test();
         }
     }
 }

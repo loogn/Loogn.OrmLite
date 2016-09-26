@@ -109,74 +109,81 @@ namespace Loogn.OrmLite
             }
         }
 
+        //private static int InsertTrans<T>(this DbTransaction dbTrans, OrmLiteProviderType type, T obj)
+        //{
+        //    var refInfo = ReflectionHelper.GetInfo<T>();
+
+        //    var objtype = typeof(T);
+        //    var table = refInfo.TableName;
+        //    var propertys = refInfo.Properties;
+
+        //    var theCmd = BaseCmd.GetCmd(dbTrans.GetProviderType());
+
+        //    var l = theCmd.L();
+        //    var r = theCmd.R();
+
+        //    StringBuilder sbsql = new StringBuilder(50);
+        //    sbsql.AppendFormat("insert into {1}{0}{2} (", table, l, r);
+        //    StringBuilder sbParams = new StringBuilder(") values (", 50);
+        //    var ps = new List<DbParameter>();
+
+        //    foreach (var property in propertys)
+        //    {
+        //        var fieldName = property.Name;
+        //        var fieldAttr = refInfo.GetFieldAttr(property);
+        //        if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase))
+        //        {
+        //            if (fieldAttr == null || (!fieldAttr.InsertRequire))
+        //            {
+        //                continue;
+        //            }
+        //        }
+        //        if (fieldAttr == null || (!fieldAttr.InsertIgnore && !fieldAttr.Ignore))
+        //        {
+        //            var accessor = refInfo.GetAccessor(fieldName);
+        //            if (accessor == null) continue;
+
+        //            var val = accessor.Get(obj);
+        //            if (val == null)
+        //            {
+        //                if (property.PropertyType == PrimitiveTypes.String)
+        //                {
+        //                    continue;
+        //                }
+        //            }
+        //            if (property.PropertyType == PrimitiveTypes.DateTime && (DateTime)val == DateTime.MinValue)
+        //            {
+        //                continue;
+        //            }
+        //            sbsql.AppendFormat("{1}{0}{2},", fieldName, l, r);
+        //            sbParams.AppendFormat("@{0},", fieldName);
+        //            ps.Add(theCmd.CreateParameter("@" + fieldName, val ?? DBNull.Value));
+        //        }
+        //    }
+        //    if (ps.Count == 0)
+        //    {
+        //        throw new ArgumentException("model里没有字段，无法插入");
+        //    }
+        //    sbsql.Remove(sbsql.Length - 1, 1);
+        //    sbParams.Remove(sbParams.Length - 1, 1);
+        //    sbsql.Append(sbParams.ToString());
+        //    sbsql.Append(")");
+        //    var raw = ExecuteNonQuery(dbTrans, CommandType.Text, sbsql.ToString(), ps.ToArray());
+        //    return raw;
+        //}
+
         private static int InsertTrans<T>(this DbTransaction dbTrans, OrmLiteProviderType type, T obj)
         {
-            var refInfo = ReflectionHelper.GetInfo<T>();
-
-            var objtype = typeof(T);
-            var table = refInfo.TableName;
-            var propertys = refInfo.Properties;
-
             var theCmd = BaseCmd.GetCmd(dbTrans.GetProviderType());
-
-            var l = theCmd.L();
-            var r = theCmd.R();
-
-            StringBuilder sbsql = new StringBuilder(50);
-            sbsql.AppendFormat("insert into {1}{0}{2} (", table, l, r);
-            StringBuilder sbParams = new StringBuilder(") values (", 50);
-            var ps = new List<DbParameter>();
-            
-            foreach (var property in propertys)
-            {
-                var fieldName = property.Name;
-                var fieldAttr = refInfo.GetFieldAttr(property);
-                if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase))
-                {
-                    if (fieldAttr == null || (!fieldAttr.InsertRequire))
-                    {
-                        continue;
-                    }
-                }
-                if (fieldAttr == null || (!fieldAttr.InsertIgnore && !fieldAttr.Ignore))
-                {
-                    var accessor = refInfo.GetAccessor(fieldName);
-                    if (accessor == null) continue;
-
-                    var val = accessor.Get(obj);
-                    if (val == null)
-                    {
-                        if (property.PropertyType == typeof(string))
-                        {
-                            continue;
-                        }
-                    }
-                    if (property.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
-                    {
-                        continue;
-                    }
-                    sbsql.AppendFormat("{1}{0}{2},", fieldName, l, r);
-                    sbParams.AppendFormat("@{0},", fieldName);
-                    ps.Add(theCmd.CreateParameter("@" + fieldName, val ?? DBNull.Value));
-                }
-            }
-            if (ps.Count == 0)
-            {
-                throw new ArgumentException("model里没有字段，无法插入");
-            }
-            sbsql.Remove(sbsql.Length - 1, 1);
-            sbParams.Remove(sbParams.Length - 1, 1);
-            sbsql.Append(sbParams.ToString());
-            sbsql.Append(")");
-            var raw = ExecuteNonQuery(dbTrans, CommandType.Text, sbsql.ToString(), ps.ToArray());
+            var cmdInfo = theCmd.Insert<T>(obj, false);
+            var raw = ExecuteNonQuery(dbTrans, CommandType.Text, cmdInfo.CmdText, cmdInfo.Params);
             return raw;
         }
-
         private static int InsertTrans(this DbTransaction dbTrans, string table, object anonType)
         {
             var propertys = ReflectionHelper.GetCachedProperties(anonType.GetType());
             var theCmd = BaseCmd.GetCmd(dbTrans.GetProviderType());
-            
+
             var l = theCmd.L();
             var r = theCmd.R();
             StringBuilder sbsql = new StringBuilder(50);
@@ -282,61 +289,70 @@ namespace Loogn.OrmLite
             return c;
         }
 
+        //private static int UpdateTrans<T>(this DbTransaction dbTrans, OrmLiteProviderType type, T obj)
+        //{
+        //    var refInfo = ReflectionHelper.GetInfo<T>();
+
+        //    var table = refInfo.TableName;
+        //    var propertys = refInfo.Properties;
+
+        //    var theCmd = BaseCmd.GetCmd(dbTrans.GetProviderType());
+
+        //    var l = theCmd.L();
+        //    var r = theCmd.R();
+
+        //    StringBuilder sbsql = new StringBuilder(50);
+        //    sbsql.AppendFormat("update {1}{0}{2} set ", table, l, r);
+        //    string condition = null;
+        //    var ps = new List<DbParameter>();
+        //    foreach (var property in propertys)
+        //    {
+        //        var fieldAttr = refInfo.GetFieldAttr(property);
+        //        if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
+        //        {
+        //            var fieldName = property.Name;
+        //            var accessor = refInfo.GetAccessor(fieldName);
+        //            if (accessor == null) continue;
+        //            var val = accessor.Get(obj);
+        //            if (val == null)
+        //            {
+        //                if (property.PropertyType == PrimitiveTypes.String)
+        //                {
+        //                    continue;
+        //                }
+        //            }
+        //            if (property.PropertyType == PrimitiveTypes.DateTime && (DateTime)val == DateTime.MinValue)
+        //            {
+        //                continue;
+        //            }
+        //            if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
+        //            {
+        //                condition = string.Format("{1}{0}{2} = @{0}", fieldName, l, r);
+        //            }
+        //            else
+        //            {
+        //                sbsql.AppendFormat("{1}{0}{2} = @{0},", fieldName, l, r);
+        //            }
+        //            ps.Add(theCmd.CreateParameter("@" + fieldName, val ?? DBNull.Value));
+        //        }
+        //    }
+        //    if (ps.Count == 0)
+        //    {
+        //        throw new ArgumentException("model里没有字段，无法修改");
+        //    }
+        //    sbsql.Remove(sbsql.Length - 1, 1);
+        //    sbsql.AppendFormat(" where ");
+        //    sbsql.Append(condition);
+        //    int c = ExecuteNonQuery(dbTrans, CommandType.Text, sbsql.ToString(), ps.ToArray());
+        //    return c;
+        //}
+
+        //下面这个应该可以吧。。。
         private static int UpdateTrans<T>(this DbTransaction dbTrans, OrmLiteProviderType type, T obj)
         {
-            var refInfo = ReflectionHelper.GetInfo<T>();
-
-            var table = refInfo.TableName;
-            var propertys = refInfo.Properties;
-
             var theCmd = BaseCmd.GetCmd(dbTrans.GetProviderType());
-
-            var l = theCmd.L();
-            var r = theCmd.R();
-
-            StringBuilder sbsql = new StringBuilder(50);
-            sbsql.AppendFormat("update {1}{0}{2} set ", table, l, r);
-            string condition = null;
-            var ps = new List<DbParameter>();
-            foreach (var property in propertys)
-            {
-                var fieldAttr = refInfo.GetFieldAttr(property);
-                if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
-                {
-                    var fieldName = property.Name;
-                    var accessor = refInfo.GetAccessor(fieldName);
-                    if (accessor == null) continue;
-                    var val = accessor.Get(obj);
-                    if (val == null)
-                    {
-                        if (property.PropertyType == typeof(string))
-                        {
-                            continue;
-                        }
-                    }
-                    if (property.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
-                    {
-                        continue;
-                    }
-                    if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
-                    {
-                        condition = string.Format("{1}{0}{2} = @{0}", fieldName, l, r);
-                    }
-                    else
-                    {
-                        sbsql.AppendFormat("{1}{0}{2} = @{0},", fieldName, l, r);
-                    }
-                    ps.Add(theCmd.CreateParameter("@" + fieldName, val ?? DBNull.Value));
-                }
-            }
-            if (ps.Count == 0)
-            {
-                throw new ArgumentException("model里没有字段，无法修改");
-            }
-            sbsql.Remove(sbsql.Length - 1, 1);
-            sbsql.AppendFormat(" where ");
-            sbsql.Append(condition);
-            int c = ExecuteNonQuery(dbTrans, CommandType.Text, sbsql.ToString(), ps.ToArray());
+            var cmdInfo = theCmd.Update<T>(obj);
+            int c = ExecuteNonQuery(dbTrans, CommandType.Text, cmdInfo.CmdText, cmdInfo.Params);
             return c;
         }
 

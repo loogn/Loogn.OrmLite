@@ -33,7 +33,6 @@ namespace Loogn.OrmLite
                 {
                     var prop = props[i];
                     var p = provider.CreateParameter("@" + prop.Name, prop.GetValue(anonType, null));
-
                     ps[i] = p;
                 }
                 return ps;
@@ -215,11 +214,12 @@ namespace Loogn.OrmLite
             var enumerator = idValues.GetEnumerator();
             while (enumerator.MoveNext())
             {
+                var obj = enumerator.Current;
                 if (!any)
                 {
                     any = true;
-                    var idType = enumerator.Current.GetType();
-                    if (idType == typeof(string) || idType == typeof(DateTime))
+
+                    if (obj is string || obj is DateTime)
                     {
                         needQuot = true;
                     }
@@ -229,11 +229,11 @@ namespace Loogn.OrmLite
                 }
                 if (needQuot)
                 {
-                    sql.AppendFormat("'{0}',", enumerator.Current);
+                    sql.AppendFormat("'{0}',", obj);
                 }
                 else
                 {
-                    sql.AppendFormat("{0},", enumerator.Current);
+                    sql.AppendFormat("{0},", obj);
                 }
             }
             if (!any)
@@ -348,8 +348,6 @@ namespace Loogn.OrmLite
             };
         }
 
-
-
         public CmdInfo Insert<T>(T obj, bool selectIdentity)
         {
             var refInfo = ReflectionHelper.GetInfo<T>();
@@ -383,14 +381,14 @@ namespace Loogn.OrmLite
                     var val = accessor.Get(obj);
                     if (val == null)
                     {
-                        if (property.PropertyType == typeof(string))
+                        if (property.PropertyType == PrimitiveTypes.String)
                         {
                             val = string.Empty;
                         }
                     }
                     else
                     {
-                        if (property.PropertyType == typeof(DateTime) && (DateTime)val == DateTime.MinValue)
+                        if (val is DateTime && DateTime.MinValue.Equals(val))
                         {
                             val = DateTime.Now;
                         }
@@ -407,11 +405,10 @@ namespace Loogn.OrmLite
             sbsql.Remove(sbsql.Length - 1, 1);
             sbParams.Remove(sbParams.Length - 1, 1);
             sbsql.Append(sbParams.ToString());
-            sbsql.Append(")");
+            sbsql.Append(");");
 
             if (selectIdentity)
             {
-                sbsql.Append(";");
                 sbsql.Append(GetLastInsertID());
             }
             return new CmdInfo
@@ -442,11 +439,10 @@ namespace Loogn.OrmLite
             sbsql.Remove(sbsql.Length - 1, 1);
             sbParams.Remove(sbParams.Length - 1, 1);
             sbsql.Append(sbParams.ToString());
-            sbsql.Append(")");
+            sbsql.Append(");");
 
             if (selectIdentity)
             {
-                sbsql.Append(";");
                 sbsql.Append(GetLastInsertID());
             }
             return new CmdInfo
@@ -482,11 +478,10 @@ namespace Loogn.OrmLite
             sbsql.Remove(sbsql.Length - 1, 1);
             sbParams.Remove(sbParams.Length - 1, 1);
             sbsql.Append(sbParams.ToString());
-            sbsql.Append(")");
+            sbsql.Append(");");
 
             if (selectIdentity)
             {
-                sbsql.Append(";");
                 sbsql.Append(GetLastInsertID());
             }
             return new CmdInfo
@@ -654,11 +649,11 @@ namespace Loogn.OrmLite
             var enumerator = idValues.GetEnumerator();
             while (enumerator.MoveNext())
             {
+                var obj = enumerator.Current;
                 if (!any)
                 {
                     any = true;
-                    var idType = enumerator.Current.GetType();
-                    if (idType == typeof(string) || idType == typeof(DateTime))
+                    if (obj is string || obj is DateTime)
                     {
                         needQuot = true;
                     }
@@ -668,11 +663,11 @@ namespace Loogn.OrmLite
                 }
                 if (needQuot)
                 {
-                    sql.AppendFormat("'{0}',", enumerator.Current);
+                    sql.AppendFormat("'{0}',", obj);
                 }
                 else
                 {
-                    sql.AppendFormat("{0},", enumerator.Current);
+                    sql.AppendFormat("{0},", obj);
                 }
             }
             if (!any)

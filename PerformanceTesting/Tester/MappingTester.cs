@@ -10,12 +10,16 @@ using CRL.LambdaQuery;
 using Loogn.Utils;
 using ServiceStack.OrmLite;
 using SqlSugar;
+using CRL.DBExtend.RelationDB;
+using CoreHelper;
+using CRL;
 
 namespace PerformanceTesting
 {
     public class MappingTester
     {
-        static int limit = 5000000;
+        //static int limit = 5000000;
+        static int limit = 500000;
         public static void Test()
         {
 
@@ -23,7 +27,7 @@ namespace PerformanceTesting
             Chloe(2);
             ChloeSql(2);
             Dapper(2);
-            EF(2);
+            //EF(2);
             EFSql(2);
             Loogn(2);
             CRL(2);
@@ -55,10 +59,10 @@ namespace PerformanceTesting
             //{
             //    EF(limit);
             //});
-            //CodeTimer.Time("Mapping-EFSql", 1, () =>
-            //{
-            //    EFSql(limit);
-            //});
+            CodeTimer.Time("Mapping-EFSql", 1, () =>
+            {
+                EFSql(limit);
+            });
 
             CodeTimer.Time("Mapping-Loogn", 1, () =>
             {
@@ -136,10 +140,10 @@ namespace PerformanceTesting
 
         static void CRL(int limit)
         {
-            CRLProvider provider = new CRLProvider();
-            var query = provider.GetLambdaQuery();
-            query.Top(limit);
-            var list = query.ToList();
+            var dbContext = new DbContext(new CoreHelper.SqlHelper(Utils.ConnStr), new DBLocation() { ManageType = typeof(MappingTester) });
+            var db = DBExtendFactory.CreateDBExtend(dbContext);
+
+            var list = db.ExecList<testentity>(string.Format("select top {0} * from TestEntity", limit));
         }
 
         static void ServiceStack(int limit)
@@ -155,6 +159,7 @@ namespace PerformanceTesting
         {
             using (SqlSugarClient db = new SqlSugarClient(Utils.ConnStr))
             {
+
                 var list = db.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
             }
         }

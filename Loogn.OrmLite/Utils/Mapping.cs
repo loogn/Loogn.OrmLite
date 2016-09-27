@@ -27,7 +27,7 @@ namespace Loogn.OrmLite
             {
                 var refInfo = ReflectionHelper.GetInfo<T>();
 
-                T obj = refInfo.NewInstance(); //Activator.CreateInstance<T>();
+                T obj = refInfo.NewInstance();
                 var length = reader.FieldCount;
                 object[] values = new object[length];
                 reader.GetValues(values);
@@ -69,7 +69,7 @@ namespace Loogn.OrmLite
             while (reader.Read())
             {
                 reader.GetValues(values);
-                T obj = refInfo.NewInstance();// Activator.CreateInstance<T>();
+                T obj = refInfo.NewInstance();
                 if (first)
                 {
                     for (int i = 0; i < length; i++)

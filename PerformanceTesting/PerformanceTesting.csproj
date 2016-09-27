@@ -77,8 +77,8 @@
       <HintPath>..\packages\ServiceStack.Text.4.5.0\lib\net45\ServiceStack.Text.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SqlSugar, Version=2.7.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\sqlSugar.2.7.0.1\lib\net40\SqlSugar.dll</HintPath>
+    <Reference Include="SqlSugar, Version=2.9.9.8, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\sqlSugar.2.9.9.9\lib\net40\SqlSugar.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

@@ -106,7 +106,7 @@ namespace Loogn.OrmLite
                 var type = typeof(T);
                 object newobj = obj;
 
-                if (type == PrimitiveTypes.Int32)
+                if (ReferenceEquals(type, PrimitiveTypes.Int32))
                 {
                     newobj = Convert.ToInt32(obj);
                 }

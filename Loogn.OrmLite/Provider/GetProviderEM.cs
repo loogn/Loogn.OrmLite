@@ -10,18 +10,18 @@ namespace Loogn.OrmLite
     {
         public static OrmLiteProviderType GetProviderType(this DbConnection conn)
         {
-            var connTypeName = conn.GetType().Name;
+            var connTypeName = string.Intern(conn.GetType().Name);
 
-            if (connTypeName == "SqlConnection")
+            if (ReferenceEquals(connTypeName, "SqlConnection"))
             {
                 return OrmLiteProviderType.SqlServer;
             }
 
-            else if (connTypeName == "MySqlConnection")
+            else if (ReferenceEquals(connTypeName, "MySqlConnection"))
             {
                 return OrmLiteProviderType.MySql;
             }
-            else if (connTypeName == "SQLiteConnection")
+            else if (ReferenceEquals(connTypeName, "SQLiteConnection"))
             {
                 return OrmLiteProviderType.Sqlite;
             }

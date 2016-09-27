@@ -97,107 +97,107 @@ namespace Loogn.OrmLite
                 {
                     propType = propType.GetEnumUnderlyingType();
                 }
-                if (PrimitiveTypes.String == propType)
+                if (ReferenceEquals(PrimitiveTypes.String, propType))
                 {
                     accessor = new StringAccessor(prop);
                 }
-                else if (PrimitiveTypes.Int32 == propType)
+                else if (ReferenceEquals(PrimitiveTypes.Int32, propType))
                 {
                     accessor = new IntAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableInt32 == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableInt32, propType))
                 {
                     accessor = new IntNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.DateTime == propType)
+                else if (ReferenceEquals(PrimitiveTypes.DateTime, propType))
                 {
                     accessor = new DateTimeAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableDateTime == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableDateTime, propType))
                 {
                     accessor = new DateTimeNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.Int64 == propType)
+                else if (ReferenceEquals(PrimitiveTypes.Int64, propType))
                 {
                     accessor = new LongAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableInt64 == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableInt64, propType))
                 {
                     accessor = new LongNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.Single == propType)
+                else if (ReferenceEquals(PrimitiveTypes.Single, propType))
                 {
                     accessor = new FloatAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableSingle == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableSingle, propType))
                 {
                     accessor = new FloatNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.Double == propType)
+                else if (ReferenceEquals(PrimitiveTypes.Double, propType))
                 {
                     accessor = new DoubleAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableDouble == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableDouble, propType))
                 {
                     accessor = new DoubleNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.Guid == propType)
+                else if (ReferenceEquals(PrimitiveTypes.Guid, propType))
                 {
                     accessor = new GuidAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableGuid == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableGuid, propType))
                 {
                     accessor = new GuidNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.Int16 == propType)
+                else if (ReferenceEquals(PrimitiveTypes.Int16, propType))
                 {
                     accessor = new ShortAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableInt16 == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableInt16, propType))
                 {
                     accessor = new ShortNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.Byte == propType)
+                else if (ReferenceEquals(PrimitiveTypes.Byte, propType))
                 {
                     accessor = new ByteAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableByte == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableByte, propType))
                 {
                     accessor = new ByteNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.Char == propType)
+                else if (ReferenceEquals(PrimitiveTypes.Char, propType))
                 {
                     accessor = new CharAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableChar == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableChar, propType))
                 {
                     accessor = new CharNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.Decimal == propType)
+                else if (ReferenceEquals(PrimitiveTypes.Decimal, propType))
                 {
                     accessor = new DecimalAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableDecimal == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableDecimal, propType))
                 {
                     accessor = new DecimalNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.ByteArray == propType)
+                else if (ReferenceEquals(PrimitiveTypes.ByteArray, propType))
                 {
                     accessor = new ByteArrayAccessor(prop);
                 }
-                else if (PrimitiveTypes.Bool == propType)
+                else if (ReferenceEquals(PrimitiveTypes.Bool, propType))
                 {
                     accessor = new BoolAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableBool == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableBool, propType))
                 {
                     accessor = new BoolNullableAccessor(prop);
                 }
-                else if (PrimitiveTypes.TimeSpan == propType)
+                else if (ReferenceEquals(PrimitiveTypes.TimeSpan, propType))
                 {
                     accessor = new TimeSpanAccessor(prop);
                 }
-                else if (PrimitiveTypes.NullableTimeSpan == propType)
+                else if (ReferenceEquals(PrimitiveTypes.NullableTimeSpan, propType))
                 {
                     accessor = new TimeSpanNullableAccessor(prop);
                 }
@@ -243,13 +243,26 @@ namespace Loogn.OrmLite
 
         public abstract class Accessor
         {
+            PropertyInfo _prop;
+            public Accessor(PropertyInfo prop)
+            {
+                _prop = prop;
+            }
+
             public void Set(TObject obj, object value)
             {
                 if (value == null || value is DBNull)
                 {
                     return;
                 }
-                DoSet(obj, value);
+                try
+                {
+                    DoSet(obj, value);
+                }
+                catch
+                {
+                    throw new Exception(string.Format("将{0}类型的值{1}赋给{2}.{3}时失败", value.GetType().FullName, value, obj.GetType().FullName, _prop.Name));
+                }
             }
 
             public object Get(TObject obj)
@@ -265,7 +278,7 @@ namespace Loogn.OrmLite
         #region Accessor
         public class EmptyAccessor : Accessor
         {
-
+            public EmptyAccessor() : base(null) { }
             protected override object DoGet(TObject obj)
             {
                 return null;
@@ -282,7 +295,7 @@ namespace Loogn.OrmLite
             Action<TObject, string> setter;
             Func<TObject, string> getter;
 
-            public StringAccessor(PropertyInfo prop)
+            public StringAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, string>)Delegate.CreateDelegate(typeof(Action<TObject, string>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, string>)Delegate.CreateDelegate(typeof(Func<TObject, string>), null, prop.GetGetMethod(true));
@@ -301,7 +314,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, int> setter;
             Func<TObject, int> getter;
-            public IntAccessor(PropertyInfo prop)
+            public IntAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, int>)Delegate.CreateDelegate(typeof(Action<TObject, int>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, int>)Delegate.CreateDelegate(typeof(Func<TObject, int>), null, prop.GetGetMethod(true));
@@ -320,7 +333,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, int?> setter;
             Func<TObject, int?> getter;
-            public IntNullableAccessor(PropertyInfo prop)
+            public IntNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, int?>)Delegate.CreateDelegate(typeof(Action<TObject, int?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, int?>)Delegate.CreateDelegate(typeof(Func<TObject, int?>), null, prop.GetGetMethod(true));
@@ -339,7 +352,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, DateTime> setter;
             Func<TObject, DateTime> getter;
-            public DateTimeAccessor(PropertyInfo prop)
+            public DateTimeAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, DateTime>)Delegate.CreateDelegate(typeof(Action<TObject, DateTime>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, DateTime>)Delegate.CreateDelegate(typeof(Func<TObject, DateTime>), null, prop.GetGetMethod(true));
@@ -359,7 +372,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, DateTime?> setter;
             Func<TObject, DateTime?> getter;
-            public DateTimeNullableAccessor(PropertyInfo prop)
+            public DateTimeNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, DateTime?>)Delegate.CreateDelegate(typeof(Action<TObject, DateTime?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, DateTime?>)Delegate.CreateDelegate(typeof(Func<TObject, DateTime?>), null, prop.GetGetMethod(true));
@@ -379,7 +392,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, long> setter;
             Func<TObject, long> getter;
-            public LongAccessor(PropertyInfo prop)
+            public LongAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, long>)Delegate.CreateDelegate(typeof(Action<TObject, long>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, long>)Delegate.CreateDelegate(typeof(Func<TObject, long>), null, prop.GetGetMethod(true));
@@ -399,7 +412,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, long?> setter;
             Func<TObject, long?> getter;
-            public LongNullableAccessor(PropertyInfo prop)
+            public LongNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, long?>)Delegate.CreateDelegate(typeof(Action<TObject, long?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, long?>)Delegate.CreateDelegate(typeof(Func<TObject, long?>), null, prop.GetGetMethod(true));
@@ -418,7 +431,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, double> setter;
             Func<TObject, double> getter;
-            public DoubleAccessor(PropertyInfo prop)
+            public DoubleAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, double>)Delegate.CreateDelegate(typeof(Action<TObject, double>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, double>)Delegate.CreateDelegate(typeof(Func<TObject, double>), null, prop.GetGetMethod(true));
@@ -437,7 +450,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, double?> setter;
             Func<TObject, double?> getter;
-            public DoubleNullableAccessor(PropertyInfo prop)
+            public DoubleNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, double?>)Delegate.CreateDelegate(typeof(Action<TObject, double?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, double?>)Delegate.CreateDelegate(typeof(Func<TObject, double?>), null, prop.GetGetMethod(true));
@@ -456,7 +469,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, float> setter;
             Func<TObject, float> getter;
-            public FloatAccessor(PropertyInfo prop)
+            public FloatAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, float>)Delegate.CreateDelegate(typeof(Action<TObject, float>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, float>)Delegate.CreateDelegate(typeof(Func<TObject, float>), null, prop.GetGetMethod(true));
@@ -475,7 +488,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, float?> setter;
             Func<TObject, float?> getter;
-            public FloatNullableAccessor(PropertyInfo prop)
+            public FloatNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, float?>)Delegate.CreateDelegate(typeof(Action<TObject, float?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, float?>)Delegate.CreateDelegate(typeof(Func<TObject, float?>), null, prop.GetGetMethod(true));
@@ -494,7 +507,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, Guid> setter;
             Func<TObject, Guid> getter;
-            public GuidAccessor(PropertyInfo prop)
+            public GuidAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, Guid>)Delegate.CreateDelegate(typeof(Action<TObject, Guid>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, Guid>)Delegate.CreateDelegate(typeof(Func<TObject, Guid>), null, prop.GetGetMethod(true));
@@ -513,7 +526,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, Guid?> setter;
             Func<TObject, Guid?> getter;
-            public GuidNullableAccessor(PropertyInfo prop)
+            public GuidNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, Guid?>)Delegate.CreateDelegate(typeof(Action<TObject, Guid?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, Guid?>)Delegate.CreateDelegate(typeof(Func<TObject, Guid?>), null, prop.GetGetMethod(true));
@@ -532,7 +545,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, byte> setter;
             Func<TObject, byte> getter;
-            public ByteAccessor(PropertyInfo prop)
+            public ByteAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, byte>)Delegate.CreateDelegate(typeof(Action<TObject, byte>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, byte>)Delegate.CreateDelegate(typeof(Func<TObject, byte>), null, prop.GetGetMethod(true));
@@ -559,7 +572,7 @@ namespace Loogn.OrmLite
             Action<TObject, byte?> setter;
             Func<TObject, byte?> getter;
 
-            public ByteNullableAccessor(PropertyInfo prop)
+            public ByteNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, byte?>)Delegate.CreateDelegate(typeof(Action<TObject, byte?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, byte?>)Delegate.CreateDelegate(typeof(Func<TObject, byte?>), null, prop.GetGetMethod(true));
@@ -585,7 +598,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, short> setter;
             Func<TObject, short> getter;
-            public ShortAccessor(PropertyInfo prop)
+            public ShortAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, short>)Delegate.CreateDelegate(typeof(Action<TObject, short>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, short>)Delegate.CreateDelegate(typeof(Func<TObject, short>), null, prop.GetGetMethod(true));
@@ -603,7 +616,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, short?> setter;
             Func<TObject, short?> getter;
-            public ShortNullableAccessor(PropertyInfo prop)
+            public ShortNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, short?>)Delegate.CreateDelegate(typeof(Action<TObject, short?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, short?>)Delegate.CreateDelegate(typeof(Func<TObject, short?>), null, prop.GetGetMethod(true));
@@ -622,7 +635,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, char> setter;
             Func<TObject, char> getter;
-            public CharAccessor(PropertyInfo prop)
+            public CharAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, char>)Delegate.CreateDelegate(typeof(Action<TObject, char>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, char>)Delegate.CreateDelegate(typeof(Func<TObject, char>), null, prop.GetGetMethod(true));
@@ -641,7 +654,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, char?> setter;
             Func<TObject, char?> getter;
-            public CharNullableAccessor(PropertyInfo prop)
+            public CharNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, char?>)Delegate.CreateDelegate(typeof(Action<TObject, char?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, char?>)Delegate.CreateDelegate(typeof(Func<TObject, char?>), null, prop.GetGetMethod(true));
@@ -660,7 +673,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, bool> setter;
             Func<TObject, bool> getter;
-            public BoolAccessor(PropertyInfo prop)
+            public BoolAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, bool>)Delegate.CreateDelegate(typeof(Action<TObject, bool>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, bool>)Delegate.CreateDelegate(typeof(Func<TObject, bool>), null, prop.GetGetMethod(true));
@@ -686,7 +699,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, bool?> setter;
             Func<TObject, bool?> getter;
-            public BoolNullableAccessor(PropertyInfo prop)
+            public BoolNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, bool?>)Delegate.CreateDelegate(typeof(Action<TObject, bool?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, bool?>)Delegate.CreateDelegate(typeof(Func<TObject, bool?>), null, prop.GetGetMethod(true));
@@ -712,7 +725,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, TimeSpan> setter;
             Func<TObject, TimeSpan> getter;
-            public TimeSpanAccessor(PropertyInfo prop)
+            public TimeSpanAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, TimeSpan>)Delegate.CreateDelegate(typeof(Action<TObject, TimeSpan>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, TimeSpan>)Delegate.CreateDelegate(typeof(Func<TObject, TimeSpan>), null, prop.GetGetMethod(true));
@@ -731,7 +744,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, TimeSpan?> setter;
             Func<TObject, TimeSpan?> getter;
-            public TimeSpanNullableAccessor(PropertyInfo prop)
+            public TimeSpanNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, TimeSpan?>)Delegate.CreateDelegate(typeof(Action<TObject, TimeSpan?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, TimeSpan?>)Delegate.CreateDelegate(typeof(Func<TObject, TimeSpan?>), null, prop.GetGetMethod(true));
@@ -750,7 +763,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, decimal> setter;
             Func<TObject, decimal> getter;
-            public DecimalAccessor(PropertyInfo prop)
+            public DecimalAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, decimal>)Delegate.CreateDelegate(typeof(Action<TObject, decimal>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, decimal>)Delegate.CreateDelegate(typeof(Func<TObject, decimal>), null, prop.GetGetMethod(true));
@@ -769,7 +782,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, decimal?> setter;
             Func<TObject, decimal?> getter;
-            public DecimalNullableAccessor(PropertyInfo prop)
+            public DecimalNullableAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, decimal?>)Delegate.CreateDelegate(typeof(Action<TObject, decimal?>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, decimal?>)Delegate.CreateDelegate(typeof(Func<TObject, decimal?>), null, prop.GetGetMethod(true));
@@ -788,7 +801,7 @@ namespace Loogn.OrmLite
         {
             Action<TObject, byte[]> setter;
             Func<TObject, byte[]> getter;
-            public ByteArrayAccessor(PropertyInfo prop)
+            public ByteArrayAccessor(PropertyInfo prop) : base(prop)
             {
                 setter = (Action<TObject, byte[]>)Delegate.CreateDelegate(typeof(Action<TObject, byte[]>), null, prop.GetSetMethod(true));
                 getter = (Func<TObject, byte[]>)Delegate.CreateDelegate(typeof(Func<TObject, byte[]>), null, prop.GetGetMethod(true));

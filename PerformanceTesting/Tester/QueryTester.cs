@@ -30,6 +30,7 @@ namespace PerformanceTesting
             EFSql(2);
             Loogn(2);
             CRL(2);
+            SqlSugar(2);
             ServiceStack(2);
 
 
@@ -66,15 +67,17 @@ namespace PerformanceTesting
                 Loogn(limit);
             });
 
+            CodeTimer.Time("Query-SqlSugar", queryCount, () =>
+            {
+                SqlSugar(limit);
+            });
+
+
             CodeTimer.Time("Query-CRL", queryCount, () =>
             {
                 CRL(limit);
             });
 
-            CodeTimer.Time("Query-SqlSugar", queryCount, () =>
-            {
-                SqlSugar(limit);
-            });
 
             CodeTimer.Time("Query-ServiceStack", queryCount, () =>
             {

@@ -9,7 +9,7 @@ namespace Loogn.OrmLite
     {
 
         static SqliteCmd instance;
-        public static SqliteCmd Instance
+        public new static SqliteCmd Instance
         {
             get
             {

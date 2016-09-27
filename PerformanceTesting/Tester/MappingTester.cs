@@ -18,22 +18,22 @@ namespace PerformanceTesting
 {
     public class MappingTester
     {
-        //static int limit = 5000000;
-        static int limit = 500000;
+        static int limit = 5000000;
+        //static int limit = 500000;
         public static void Test()
         {
 
             //预热
-            Chloe(2);
+            //Chloe(2);
             ChloeSql(2);
             Dapper(2);
             //EF(2);
             EFSql(2);
             Loogn(2);
+            SqlSugar(2);
             CRL(2);
             ServiceStack(2);
 
-            SqlSugar(2);
 
 
             Console.WriteLine("Mapping count: " + limit);
@@ -59,6 +59,7 @@ namespace PerformanceTesting
             //{
             //    EF(limit);
             //});
+
             CodeTimer.Time("Mapping-EFSql", 1, () =>
             {
                 EFSql(limit);

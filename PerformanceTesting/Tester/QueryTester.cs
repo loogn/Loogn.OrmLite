@@ -21,7 +21,7 @@ namespace PerformanceTesting
         //static int limit = 10;
         static int queryCount = 1000;
         static int limit = 20;
-        
+
         static int minId = 1;
         public static void Test()
         {
@@ -56,10 +56,10 @@ namespace PerformanceTesting
                 Dapper(limit);
             });
 
-            //CodeTimer.Time("Query-EF", queryCount, () =>
-            //{
-            //    EF(limit);
-            //});
+            CodeTimer.Time("Query-EF", queryCount, () =>
+            {
+                EF(limit);
+            });
             CodeTimer.Time("Query-EFSql", queryCount, () =>
             {
                 EFSql(limit);
@@ -147,8 +147,7 @@ namespace PerformanceTesting
 
         static void SqlSugar(int limit)
         {
-            var db = new SqlSugarClient(Utils.ConnStr);
-            using (db)
+            using (var db = new SqlSugarClient(Utils.ConnStr))
             {
                 var list = db.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId.ToString()));
             }

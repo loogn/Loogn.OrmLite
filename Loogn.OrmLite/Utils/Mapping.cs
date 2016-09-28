@@ -115,19 +115,14 @@ namespace Loogn.OrmLite
             }
         }
 
-        internal static List<Tuple<T1, T2>> ReaderToTupleList<T1, T2>(DbDataReader reader)
-        {
-            if (!reader.HasRows) return new List<Tuple<T1, T2>>();
-            var list = new List<Tuple<T1, T2>>();
-            while (reader.Read())
-            {
-                var values = new object[2];
-                reader.GetValues(values);
-                list.Add(new Tuple<T1, T2>((T1)values[0], (T2)values[1]));
-            }
-            return list;
-        }
+       
 
+        /// <summary>
+        /// 用只有一个列的Reader填充成一个列表
+        /// </summary>
+        /// <typeparam name="T">对应reader第一个列的类型</typeparam>
+        /// <param name="reader">DataReader</param>
+        /// <returns></returns>
         public static List<T> ReaderToColumnList<T>(DbDataReader reader)
         {
             if (!reader.HasRows) return new List<T>();
@@ -139,6 +134,12 @@ namespace Loogn.OrmLite
             return list;
         }
 
+        /// <summary>
+        /// 用只有一个列的reader填充成一个集合
+        /// </summary>
+        /// <typeparam name="T">对应reader第一个列的类型</typeparam>
+        /// <param name="reader">DataReader</param>
+        /// <returns></returns>
         public static HashSet<T> ReaderToColumnSet<T>(DbDataReader reader)
         {
             if (!reader.HasRows) return new HashSet<T>();
@@ -150,15 +151,23 @@ namespace Loogn.OrmLite
             return set;
         }
 
+        /// <summary>
+        /// 用Reader填充dynamic类型
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
         public static dynamic ReaderToDynamic(DbDataReader reader)
         {
             if (reader.Read())
             {
                 dynamic obj = new ExpandoObject();
                 var dict = obj as IDictionary<string, object>;
+                object[] values = new object[reader.FieldCount];
+                reader.GetValues(values);
+
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    dict.Add(reader.GetName(i), reader.GetValue(i));
+                    dict.Add(reader.GetName(i), values[i]);
                 }
                 return obj;
             }
@@ -168,6 +177,11 @@ namespace Loogn.OrmLite
             }
         }
 
+        /// <summary>
+        /// 用Reader填充dynamic列表
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <returns></returns>
         public static List<dynamic> ReaderToDynamicList(DbDataReader reader)
         {
             if (!reader.HasRows)
@@ -179,15 +193,24 @@ namespace Loogn.OrmLite
             {
                 dynamic obj = new ExpandoObject();
                 var dict = obj as IDictionary<string, object>;
+                object[] values = new object[reader.FieldCount];
+                reader.GetValues(values);
                 for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    dict.Add(reader.GetName(i), reader.GetValue(i));
+                    dict.Add(reader.GetName(i), values[i]);
                 }
                 list.Add(obj);
             }
             return list;
         }
 
+        /// <summary>
+        /// 用reader的第一列做为key，把第二列聚合成列表
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="reader"></param>
+        /// <returns></returns>
         public static Dictionary<K, List<V>> ReaderToLookup<K, V>(DbDataReader reader)
         {
             if (!reader.HasRows) return new Dictionary<K, List<V>>();
@@ -216,6 +239,19 @@ namespace Loogn.OrmLite
                 dict[tuple.Item1] = tuple.Item2;
             }
             return dict;
+        }
+
+        internal static List<Tuple<T1, T2>> ReaderToTupleList<T1, T2>(DbDataReader reader)
+        {
+            if (!reader.HasRows) return new List<Tuple<T1, T2>>();
+            var list = new List<Tuple<T1, T2>>();
+            while (reader.Read())
+            {
+                var values = new object[2];
+                reader.GetValues(values);
+                list.Add(new Tuple<T1, T2>((T1)values[0], (T2)values[1]));
+            }
+            return list;
         }
     }
 }

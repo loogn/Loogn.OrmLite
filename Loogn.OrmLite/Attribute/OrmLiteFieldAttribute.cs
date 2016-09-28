@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
+    /// <summary>
+    /// 实体类特性，用户属性上，指明该属性是否自增，是否是主键，是否忽略等
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public class OrmLiteFieldAttribute : Attribute
     {
+        /// <summary>
+        /// 实体类特性
+        /// </summary>
         public OrmLiteFieldAttribute()
         {
         }

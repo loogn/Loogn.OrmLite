@@ -9,13 +9,20 @@ using System.Data.SqlClient;
 
 namespace Loogn.OrmLite
 {
-
+    /// <summary>
+    /// OrmLite配置类
+    /// </summary>
     public class OrmLite
     {
         private static IOrmLiteProvider SqlServerProvider;
         private static IOrmLiteProvider MySqlProvider;
         private static IOrmLiteProvider SqliteProvider;
 
+        /// <summary>
+        /// 注册提供程序，SqlServer默认已注册
+        /// </summary>
+        /// <param name="type">OrmLiteProviderType枚举</param>
+        /// <param name="provider">实现IOrmLiteProvider接口的提供程序类</param>
         public static void RegisterProvider(OrmLiteProviderType type, IOrmLiteProvider provider)
         {
             if (type == OrmLiteProviderType.SqlServer && SqlServerProvider == null)
@@ -39,7 +46,7 @@ namespace Loogn.OrmLite
             RegisterProvider(OrmLiteProviderType.SqlServer, SqlServerOrmLiteProvider.Instance);
         }
 
-        public static IOrmLiteProvider GetProvider(OrmLiteProviderType type)
+        internal static IOrmLiteProvider GetProvider(OrmLiteProviderType type)
         {
             if (type == OrmLiteProviderType.SqlServer)
             {
@@ -56,9 +63,15 @@ namespace Loogn.OrmLite
             throw new ArgumentException("OrmLiteProviderType 参数错误");
         }
 
+        /// <summary>
+        /// 默认主键
+        /// </summary>
         public const string KeyName = "ID";
 
         private static string defaultKeyName = KeyName;
+        /// <summary>
+        /// 设置默认主键
+        /// </summary>
         public static string DefaultKeyName
         {
             get { return defaultKeyName; }
@@ -66,6 +79,9 @@ namespace Loogn.OrmLite
         }
 
         private static List<string> updateIgnoreFields = new List<string>() { "AddDate", "AddTime" };
+        /// <summary>
+        /// 整体修改时，默认忽略修改的字段集合，集合里默认有AddDate,AddTime
+        /// </summary>
         public static List<string> UpdateIgnoreFields
         {
             get { return updateIgnoreFields; }

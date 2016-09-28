@@ -229,6 +229,14 @@ namespace Loogn.OrmLite
             return dict;
         }
 
+
+        /// <summary>
+        /// 给我
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="reader"></param>
+        /// <returns></returns>
         public static Dictionary<K, V> ReaderToDictionary<K, V>(DbDataReader reader)
         {
             if (!reader.HasRows) return new Dictionary<K, V>();

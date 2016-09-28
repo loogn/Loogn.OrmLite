@@ -271,7 +271,7 @@ namespace Loogn.OrmLite
             return list;
         }
 
-        public static OrmLitePageResult<T> Page<T>(this DbTransaction dbTrans, OrmLitePageFactor factor)
+        public static OrmLitePageResult<T> SelectPage<T>(this DbTransaction dbTrans, OrmLitePageFactor factor)
         {
             int totalCount;
             OrmLitePageResult<T> pageInfo = new OrmLitePageResult<T>();
@@ -282,7 +282,7 @@ namespace Loogn.OrmLite
             return pageInfo;
         }
 
-        public static OrmLitePageResult<dynamic> Page(this DbTransaction dbTrans, OrmLitePageFactor factor)
+        public static OrmLitePageResult<dynamic> SelectPage(this DbTransaction dbTrans, OrmLitePageFactor factor)
         {
             int totalCount;
             OrmLitePageResult<dynamic> pageInfo = new OrmLitePageResult<dynamic>();

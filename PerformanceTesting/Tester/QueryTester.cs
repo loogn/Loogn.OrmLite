@@ -17,8 +17,11 @@ namespace PerformanceTesting
 {
     class QueryTester
     {
-        static int queryCount = 20000;
-        static int limit = 10;
+        //static int queryCount = 20000;
+        //static int limit = 10;
+        static int queryCount = 1000;
+        static int limit = 20;
+        
         static int minId = 1;
         public static void Test()
         {

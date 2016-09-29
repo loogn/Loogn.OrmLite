@@ -862,37 +862,109 @@ namespace Loogn.OrmLite
         #endregion
 
         #region Lookup Dictionary
+
+        /// <summary>
+        /// 查询两列数据，第一列作为Key，聚合第二列作为Value
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <returns></returns>
         public static Dictionary<K, List<V>> Lookup<K, V>(this DbConnection dbConn, string sql)
         {
             return LookupOriginal<K, V>(dbConn, CommandType.Text, sql, null);
         }
+        /// <summary>
+        /// 查询两列数据，第一列作为Key，聚合第二列作为Value
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static Dictionary<K, List<V>> Lookup<K, V>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return LookupOriginal<K, V>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).DictionaryToParams(parameters));
         }
+        /// <summary>
+        /// 查询两列数据，第一列作为Key，聚合第二列作为Value
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static Dictionary<K, List<V>> Lookup<K, V>(this DbConnection dbConn, string sql, object parameters)
         {
             return LookupOriginal<K, V>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).AnonTypeToParams(parameters));
         }
 
+        /// <summary>
+        /// 查询两列数据，第一列作为Key，聚合第二列作为Value
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sqlFormat"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static Dictionary<K, List<V>> LookupFmt<K, V>(this DbConnection dbConn, string sqlFormat, params object[] parameters)
         {
             return LookupOriginal<K, V>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
+        /// <summary>
+        /// 查询两列数据，第一列作为Key，第二列作为Value
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <returns></returns>
         public static Dictionary<K, V> Dictionary<K, V>(this DbConnection dbConn, string sql)
         {
             return DictionaryOriginal<K, V>(dbConn, CommandType.Text, sql, null);
         }
+        /// <summary>
+        /// 查询两列数据，第一列作为Key，第二列作为Value
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static Dictionary<K, V> Dictionary<K, V>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             return DictionaryOriginal<K, V>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).DictionaryToParams(parameters));
         }
+
+        /// <summary>
+        /// 查询两列数据，第一列作为Key，第二列作为Value
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static Dictionary<K, V> Dictionary<K, V>(this DbConnection dbConn, string sql, object parameters)
         {
             return DictionaryOriginal<K, V>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).AnonTypeToParams(parameters));
         }
 
+        /// <summary>
+        /// 查询两列数据，第一列作为Key，第二列作为Value
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sqlFormat"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static Dictionary<K, V> DictionaryFmt<K, V>(this DbConnection dbConn, string sqlFormat, params object[] parameters)
         {
             return DictionaryOriginal<K, V>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
@@ -900,44 +972,104 @@ namespace Loogn.OrmLite
         #endregion
 
         #region Count
+        /// <summary>
+        /// 查询总条数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <returns></returns>
         public static int Count<T>(this DbConnection dbConn)
         {
             return CountOriginal(dbConn, CommandType.Text, BaseCmd.GetCmd(dbConn.GetProviderType()).Count<T>());
         }
 
+        /// <summary>
+        /// 根据sql语句查询条数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <returns></returns>
         public static int Count<T>(this DbConnection dbConn, string sql)
         {
             return CountOriginal(dbConn, CommandType.Text, BaseCmd.GetCmd(dbConn.GetProviderType()).FullPartSql<T>(sql, PartSqlType.Count), null);
         }
+
+        /// <summary>
+        /// 根据sql语句查询条数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static int Count<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             var theCmd = BaseCmd.GetCmd(dbConn.GetProviderType());
             return CountOriginal(dbConn, CommandType.Text, theCmd.FullPartSql<T>(sql, PartSqlType.Count), theCmd.DictionaryToParams(parameters));
         }
+
+        /// <summary>
+        /// 根据sql语句查询条数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static int Count<T>(this DbConnection dbConn, string sql, object parameters)
         {
             var theCmd = BaseCmd.GetCmd(dbConn.GetProviderType());
             return CountOriginal(dbConn, CommandType.Text, theCmd.FullPartSql<T>(sql, PartSqlType.Count), theCmd.AnonTypeToParams(parameters));
         }
 
+        /// <summary>
+        /// 根据单个字段作为条件查询条数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static int CountWhere<T>(this DbConnection dbConn, string name, object value)
         {
             var cmd = BaseCmd.GetCmd(dbConn.GetProviderType()).CountWhere<T>(name, value);
             return CountOriginal(dbConn, CommandType.Text, cmd.CmdText, cmd.Params);
         }
 
+        /// <summary>
+        /// 根据字段作为条件查询条数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="conditions"></param>
+        /// <returns></returns>
         public static int CountWhere<T>(this DbConnection dbConn, IDictionary<string, object> conditions)
         {
             var cmd = BaseCmd.GetCmd(dbConn.GetProviderType()).CountWhere<T>(conditions);
             return CountOriginal(dbConn, CommandType.Text, cmd.CmdText, cmd.Params);
         }
 
+        /// <summary>
+        /// 根据字段作为条件查询条数
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="conditions"></param>
+        /// <returns></returns>
         public static int CountWhere<T>(this DbConnection dbConn, object conditions)
         {
             var cmd = BaseCmd.GetCmd(dbConn.GetProviderType()).CountWhere<T>(conditions);
             return CountOriginal(dbConn, CommandType.Text, cmd.CmdText, cmd.Params);
         }
 
+        /// <summary>
+        /// 根据sql语句查询条数
+        /// </summary>
+        /// <param name="dbConn"></param>
+        /// <param name="sqlFormat"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public static int CountFmt(this DbConnection dbConn, string sqlFormat, params object[] parameters)
         {
             return CountOriginal(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));

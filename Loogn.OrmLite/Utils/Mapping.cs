@@ -114,9 +114,7 @@ namespace Loogn.OrmLite
 
             }
         }
-
-       
-
+        
         /// <summary>
         /// 用只有一个列的Reader填充成一个列表
         /// </summary>
@@ -214,24 +212,32 @@ namespace Loogn.OrmLite
         public static Dictionary<K, List<V>> ReaderToLookup<K, V>(DbDataReader reader)
         {
             if (!reader.HasRows) return new Dictionary<K, List<V>>();
-            var list = ReaderToTupleList<K, V>(reader);
-            var dict = new Dictionary<K, List<V>>(list.Count / 2);
-            foreach (var tuple in list)
+
+            var dict = new Dictionary<K, List<V>>();
+            var values = new object[2];
+            while (reader.Read())
             {
-                List<V> value = null;
-                if (!dict.TryGetValue(tuple.Item1, out value))
+                reader.GetValues(values);
+                var key = (K)values[0];
+                var value = (V)values[1];
+                List<V> valueList = null;
+                if (dict.TryGetValue(key, out valueList))
                 {
-                    value = new List<V>();
-                    dict.Add(tuple.Item1, value);
+                    valueList.Add(value);
                 }
-                value.Add(tuple.Item2);
+                else
+                {
+                    valueList = new List<V>();
+                    valueList.Add(value);
+                    dict.Add(key, valueList);
+                }
             }
             return dict;
         }
 
 
         /// <summary>
-        /// 给我
+        /// 用reader的第一列做为key，用第二列作为Key
         /// </summary>
         /// <typeparam name="K"></typeparam>
         /// <typeparam name="V"></typeparam>
@@ -240,26 +246,15 @@ namespace Loogn.OrmLite
         public static Dictionary<K, V> ReaderToDictionary<K, V>(DbDataReader reader)
         {
             if (!reader.HasRows) return new Dictionary<K, V>();
-            var list = ReaderToTupleList<K, V>(reader);
-            var dict = new Dictionary<K, V>(list.Count);
-            foreach (var tuple in list)
-            {
-                dict[tuple.Item1] = tuple.Item2;
-            }
-            return dict;
-        }
 
-        internal static List<Tuple<T1, T2>> ReaderToTupleList<T1, T2>(DbDataReader reader)
-        {
-            if (!reader.HasRows) return new List<Tuple<T1, T2>>();
-            var list = new List<Tuple<T1, T2>>();
+            var dict = new Dictionary<K, V>();
+            var values = new object[2];
             while (reader.Read())
             {
-                var values = new object[2];
                 reader.GetValues(values);
-                list.Add(new Tuple<T1, T2>((T1)values[0], (T2)values[1]));
+                dict[(K)values[0]] = (V)values[1];
             }
-            return list;
+            return dict;
         }
     }
 }

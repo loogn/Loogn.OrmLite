@@ -124,6 +124,10 @@ namespace Loogn.OrmLite
                 {
                     return 0;
                 }
+                if (identity is int)
+                {
+                    return (int)identity;
+                }
                 return Convert.ToInt32(identity);
             }
             else
@@ -151,6 +155,10 @@ namespace Loogn.OrmLite
                 {
                     return 0;
                 }
+                if (identity is int)
+                {
+                    return (int)identity;
+                }
                 return Convert.ToInt32(identity);
             }
             else
@@ -177,6 +185,10 @@ namespace Loogn.OrmLite
                 if (identity == null || identity is DBNull)
                 {
                     return 0;
+                }
+                if (identity is int)
+                {
+                    return (int)identity;
                 }
                 return Convert.ToInt32(identity);
             }

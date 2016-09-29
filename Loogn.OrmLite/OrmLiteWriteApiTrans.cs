@@ -39,14 +39,14 @@ namespace Loogn.OrmLite
             return cmd;
         }
 
-         /// <summary>
-         /// 执行命令,返回影响行数
-         /// </summary>
-         /// <param name="dbTrans"></param>
-         /// <param name="commandType">命令类型</param>
-         /// <param name="commandText">命令文本</param>
-         /// <param name="ps">参数列表</param>
-         /// <returns></returns>
+        /// <summary>
+        /// 执行命令,返回影响行数
+        /// </summary>
+        /// <param name="dbTrans"></param>
+        /// <param name="commandType">命令类型</param>
+        /// <param name="commandText">命令文本</param>
+        /// <param name="ps">参数列表</param>
+        /// <returns></returns>
         public static int ExecuteNonQuery(this DbTransaction dbTrans, CommandType commandType, string commandText, params DbParameter[] ps)
         {
             return SqlHelper.ExecuteNonQuery(dbTrans, commandType, commandText, ps);
@@ -110,6 +110,10 @@ namespace Loogn.OrmLite
                 {
                     return 0;
                 }
+                if (identity is int)
+                {
+                    return (int)identity;
+                }
                 return Convert.ToInt32(identity);
             }
             else
@@ -137,6 +141,10 @@ namespace Loogn.OrmLite
                 {
                     return 0;
                 }
+                if (identity is int)
+                {
+                    return (int)identity;
+                }
                 return Convert.ToInt32(identity);
             }
             else
@@ -163,6 +171,10 @@ namespace Loogn.OrmLite
                 if (identity == null || identity is DBNull)
                 {
                     return 0;
+                }
+                if (identity is int)
+                {
+                    return (int)identity;
                 }
                 return Convert.ToInt32(identity);
             }

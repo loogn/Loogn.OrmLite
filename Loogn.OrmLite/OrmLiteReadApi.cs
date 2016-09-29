@@ -599,7 +599,7 @@ namespace Loogn.OrmLite
             var theCmd = BaseCmd.GetCmd(dbConn.GetProviderType());
             return SingleOriginal(dbConn, CommandType.Text, sql, theCmd.AnonTypeToParams(parameters));
         }
-        
+
         /// <summary>
         /// 根据格式化sql语句查询单条数据
         /// </summary>
@@ -683,78 +683,180 @@ namespace Loogn.OrmLite
 
         #region Scalar
 
-        public static T Scalar<T>(this DbConnection dbConn, string sql)
+        /// <summary>
+        /// 根据sql语句查询首行首列
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql">sql语句</param>
+        /// <returns></returns>
+        public static TValue Scalar<TValue>(this DbConnection dbConn, string sql)
         {
-            return ScalarOriginal<T>(dbConn, CommandType.Text, sql, null);
+            return ScalarOriginal<TValue>(dbConn, CommandType.Text, sql, null);
         }
 
-        public static T Scalar<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
+        /// <summary>
+        /// 根据sql语句查询首行首列
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql">sql语句</param>
+        /// <param name="parameters">参数列表</param>
+        /// <returns></returns>
+        public static TValue Scalar<TValue>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             var theCmd = BaseCmd.GetCmd(dbConn.GetProviderType());
-            return ScalarOriginal<T>(dbConn, CommandType.Text, sql, theCmd.DictionaryToParams(parameters));
+            return ScalarOriginal<TValue>(dbConn, CommandType.Text, sql, theCmd.DictionaryToParams(parameters));
         }
 
-        public static T Scalar<T>(this DbConnection dbConn, string sql, object parameters)
+        /// <summary>
+        /// 根据sql语句查询首行首列
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql">sql语句</param>
+        /// <param name="parameters">参数列表</param>
+        /// <returns></returns>
+        public static TValue Scalar<TValue>(this DbConnection dbConn, string sql, object parameters)
         {
-            return ScalarOriginal<T>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).AnonTypeToParams(parameters));
+            return ScalarOriginal<TValue>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).AnonTypeToParams(parameters));
         }
 
-        public static T ScalarFmt<T>(this DbConnection dbConn, string sqlFormat, params object[] parameters)
+        /// <summary>
+        /// 根据sql语句查询首行首列
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sqlFormat">格式化sql语句</param>
+        /// <param name="parameters">格式化参数</param>
+        /// <returns></returns>
+        public static TValue ScalarFmt<TValue>(this DbConnection dbConn, string sqlFormat, params object[] parameters)
         {
-            return ScalarOriginal<T>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
+            return ScalarOriginal<TValue>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
-        public static T MaxID<T>(this DbConnection dbConn, string tableName, string field = OrmLite.KeyName)
+
+        /// <summary>
+        /// 得到表中某列的最大值
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="tableName">表名</param>
+        /// <param name="field">列名</param>
+        /// <returns></returns>
+        public static TValue MaxID<TValue>(this DbConnection dbConn, string tableName, string field = OrmLite.KeyName)
         {
             tableName = SqlInjection.Filter(tableName);
             var theCmd = BaseCmd.GetCmd(dbConn.GetProviderType());
 
             var sql = string.Format("SELECT {2}(MAX({3}{0}{4}), 0) FROM {3}{1}{4}", field, tableName, theCmd.IFNULL(), theCmd.L(), theCmd.R());
-            return ScalarOriginal<T>(dbConn, CommandType.Text, sql);
+            return ScalarOriginal<TValue>(dbConn, CommandType.Text, sql);
         }
 
         #endregion
 
         #region Column
 
-        public static List<T> Column<T>(this DbConnection dbConn, string sql)
+        /// <summary>
+        /// 根据sql语句查询一列数据
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql">sql语句</param>
+        /// <returns></returns>
+        public static List<TField> Column<TField>(this DbConnection dbConn, string sql)
         {
-            return ColumnOriginal<T>(dbConn, CommandType.Text, sql, null);
+            return ColumnOriginal<TField>(dbConn, CommandType.Text, sql, null);
         }
 
-        public static List<T> Column<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
+        /// <summary>
+        /// 根据sql语句查询一列数据
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql">sql语句</param>
+        /// <param name="parameters">参数列表</param>
+        /// <returns></returns>
+        public static List<TField> Column<TField>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
-            return ColumnOriginal<T>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).DictionaryToParams(parameters));
+            return ColumnOriginal<TField>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).DictionaryToParams(parameters));
         }
 
-        public static List<T> Column<T>(this DbConnection dbConn, string sql, object parameters)
+        /// <summary>
+        /// 根据sql语句查询一列数据
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql">sql语句</param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public static List<TField> Column<TField>(this DbConnection dbConn, string sql, object parameters)
         {
-            return ColumnOriginal<T>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).AnonTypeToParams(parameters));
+            return ColumnOriginal<TField>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).AnonTypeToParams(parameters));
         }
 
-        public static List<T> ColumnFmt<T>(this DbConnection dbConn, string sqlFormat, params object[] parameters)
+        /// <summary>
+        /// 根据格式化sql语句查询一列数据
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sqlFormat">格式化sql语句</param>
+        /// <param name="parameters">格式化参数</param>
+        /// <returns></returns>
+        public static List<TField> ColumnFmt<TField>(this DbConnection dbConn, string sqlFormat, params object[] parameters)
         {
-            return ColumnOriginal<T>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
+            return ColumnOriginal<TField>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
-        public static HashSet<T> ColumnDistinct<T>(this DbConnection dbConn, string sql)
+        /// <summary>
+        /// 根据sql语句查询一列去重数据
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public static HashSet<TField> ColumnDistinct<TField>(this DbConnection dbConn, string sql)
         {
-            return ColumnDistinctOriginal<T>(dbConn, CommandType.Text, sql);
+            return ColumnDistinctOriginal<TField>(dbConn, CommandType.Text, sql);
         }
 
-        public static HashSet<T> ColumnDistinct<T>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
+        /// <summary>
+        /// 根据sql语句查询一列去重数据
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public static HashSet<TField> ColumnDistinct<TField>(this DbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
-            return ColumnDistinctOriginal<T>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).DictionaryToParams(parameters));
+            return ColumnDistinctOriginal<TField>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).DictionaryToParams(parameters));
         }
 
-        public static HashSet<T> ColumnDistinct<T>(this DbConnection dbConn, string sql, object parameters)
+        /// <summary>
+        /// 根据sql语句查询一列去重数据
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sql"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public static HashSet<TField> ColumnDistinct<TField>(this DbConnection dbConn, string sql, object parameters)
         {
-            return ColumnDistinctOriginal<T>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).AnonTypeToParams(parameters));
+            return ColumnDistinctOriginal<TField>(dbConn, CommandType.Text, sql, BaseCmd.GetCmd(dbConn.GetProviderType()).AnonTypeToParams(parameters));
         }
 
-        public static HashSet<T> ColumnDistinctFmt<T>(this DbConnection dbConn, string sqlFormat, params object[] parameters)
+        /// <summary>
+        /// 根据sql语句查询一列去重数据
+        /// </summary>
+        /// <typeparam name="TField"></typeparam>
+        /// <param name="dbConn"></param>
+        /// <param name="sqlFormat"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        public static HashSet<TField> ColumnDistinctFmt<TField>(this DbConnection dbConn, string sqlFormat, params object[] parameters)
         {
-            return ColumnDistinctOriginal<T>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
+            return ColumnDistinctOriginal<TField>(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
 
         #endregion
@@ -835,7 +937,7 @@ namespace Loogn.OrmLite
             var cmd = BaseCmd.GetCmd(dbConn.GetProviderType()).CountWhere<T>(conditions);
             return CountOriginal(dbConn, CommandType.Text, cmd.CmdText, cmd.Params);
         }
-        
+
         public static int CountFmt(this DbConnection dbConn, string sqlFormat, params object[] parameters)
         {
             return CountOriginal(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));

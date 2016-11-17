@@ -33,7 +33,7 @@ namespace PerformanceTesting
 
 
             //MappingTester.Test();
-            //QueryTester.Test();
+            QueryTester.Test();
             //SingleContextQueryTester.Test();
         }
     }

@@ -50,7 +50,7 @@ namespace Loogn.OrmLite
 
         private Dictionary<string, Accessor> accessorDict;
         public Dictionary<PropertyInfo, OrmLiteFieldAttribute> FieldAttrDict { get; private set; }
-        public PropertyInfo[] Properties { get; }
+        public PropertyInfo[] Properties { get; set; }
         public Func<TObject> NewInstance;
         public ReflectionInfo(Type modelType)
         {
@@ -295,18 +295,31 @@ namespace Loogn.OrmLite
             Action<TObject, string> setter;
             Func<TObject, string> getter;
 
-            public StringAccessor(PropertyInfo prop) : base(prop)
+            public StringAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, string>)Delegate.CreateDelegate(typeof(Action<TObject, string>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, string>)Delegate.CreateDelegate(typeof(Func<TObject, string>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, string>)Delegate.CreateDelegate(typeof(Action<TObject, string>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, string>)Delegate.CreateDelegate(typeof(Func<TObject, string>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (string)value);
+                if (setter != null)
+                {
+                    setter(obj, (string)value);
+                }
+
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -314,18 +327,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, int> setter;
             Func<TObject, int> getter;
-            public IntAccessor(PropertyInfo prop) : base(prop)
+            public IntAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, int>)Delegate.CreateDelegate(typeof(Action<TObject, int>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, int>)Delegate.CreateDelegate(typeof(Func<TObject, int>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, int>)Delegate.CreateDelegate(typeof(Action<TObject, int>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, int>)Delegate.CreateDelegate(typeof(Func<TObject, int>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (int)value);
+                if (setter != null)
+                {
+                    setter(obj, (int)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? 0 : getter(obj);
             }
         }
 
@@ -333,18 +358,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, int?> setter;
             Func<TObject, int?> getter;
-            public IntNullableAccessor(PropertyInfo prop) : base(prop)
+            public IntNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, int?>)Delegate.CreateDelegate(typeof(Action<TObject, int?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, int?>)Delegate.CreateDelegate(typeof(Func<TObject, int?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, int?>)Delegate.CreateDelegate(typeof(Action<TObject, int?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, int?>)Delegate.CreateDelegate(typeof(Func<TObject, int?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (int)value);
+                if (setter != null)
+                {
+                    setter(obj, (int)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? 0 : getter(obj);
             }
         }
 
@@ -352,19 +389,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, DateTime> setter;
             Func<TObject, DateTime> getter;
-            public DateTimeAccessor(PropertyInfo prop) : base(prop)
+            public DateTimeAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, DateTime>)Delegate.CreateDelegate(typeof(Action<TObject, DateTime>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, DateTime>)Delegate.CreateDelegate(typeof(Func<TObject, DateTime>), null, prop.GetGetMethod(true));
-
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, DateTime>)Delegate.CreateDelegate(typeof(Action<TObject, DateTime>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, DateTime>)Delegate.CreateDelegate(typeof(Func<TObject, DateTime>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (DateTime)value);
+                if (setter != null)
+                {
+                    setter(obj, (DateTime)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? DateTime.MinValue : getter(obj);
             }
         }
 
@@ -372,19 +420,32 @@ namespace Loogn.OrmLite
         {
             Action<TObject, DateTime?> setter;
             Func<TObject, DateTime?> getter;
-            public DateTimeNullableAccessor(PropertyInfo prop) : base(prop)
+            public DateTimeNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, DateTime?>)Delegate.CreateDelegate(typeof(Action<TObject, DateTime?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, DateTime?>)Delegate.CreateDelegate(typeof(Func<TObject, DateTime?>), null, prop.GetGetMethod(true));
+
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, DateTime?>)Delegate.CreateDelegate(typeof(Action<TObject, DateTime?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, DateTime?>)Delegate.CreateDelegate(typeof(Func<TObject, DateTime?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (DateTime?)value);
+                if (setter != null)
+                {
+                    setter(obj, (DateTime?)value);
+                }
             }
 
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -392,19 +453,32 @@ namespace Loogn.OrmLite
         {
             Action<TObject, long> setter;
             Func<TObject, long> getter;
-            public LongAccessor(PropertyInfo prop) : base(prop)
+            public LongAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, long>)Delegate.CreateDelegate(typeof(Action<TObject, long>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, long>)Delegate.CreateDelegate(typeof(Func<TObject, long>), null, prop.GetGetMethod(true));
+
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, long>)Delegate.CreateDelegate(typeof(Action<TObject, long>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, long>)Delegate.CreateDelegate(typeof(Func<TObject, long>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (long)value);
+                if (setter != null)
+                {
+                    setter(obj, (long)value);
+                }
             }
 
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? 0 : getter(obj);
             }
         }
 
@@ -412,18 +486,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, long?> setter;
             Func<TObject, long?> getter;
-            public LongNullableAccessor(PropertyInfo prop) : base(prop)
+            public LongNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, long?>)Delegate.CreateDelegate(typeof(Action<TObject, long?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, long?>)Delegate.CreateDelegate(typeof(Func<TObject, long?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, long?>)Delegate.CreateDelegate(typeof(Action<TObject, long?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, long?>)Delegate.CreateDelegate(typeof(Func<TObject, long?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (long)value);
+                if (setter != null)
+                {
+                    setter(obj, (long)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -431,18 +517,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, double> setter;
             Func<TObject, double> getter;
-            public DoubleAccessor(PropertyInfo prop) : base(prop)
+            public DoubleAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, double>)Delegate.CreateDelegate(typeof(Action<TObject, double>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, double>)Delegate.CreateDelegate(typeof(Func<TObject, double>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, double>)Delegate.CreateDelegate(typeof(Action<TObject, double>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, double>)Delegate.CreateDelegate(typeof(Func<TObject, double>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (double)value);
+                if (setter != null)
+                {
+                    setter(obj, (double)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? 0 : getter(obj);
             }
         }
 
@@ -450,18 +548,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, double?> setter;
             Func<TObject, double?> getter;
-            public DoubleNullableAccessor(PropertyInfo prop) : base(prop)
+            public DoubleNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, double?>)Delegate.CreateDelegate(typeof(Action<TObject, double?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, double?>)Delegate.CreateDelegate(typeof(Func<TObject, double?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, double?>)Delegate.CreateDelegate(typeof(Action<TObject, double?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, double?>)Delegate.CreateDelegate(typeof(Func<TObject, double?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (double)value);
+                if (setter != null)
+                {
+                    setter(obj, (double)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -469,18 +579,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, float> setter;
             Func<TObject, float> getter;
-            public FloatAccessor(PropertyInfo prop) : base(prop)
+            public FloatAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, float>)Delegate.CreateDelegate(typeof(Action<TObject, float>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, float>)Delegate.CreateDelegate(typeof(Func<TObject, float>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, float>)Delegate.CreateDelegate(typeof(Action<TObject, float>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, float>)Delegate.CreateDelegate(typeof(Func<TObject, float>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (float)value);
+                if (setter != null)
+                {
+                    setter(obj, (float)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? 0 : getter(obj);
             }
         }
 
@@ -488,18 +610,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, float?> setter;
             Func<TObject, float?> getter;
-            public FloatNullableAccessor(PropertyInfo prop) : base(prop)
+            public FloatNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, float?>)Delegate.CreateDelegate(typeof(Action<TObject, float?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, float?>)Delegate.CreateDelegate(typeof(Func<TObject, float?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, float?>)Delegate.CreateDelegate(typeof(Action<TObject, float?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, float?>)Delegate.CreateDelegate(typeof(Func<TObject, float?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (float)value);
+                if (setter != null)
+                {
+                    setter(obj, (float)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -507,18 +641,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, Guid> setter;
             Func<TObject, Guid> getter;
-            public GuidAccessor(PropertyInfo prop) : base(prop)
+            public GuidAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, Guid>)Delegate.CreateDelegate(typeof(Action<TObject, Guid>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, Guid>)Delegate.CreateDelegate(typeof(Func<TObject, Guid>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, Guid>)Delegate.CreateDelegate(typeof(Action<TObject, Guid>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, Guid>)Delegate.CreateDelegate(typeof(Func<TObject, Guid>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (Guid)value);
+                if (setter != null)
+                {
+                    setter(obj, (Guid)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? Guid.Empty : getter(obj);
             }
         }
 
@@ -526,18 +672,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, Guid?> setter;
             Func<TObject, Guid?> getter;
-            public GuidNullableAccessor(PropertyInfo prop) : base(prop)
+            public GuidNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, Guid?>)Delegate.CreateDelegate(typeof(Action<TObject, Guid?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, Guid?>)Delegate.CreateDelegate(typeof(Func<TObject, Guid?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, Guid?>)Delegate.CreateDelegate(typeof(Action<TObject, Guid?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, Guid?>)Delegate.CreateDelegate(typeof(Func<TObject, Guid?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (Guid)value);
+                if (setter != null)
+                {
+                    setter(obj, (Guid)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -545,26 +703,38 @@ namespace Loogn.OrmLite
         {
             Action<TObject, byte> setter;
             Func<TObject, byte> getter;
-            public ByteAccessor(PropertyInfo prop) : base(prop)
+            public ByteAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, byte>)Delegate.CreateDelegate(typeof(Action<TObject, byte>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, byte>)Delegate.CreateDelegate(typeof(Func<TObject, byte>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, byte>)Delegate.CreateDelegate(typeof(Action<TObject, byte>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, byte>)Delegate.CreateDelegate(typeof(Func<TObject, byte>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                if (value is byte)
+                if (setter != null)
                 {
-                    setter(obj, (byte)value);
-                }
-                else
-                {
-                    setter(obj, Convert.ToByte(value));
+                    if (value is byte)
+                    {
+                        setter(obj, (byte)value);
+                    }
+                    else
+                    {
+                        setter(obj, Convert.ToByte(value));
+                    }
                 }
 
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? 0 : getter(obj);
             }
         }
         public class ByteNullableAccessor : Accessor
@@ -572,25 +742,37 @@ namespace Loogn.OrmLite
             Action<TObject, byte?> setter;
             Func<TObject, byte?> getter;
 
-            public ByteNullableAccessor(PropertyInfo prop) : base(prop)
+            public ByteNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, byte?>)Delegate.CreateDelegate(typeof(Action<TObject, byte?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, byte?>)Delegate.CreateDelegate(typeof(Func<TObject, byte?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, byte?>)Delegate.CreateDelegate(typeof(Action<TObject, byte?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, byte?>)Delegate.CreateDelegate(typeof(Func<TObject, byte?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                if (value is byte)
+                if (setter != null)
                 {
-                    setter(obj, (byte)value);
-                }
-                else
-                {
-                    setter(obj, Convert.ToByte(value));
+                    if (value is byte)
+                    {
+                        setter(obj, (byte)value);
+                    }
+                    else
+                    {
+                        setter(obj, Convert.ToByte(value));
+                    }
                 }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -598,36 +780,60 @@ namespace Loogn.OrmLite
         {
             Action<TObject, short> setter;
             Func<TObject, short> getter;
-            public ShortAccessor(PropertyInfo prop) : base(prop)
+            public ShortAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, short>)Delegate.CreateDelegate(typeof(Action<TObject, short>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, short>)Delegate.CreateDelegate(typeof(Func<TObject, short>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, short>)Delegate.CreateDelegate(typeof(Action<TObject, short>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, short>)Delegate.CreateDelegate(typeof(Func<TObject, short>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (short)value);
+                if (setter != null)
+                {
+                    setter(obj, (short)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? 0 : getter(obj);
             }
         }
         public class ShortNullableAccessor : Accessor
         {
             Action<TObject, short?> setter;
             Func<TObject, short?> getter;
-            public ShortNullableAccessor(PropertyInfo prop) : base(prop)
+            public ShortNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, short?>)Delegate.CreateDelegate(typeof(Action<TObject, short?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, short?>)Delegate.CreateDelegate(typeof(Func<TObject, short?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, short?>)Delegate.CreateDelegate(typeof(Action<TObject, short?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, short?>)Delegate.CreateDelegate(typeof(Func<TObject, short?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (short)value);
+                if (setter != null)
+                {
+                    setter(obj, (short)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? 0 : getter(obj);
             }
         }
 
@@ -635,18 +841,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, char> setter;
             Func<TObject, char> getter;
-            public CharAccessor(PropertyInfo prop) : base(prop)
+            public CharAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, char>)Delegate.CreateDelegate(typeof(Action<TObject, char>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, char>)Delegate.CreateDelegate(typeof(Func<TObject, char>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, char>)Delegate.CreateDelegate(typeof(Action<TObject, char>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, char>)Delegate.CreateDelegate(typeof(Func<TObject, char>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (char)value);
+                if (setter != null)
+                {
+                    setter(obj, (char)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? char.MinValue : getter(obj);
             }
         }
 
@@ -654,18 +872,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, char?> setter;
             Func<TObject, char?> getter;
-            public CharNullableAccessor(PropertyInfo prop) : base(prop)
+            public CharNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, char?>)Delegate.CreateDelegate(typeof(Action<TObject, char?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, char?>)Delegate.CreateDelegate(typeof(Func<TObject, char?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, char?>)Delegate.CreateDelegate(typeof(Action<TObject, char?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, char?>)Delegate.CreateDelegate(typeof(Func<TObject, char?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (char)value);
+                if (setter != null)
+                {
+                    setter(obj, (char)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -673,25 +903,37 @@ namespace Loogn.OrmLite
         {
             Action<TObject, bool> setter;
             Func<TObject, bool> getter;
-            public BoolAccessor(PropertyInfo prop) : base(prop)
+            public BoolAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, bool>)Delegate.CreateDelegate(typeof(Action<TObject, bool>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, bool>)Delegate.CreateDelegate(typeof(Func<TObject, bool>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, bool>)Delegate.CreateDelegate(typeof(Action<TObject, bool>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, bool>)Delegate.CreateDelegate(typeof(Func<TObject, bool>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                if (value is bool)
+                if (setter != null)
                 {
-                    setter(obj, (bool)value);
-                }
-                else
-                {
-                    setter(obj, Convert.ToUInt16(value) > 0);
+                    if (value is bool)
+                    {
+                        setter(obj, (bool)value);
+                    }
+                    else
+                    {
+                        setter(obj, Convert.ToUInt16(value) > 0);
+                    }
                 }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? false : getter(obj);
             }
         }
 
@@ -699,25 +941,37 @@ namespace Loogn.OrmLite
         {
             Action<TObject, bool?> setter;
             Func<TObject, bool?> getter;
-            public BoolNullableAccessor(PropertyInfo prop) : base(prop)
+            public BoolNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, bool?>)Delegate.CreateDelegate(typeof(Action<TObject, bool?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, bool?>)Delegate.CreateDelegate(typeof(Func<TObject, bool?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, bool?>)Delegate.CreateDelegate(typeof(Action<TObject, bool?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, bool?>)Delegate.CreateDelegate(typeof(Func<TObject, bool?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                if (value is bool)
+                if (setter != null)
                 {
-                    setter(obj, (bool)value);
-                }
-                else
-                {
-                    setter(obj, Convert.ToUInt16(value) > 0);
+                    if (value is bool)
+                    {
+                        setter(obj, (bool)value);
+                    }
+                    else
+                    {
+                        setter(obj, Convert.ToUInt16(value) > 0);
+                    }
                 }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -725,18 +979,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, TimeSpan> setter;
             Func<TObject, TimeSpan> getter;
-            public TimeSpanAccessor(PropertyInfo prop) : base(prop)
+            public TimeSpanAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, TimeSpan>)Delegate.CreateDelegate(typeof(Action<TObject, TimeSpan>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, TimeSpan>)Delegate.CreateDelegate(typeof(Func<TObject, TimeSpan>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, TimeSpan>)Delegate.CreateDelegate(typeof(Action<TObject, TimeSpan>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, TimeSpan>)Delegate.CreateDelegate(typeof(Func<TObject, TimeSpan>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (TimeSpan)value);
+                if (setter != null)
+                {
+                    setter(obj, (TimeSpan)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? TimeSpan.Zero : getter(obj);
             }
         }
 
@@ -744,18 +1010,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, TimeSpan?> setter;
             Func<TObject, TimeSpan?> getter;
-            public TimeSpanNullableAccessor(PropertyInfo prop) : base(prop)
+            public TimeSpanNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, TimeSpan?>)Delegate.CreateDelegate(typeof(Action<TObject, TimeSpan?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, TimeSpan?>)Delegate.CreateDelegate(typeof(Func<TObject, TimeSpan?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, TimeSpan?>)Delegate.CreateDelegate(typeof(Action<TObject, TimeSpan?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, TimeSpan?>)Delegate.CreateDelegate(typeof(Func<TObject, TimeSpan?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (TimeSpan)value);
+                if (setter != null)
+                {
+                    setter(obj, (TimeSpan)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -763,18 +1041,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, decimal> setter;
             Func<TObject, decimal> getter;
-            public DecimalAccessor(PropertyInfo prop) : base(prop)
+            public DecimalAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, decimal>)Delegate.CreateDelegate(typeof(Action<TObject, decimal>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, decimal>)Delegate.CreateDelegate(typeof(Func<TObject, decimal>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, decimal>)Delegate.CreateDelegate(typeof(Action<TObject, decimal>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, decimal>)Delegate.CreateDelegate(typeof(Func<TObject, decimal>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (decimal)value);
+                if (setter != null)
+                {
+                    setter(obj, (decimal)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? 0M : getter(obj);
             }
         }
 
@@ -782,18 +1072,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, decimal?> setter;
             Func<TObject, decimal?> getter;
-            public DecimalNullableAccessor(PropertyInfo prop) : base(prop)
+            public DecimalNullableAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, decimal?>)Delegate.CreateDelegate(typeof(Action<TObject, decimal?>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, decimal?>)Delegate.CreateDelegate(typeof(Func<TObject, decimal?>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, decimal?>)Delegate.CreateDelegate(typeof(Action<TObject, decimal?>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, decimal?>)Delegate.CreateDelegate(typeof(Func<TObject, decimal?>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (decimal)value);
+                if (setter != null)
+                {
+                    setter(obj, (decimal)value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 
@@ -801,18 +1103,30 @@ namespace Loogn.OrmLite
         {
             Action<TObject, byte[]> setter;
             Func<TObject, byte[]> getter;
-            public ByteArrayAccessor(PropertyInfo prop) : base(prop)
+            public ByteArrayAccessor(PropertyInfo prop)
+                : base(prop)
             {
-                setter = (Action<TObject, byte[]>)Delegate.CreateDelegate(typeof(Action<TObject, byte[]>), null, prop.GetSetMethod(true));
-                getter = (Func<TObject, byte[]>)Delegate.CreateDelegate(typeof(Func<TObject, byte[]>), null, prop.GetGetMethod(true));
+                var setMethod = prop.GetSetMethod(true);
+                if (setMethod != null)
+                {
+                    setter = (Action<TObject, byte[]>)Delegate.CreateDelegate(typeof(Action<TObject, byte[]>), null, setMethod);
+                }
+                var getMethod = prop.GetGetMethod(true);
+                if (getMethod != null)
+                {
+                    getter = (Func<TObject, byte[]>)Delegate.CreateDelegate(typeof(Func<TObject, byte[]>), null, getMethod);
+                }
             }
             protected override void DoSet(TObject obj, object value)
             {
-                setter(obj, (byte[])value);
+                if (setter != null)
+                {
+                    setter(obj, (byte[])value);
+                }
             }
             protected override object DoGet(TObject obj)
             {
-                return getter(obj);
+                return getter == null ? null : getter(obj);
             }
         }
 

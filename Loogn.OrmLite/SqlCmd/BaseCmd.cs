@@ -705,7 +705,7 @@ namespace Loogn.OrmLite
             }
             else if (providerType == OrmLiteProviderType.MySql || providerType == OrmLiteProviderType.Sqlite)
             {
-                sb.AppendFormat("select {0} from `{1}`", factor.Fields, factor.TableName);
+                sb.AppendFormat("select {0} from {1}", factor.Fields, factor.TableName);
                 if (!string.IsNullOrEmpty(factor.Conditions))
                 {
                     sb.AppendFormat(" where {0}", factor.Conditions);

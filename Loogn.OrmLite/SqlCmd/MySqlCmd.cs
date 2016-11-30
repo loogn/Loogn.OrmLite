@@ -51,7 +51,7 @@ namespace Loogn.OrmLite
 
         public override string L()
         {
-            return "`";
+            return "";
         }
 
         public override string PageSql(OrmLitePageFactor factor)
@@ -69,7 +69,7 @@ namespace Loogn.OrmLite
 
         public override string R()
         {
-            return "`";
+            return "";
         }
 
         public override CmdInfo Single<T>(object conditions)

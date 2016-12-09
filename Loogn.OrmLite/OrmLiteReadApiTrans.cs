@@ -189,16 +189,13 @@ namespace Loogn.OrmLite
                 factor.Fields = "*";
             }
             var theCmd = BaseCmd.GetCmd(dbTrans.GetProviderType());
-
-            var l = theCmd.L();
-            var r = theCmd.R();
-
+            
             var ps = factor.Params is IDictionary<string, object> ?
                 theCmd.DictionaryToParams(factor.Params as IDictionary<string, object>)
                 : theCmd.AnonTypeToParams(factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
-            sb.AppendFormat("select count(0) from {1}{0}{2}", factor.TableName, l, r);
+            sb.AppendFormat("select count(0) from {0}", factor.TableName);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);
@@ -234,16 +231,13 @@ namespace Loogn.OrmLite
             }
 
             var theCmd = BaseCmd.GetCmd(dbTrans.GetProviderType());
-
-            var l = theCmd.L();
-            var r = theCmd.R();
-
+            
             var ps = factor.Params is IDictionary<string, object> ?
                 theCmd.DictionaryToParams(factor.Params as IDictionary<string, object>)
                 : theCmd.AnonTypeToParams(factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
-            sb.AppendFormat("select count(0) from {1}{0}{2}", factor.TableName, l, r);
+            sb.AppendFormat("select count(0) from {0}", factor.TableName);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);

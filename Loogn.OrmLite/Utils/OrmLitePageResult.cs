@@ -6,16 +6,10 @@ using System.Text;
 namespace Loogn.OrmLite
 {
     /// <summary>
-    /// 分页数据信息
+    /// 分页信息
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class OrmLitePageResult<T>
+    public class OrmLitePageInfo
     {
-        /// <summary>
-        /// 分页数据
-        /// </summary>
-        public List<T> List { get; set; }
-
         /// <summary>
         /// 总条数
         /// </summary>
@@ -46,6 +40,20 @@ namespace Loogn.OrmLite
         /// 页码
         /// </summary>
         public int PageIndex { get; set; }
+    }
+
+    /// <summary>
+    /// 分页数据信息
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class OrmLitePageResult<T> : OrmLitePageInfo
+    {
+        /// <summary>
+        /// 分页数据
+        /// </summary>
+        public List<T> List { get; set; }
+
+
 
     }
 }

@@ -36,7 +36,7 @@ namespace Loogn.OrmLite
             }
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             StringBuilder sb = new StringBuilder(sql.Length + 50);
-            return sb.AppendFormat("SELECT * FROM {2}{0}{3} where {1} limit 1", tableName, sql, L(), R()).ToString();
+            return sb.AppendFormat("SELECT * FROM `{0}` where {1} limit 1", tableName, sql).ToString();
         }
 
         public override string GetLastInsertID()
@@ -51,14 +51,14 @@ namespace Loogn.OrmLite
 
         public override string L()
         {
-            return "";
+            return "`";
         }
 
         public override string PageSql(OrmLitePageFactor factor)
         {
             StringBuilder sb = new StringBuilder(100);
 
-            sb.AppendFormat("select {0} from {2}{1}{3}", factor.Fields, factor.TableName, L(), R());
+            sb.AppendFormat("select {0} from {1}", factor.Fields, factor.TableName);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);
@@ -69,7 +69,7 @@ namespace Loogn.OrmLite
 
         public override string R()
         {
-            return "";
+            return "`";
         }
 
         public override CmdInfo Single<T>(object conditions)
@@ -77,7 +77,7 @@ namespace Loogn.OrmLite
             StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
-            sqlbuilder.AppendFormat("SELECT * FROM {1}{0}{2}", tableName, L(), R());
+            sqlbuilder.AppendFormat("SELECT * FROM `{0}`", tableName);
             ps = AnonTypeToParams(conditions, sqlbuilder);
             sqlbuilder.Append(" limit 1");
 
@@ -95,7 +95,7 @@ namespace Loogn.OrmLite
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
 
-            sqlbuilder.AppendFormat("SELECT * FROM {1}{0}{2}", tableName, L(), R());
+            sqlbuilder.AppendFormat("SELECT * FROM `{0}`", tableName);
             ps = DictionaryToParams(conditions, sqlbuilder);
             sqlbuilder.Append(" limit 1");
             var cmd = new CmdInfo();
@@ -108,7 +108,7 @@ namespace Loogn.OrmLite
         {
             var sp = CreateParameter("@" + idField, idValue);
 
-            var sql = string.Format("SELECT * FROM {2}{0}{3} WHERE {2}{1}{3}=@{1} limit 1", ReflectionHelper.GetInfo<T>().TableName, idField, L(), R());
+            var sql = string.Format("SELECT * FROM `{0}` WHERE `{1}`=@{1} limit 1", ReflectionHelper.GetInfo<T>().TableName, idField);
             return new CmdInfo
             {
                 CmdText = sql,
@@ -122,7 +122,7 @@ namespace Loogn.OrmLite
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
 
-            sqlbuilder.AppendFormat("SELECT * FROM {1}{0}{2}", tableName, L(), R());
+            sqlbuilder.AppendFormat("SELECT * FROM `{0}`", tableName);
             ps = AnonTypeToParams(conditions, sqlbuilder);
             sqlbuilder.Append(" limit 1");
             return new CmdInfo
@@ -138,7 +138,7 @@ namespace Loogn.OrmLite
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
 
-            sqlbuilder.AppendFormat("SELECT * FROM {1}{0}{2}", tableName, L(), R());
+            sqlbuilder.AppendFormat("SELECT * FROM `{0}`", tableName);
             ps = DictionaryToParams(conditions, sqlbuilder);
             sqlbuilder.Append(" limit 1");
             return new CmdInfo
@@ -153,7 +153,7 @@ namespace Loogn.OrmLite
             var table = ReflectionHelper.GetInfo<T>().TableName;
             var p = CreateParameter("@" + name, value);
 
-            var sql = string.Format("SELECT * FROM {2}{0}{3} WHERE {2}{1}{3}=@{1} limit 1 ", table, name, L(), R());
+            var sql = string.Format("SELECT * FROM `{0}` WHERE `{1}`=@{1} limit 1 ", table, name);
             return new CmdInfo
             {
                 CmdText = sql,

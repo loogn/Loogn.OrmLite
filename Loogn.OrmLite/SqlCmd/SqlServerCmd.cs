@@ -60,7 +60,16 @@ namespace Loogn.OrmLite
         {
             StringBuilder sb = new StringBuilder(100);
             sb.AppendFormat("select * from (");
-            sb.AppendFormat(" select top {0} {1},ROW_NUMBER() over(order by {2}) rowid from {4}{3}{5}", factor.PageIndex * factor.PageSize, factor.Fields, factor.OrderBy, factor.TableName, L(), R());
+
+            var l = L();
+            var r = R();
+            if (factor.TableName.ToUpperInvariant().IndexOf("JOIN") > 0 || factor.TableName.IndexOf(",") > 0)
+            {
+                l = "";
+                r = "";
+            }
+
+            sb.AppendFormat(" select top {0} {1},ROW_NUMBER() over(order by {2}) rowid from {4}{3}{5}", factor.PageIndex * factor.PageSize, factor.Fields, factor.OrderBy, factor.TableName, l, r);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);

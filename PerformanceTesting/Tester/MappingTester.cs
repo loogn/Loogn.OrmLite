@@ -18,7 +18,7 @@ namespace PerformanceTesting
 {
     public class MappingTester
     {
-        static int limit = 5000000;
+        static int limit = 500000;
         //static int limit = 500000;
         public static void Test()
         {

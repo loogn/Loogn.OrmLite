@@ -32,8 +32,8 @@ namespace PerformanceTesting
             //QueryTester.Test();
 
 
-            //MappingTester.Test();
-            QueryTester.Test();
+            MappingTester.Test();
+            //QueryTester.Test();
             //SingleContextQueryTester.Test();
         }
     }

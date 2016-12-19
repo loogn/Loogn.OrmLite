@@ -198,6 +198,12 @@ namespace Loogn.OrmLite
                 : theCmd.AnonTypeToParams(factor.Params);
             StringBuilder sb = new StringBuilder(200);
 
+            if (factor.TableName.ToUpperInvariant().IndexOf("JOIN") > 0 || factor.TableName.IndexOf(",") > 0)
+            {
+                l = "";
+                r = "";
+            }
+
             sb.AppendFormat("select count(0) from {1}{0}{2}", factor.TableName, l, r);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {

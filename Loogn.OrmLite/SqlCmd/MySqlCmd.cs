@@ -51,14 +51,22 @@ namespace Loogn.OrmLite
 
         public override string L()
         {
-            return "";
+            return "`";
         }
 
         public override string PageSql(OrmLitePageFactor factor)
         {
             StringBuilder sb = new StringBuilder(100);
 
-            sb.AppendFormat("select {0} from {2}{1}{3}", factor.Fields, factor.TableName, L(), R());
+            var l = L();
+            var r = R();
+            if (factor.TableName.ToUpperInvariant().IndexOf("JOIN") > 0 || factor.TableName.IndexOf(",") > 0)
+            {
+                l = "";
+                r = "";
+            }
+
+            sb.AppendFormat("select {0} from {2}{1}{3}", factor.Fields, factor.TableName, l, r);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);
@@ -69,7 +77,7 @@ namespace Loogn.OrmLite
 
         public override string R()
         {
-            return "";
+            return "`";
         }
 
         public override CmdInfo Single<T>(object conditions)

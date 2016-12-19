@@ -8,6 +8,8 @@ using System.Data.Common;
 
 namespace Loogn.OrmLite
 {
+
+    [Obsolete("便捷操作类，虽然可以用，但是不建议用")]
     /// <summary>
     /// 便捷操作类
     /// </summary>

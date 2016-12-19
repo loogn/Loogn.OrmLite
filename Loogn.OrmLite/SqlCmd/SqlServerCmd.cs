@@ -115,7 +115,7 @@ namespace Loogn.OrmLite
         public override CmdInfo SingleById<T>(object idValue, string idField)
         {
             var sp = CreateParameter("@" + idField, idValue);
-            var sql = string.Format("SELECT top 1 * FROM {2}{0}{3} WHERE {2}{1}{3}=@{1}", ReflectionHelper.GetInfo<T>().TableName, idField, L(), R());
+            var sql = string.Format("SELECT top 1 * FROM [{0}] WHERE [{1}]=@{1}", ReflectionHelper.GetInfo<T>().TableName, idField);
 
             return new CmdInfo
             {
@@ -130,7 +130,7 @@ namespace Loogn.OrmLite
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
 
-            sqlbuilder.AppendFormat("SELECT top 1 * FROM {1}{0}{2}", tableName, L(), R());
+            sqlbuilder.AppendFormat("SELECT top 1 * FROM [{0}]", tableName);
             ps = AnonTypeToParams(conditions, sqlbuilder);
 
             return new CmdInfo
@@ -146,7 +146,7 @@ namespace Loogn.OrmLite
             var tableName = ReflectionHelper.GetInfo<T>().TableName;
             DbParameter[] ps = null;
 
-            sqlbuilder.AppendFormat("SELECT top 1 * FROM {1}{0}{2}", tableName, L(), R());
+            sqlbuilder.AppendFormat("SELECT top 1 * FROM [{0}]", tableName);
             ps = DictionaryToParams(conditions, sqlbuilder);
             return new CmdInfo
             {
@@ -159,7 +159,7 @@ namespace Loogn.OrmLite
         {
             var table = ReflectionHelper.GetInfo<T>().TableName;
             var p = CreateParameter("@" + name, value);
-            var sql = string.Format("SELECT top 1 * FROM {2}{0}{3} WHERE {2}{1}{3}=@{1} ", table, name, L(), R());
+            var sql = string.Format("SELECT top 1 * FROM [{0}] WHERE [{1}]=@{1} ", table, name);
 
             return new CmdInfo
             {

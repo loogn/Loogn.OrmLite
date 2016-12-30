@@ -45,10 +45,10 @@ namespace PerformanceTesting
             //    Chloe(limit);
             //});
 
-            CodeTimer.Time("Mapping-ChloeSql", 1, () =>
-            {
-                ChloeSql(limit);
-            });
+            //CodeTimer.Time("Mapping-ChloeSql", 1, () =>
+            //{
+            //    ChloeSql(limit);
+            //});
 
             CodeTimer.Time("Mapping-Dapper", 1, () =>
             {
@@ -60,10 +60,10 @@ namespace PerformanceTesting
             //    EF(limit);
             //});
 
-            CodeTimer.Time("Mapping-EFSql", 1, () =>
-            {
-                EFSql(limit);
-            });
+            //CodeTimer.Time("Mapping-EFSql", 1, () =>
+            //{
+            //    EFSql(limit);
+            //});
 
             CodeTimer.Time("Mapping-Loogn", 1, () =>
             {

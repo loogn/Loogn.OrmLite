@@ -198,7 +198,7 @@ namespace Loogn.OrmLite
             var l = theCmd.L();
             var r = theCmd.R();
 
-            if (factor.TableName.ToUpperInvariant().IndexOf("JOIN") > 0 || factor.TableName.IndexOf(",") > 0)
+            if (factor.TableName.IndexOf(" ") > 0)
             {
                 l = "";
                 r = "";

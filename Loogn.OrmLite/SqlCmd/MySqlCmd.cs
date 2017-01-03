@@ -60,7 +60,7 @@ namespace Loogn.OrmLite
 
             var l = L();
             var r = R();
-            if (factor.TableName.ToUpperInvariant().IndexOf(" ") > 0 || factor.TableName.IndexOf(",") > 0)
+            if (factor.TableName.IndexOf(" ") > 0)
             {
                 l = "";
                 r = "";

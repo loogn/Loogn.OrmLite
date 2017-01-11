@@ -31,5 +31,14 @@ namespace Loogn.OrmLite
         {
             return "select last_insert_rowid()";
         }
+
+        public override CmdInfo ColumnMetaDataSql(string dbName, string tableName)
+        {
+            throw new NotImplementedException("未实现sqlite数据库的元数据查询");
+        }
+        public override CmdInfo TableMetaDataSql(string dbName)
+        {
+            throw new NotImplementedException("未实现sqlite数据库的元数据查询");
+        }
     }
 }

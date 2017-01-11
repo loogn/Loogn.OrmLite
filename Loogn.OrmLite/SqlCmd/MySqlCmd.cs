@@ -169,5 +169,37 @@ namespace Loogn.OrmLite
             };
         }
 
+        public override CmdInfo TableMetaDataSql(string dbName)
+        {
+            var GetTablesSql = "SELECT TABLE_NAME Name,TABLE_COMMENT Description FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = @dbName";
+            var p = CreateParameter("@dbName", dbName);
+
+            return new CmdInfo
+            {
+                CmdText = GetTablesSql,
+                Params = new DbParameter[] { p }
+            };
+
+        }
+
+        public override CmdInfo ColumnMetaDataSql(string dbName, string tableName)
+        {
+            var GetColumnsSql = @"select Column_Name Name,
+case Column_Key when 'PRI' then 1 else 0 end IsPrimaryKey,
+case ExTra when 'auto_increment' then 1 else 0 end IsIdentity,
+ Column_comment Description,
+data_type SqlDataType,
+case Is_Nullable when 'NO' then 0 else 1 end IsNullable
+ from information_schema.columns where table_schema = @dbName  and table_name = @tableName";
+            var p_dbName = CreateParameter("@dbName", dbName);
+            var p_tableName = CreateParameter("@tableName", tableName);
+
+            return new CmdInfo
+            {
+                CmdText = GetColumnsSql,
+                Params = new DbParameter[] { p_dbName, p_tableName }
+            };
+
+        }
     }
 }

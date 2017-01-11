@@ -167,5 +167,72 @@ namespace Loogn.OrmLite
                 Params = new DbParameter[] { p }
             };
         }
+
+        public override CmdInfo TableMetaDataSql(string dbName)
+        {
+            string GetTablesSql = @"
+SELECT  t.Name ,
+        ISNULL(p.value, '') Description
+FROM    sysobjects t
+        LEFT JOIN sys.extended_properties p ON t.id = p.major_id
+                                               AND p.minor_id = 0
+WHERE   t.xtype = 'U'
+        AND t.name <> 'dtproperties'
+ORDER BY t.name";
+            return new CmdInfo
+            {
+                CmdText = GetTablesSql,
+                Params = new DbParameter[] { }
+            };
+        }
+
+        public override CmdInfo ColumnMetaDataSql(string dbName, string tableName)
+        {
+            string GetColumnsSql = @"
+SELECT  c.Name ,
+        c.IsNullable ,
+        ( CASE WHEN COLUMNPROPERTY(c.id, c.name, 'IsIdentity') = 1 THEN 1
+               ELSE 0
+          END ) IsIdentity ,
+        ( CASE WHEN ( SELECT    COUNT(*)
+                      FROM      sysobjects
+                      WHERE     ( name IN (
+                                  SELECT    name
+                                  FROM      sysindexes
+                                  WHERE     ( id = c.id )
+                                            AND ( indid IN (
+                                                  SELECT    indid
+                                                  FROM      sysindexkeys
+                                                  WHERE     ( id = c.id )
+                                                            AND ( colid IN (
+                                                              SELECT
+                                                              colid
+                                                              FROM
+                                                              syscolumns
+                                                              WHERE
+                                                              ( id = c.id )
+                                                              AND ( name = c.name ) ) ) ) ) ) )
+                                AND ( xtype = 'PK' )
+                    ) > 0 THEN 1
+               ELSE 0
+          END ) IsPrimaryKey ,
+        t.name AS SqlDataType ,
+        ISNULL(p.value, '') Description 
+FROM    syscolumns c
+        LEFT JOIN systypes t ON c.xtype = t.xtype
+                                AND t.name <> 'sysname'
+        LEFT JOIN sys.extended_properties p ON c.colid = p.minor_id
+                                               AND p.major_id = c.id
+        LEFT JOIN syscomments m ON c.cdefault = m.id
+WHERE   c.id = OBJECT_ID(@tableName)
+ORDER BY colorder ASC
+";
+            var p = CreateParameter("@tableName", tableName);
+            return new CmdInfo
+            {
+                CmdText = GetColumnsSql,
+                Params = new DbParameter[] { p }
+            };
+        }
     }
 }

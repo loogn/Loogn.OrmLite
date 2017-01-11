@@ -45,6 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MetaData\ColumnMetaData.cs" />
+    <Compile Include="MetaData\MetaDataHelper.cs" />
+    <Compile Include="MetaData\TableMetaData.cs" />
     <Compile Include="SqlCmd\PartSqlType.cs" />
     <Compile Include="Utils\DictBuilder.cs" />
     <Compile Include="Provider\IOrmLiteProvider.cs" />

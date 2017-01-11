@@ -10,7 +10,7 @@
     <projectUrl>http://git.oschina.net/loogn/Loogn.OrmLite</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>首发稳定第一版</releaseNotes>
+    <releaseNotes>修复分页查询多表名问题</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>ORM Loogn Loogn.OrmLite OrmLite</tags>
   </metadata>

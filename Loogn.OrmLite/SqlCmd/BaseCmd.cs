@@ -718,5 +718,8 @@ namespace Loogn.OrmLite
             }
             return sb.ToString();
         }
+
+        abstract public CmdInfo TableMetaDataSql(string dbName);
+        abstract public CmdInfo ColumnMetaDataSql(string dbName, string tableName);
     }
 }

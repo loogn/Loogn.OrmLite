@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Common;
+using Loogn.OrmLite.MetaData;
 
 namespace Loogn.OrmLite
 {
@@ -394,7 +395,7 @@ namespace Loogn.OrmLite
             }
 
             var theCmd = BaseCmd.GetCmd(dbConn.GetProviderType());
-            
+
             var ps = factor.Params is IDictionary<string, object> ?
                 theCmd.DictionaryToParams(factor.Params as IDictionary<string, object>)
                 : theCmd.AnonTypeToParams(factor.Params);
@@ -444,7 +445,7 @@ namespace Loogn.OrmLite
                 factor.Fields = "*";
             }
             var theCmd = BaseCmd.GetCmd(dbConn.GetProviderType());
-            
+
             var ps = factor.Params is IDictionary<string, object> ?
                 theCmd.DictionaryToParams(factor.Params as IDictionary<string, object>)
                 : theCmd.AnonTypeToParams(factor.Params);
@@ -1067,6 +1068,43 @@ namespace Loogn.OrmLite
         {
             return CountOriginal(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }
+        #endregion
+
+
+        #region MetaData
+
+        /// <summary>
+        /// 查询指定数据库表的元数据
+        /// </summary>
+        /// <param name="dbConn"></param>
+        /// <param name="includeColumns"></param>
+        /// <returns></returns>
+        public static List<TableMetaData> SelectTableMetaData(this DbConnection dbConn, bool includeColumns = false)
+        {
+            var cmd = BaseCmd.GetCmd(dbConn.GetProviderType()).TableMetaDataSql(dbConn.Database);
+            var tableList = SelectOriginal<TableMetaData>(dbConn, CommandType.Text, cmd.CmdText, cmd.Params);
+            if (includeColumns)
+            {
+                foreach (var table in tableList)
+                {
+                    table.Columns = SelectColumnMetaData(dbConn, table.Name);
+                }
+            }
+            return tableList;
+        }
+
+        /// <summary>
+        /// 查询指定表的列元数据
+        /// </summary>
+        /// <param name="dbConn"></param>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
+        public static List<ColumnMetaData> SelectColumnMetaData(this DbConnection dbConn, string tableName)
+        {
+            var cmd = BaseCmd.GetCmd(dbConn.GetProviderType()).ColumnMetaDataSql(dbConn.Database, tableName);
+            return SelectOriginal<ColumnMetaData>(dbConn, CommandType.Text, cmd.CmdText, cmd.Params);
+        }
+
         #endregion
 
     }

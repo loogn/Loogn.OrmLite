@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Loogn.OrmLite
 {
@@ -41,6 +42,17 @@ namespace Loogn.OrmLite
             PropertysDict[type] = value;
             return value;
         }
+
+        public static Func<T> CreateNewDelegate<T>(Type objType)
+        {
+            var newMethod = new DynamicMethod(string.Empty, objType, Type.EmptyTypes, true);
+            var il = newMethod.GetILGenerator();
+            il.Emit(OpCodes.Newobj, objType.GetConstructor(Type.EmptyTypes));
+            il.Emit(OpCodes.Ret);
+            var il_new = (Func<T>)newMethod.CreateDelegate(typeof(Func<T>));
+            return il_new;
+        }
+
     }
 
     class ReflectionInfo<TObject>
@@ -79,6 +91,7 @@ namespace Loogn.OrmLite
 
             //构造委托
             NewInstance = Expression.Lambda<Func<TObject>>(Expression.New(modelType)).Compile();
+            //NewInstance = ReflectionHelper.CreateNewDelegate<TObject>(modelType);
             InitInfo();
         }
 

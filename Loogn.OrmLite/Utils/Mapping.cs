@@ -49,6 +49,25 @@ namespace Loogn.OrmLite
         }
 
         /// <summary>
+        /// 取reader的首行首列
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="reader"></param>
+        /// <returns></returns>
+        public static TValue ReaderToScalar<TValue>(DbDataReader reader)
+        {
+            if (reader.Read())
+            {
+                var obj = reader.GetValue(0);
+                return ConvertToPrimitiveType<TValue>(obj);
+            }
+            else
+            {
+                return default(TValue);
+            }
+        }
+
+        /// <summary>
         /// 用Reader填充T类型列表
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -114,7 +133,7 @@ namespace Loogn.OrmLite
 
             }
         }
-        
+
         /// <summary>
         /// 用只有一个列的Reader填充成一个列表
         /// </summary>

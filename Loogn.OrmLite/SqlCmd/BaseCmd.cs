@@ -15,6 +15,7 @@ namespace Loogn.OrmLite
     {
         public string CmdText { get; set; }
         public DbParameter[] Params { get; set; }
+
     }
 
     /// <summary>

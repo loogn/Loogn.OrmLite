@@ -47,6 +47,30 @@ namespace Loogn.OrmLite
         }
 
         /// <summary>
+        /// 执行命令，返回多个结果集，返回对象用using释放，Fetch结果的时候最好不要做其他逻辑
+        /// </summary>
+        /// <param name="dbConn"></param>
+        /// <param name="cmds"></param>
+        /// <returns></returns>
+        public static MutipleResult SelectMutipleResult(this DbConnection dbConn, params MutipleCmd[] cmds)
+        {
+            if (cmds == null || cmds.Length == 0) return new MutipleResult();
+            var theCmd = BaseCmd.GetCmd(dbConn.GetProviderType());
+
+            List<string> sqls = new List<string>();
+            List<DbParameter> ps = new List<DbParameter>();
+            for (int i = 0; i < cmds.Length; i++)
+            {
+                var cmd = cmds[i];
+                sqls.Add(cmd.GetMatchedCmdText(i));
+                ps.AddRange(theCmd.DictionaryToParams(cmd.GetUniqueParams(i)));
+            }
+            var sql = string.Join(";", sqls);
+            var reader = SqlHelper.ExecuteReader(dbConn, CommandType.Text, sql, ps.ToArray());
+            return new MutipleResult(reader);
+        }
+
+        /// <summary>
         /// 执行命令，返回动态列表
         /// </summary>
         /// <param name="dbConn"></param>

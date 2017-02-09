@@ -57,6 +57,7 @@
     <Compile Include="Utils\Mapping.cs" />
     <Compile Include="OrmLite.cs" />
     <Compile Include="Attribute\OrmLiteFieldAttribute.cs" />
+    <Compile Include="Utils\MutipleResult.cs" />
     <Compile Include="Utils\OrmLitePageFactor.cs" />
     <Compile Include="OrmLiteReadApiTrans.cs" />
     <Compile Include="OrmLiteReadApi.cs" />

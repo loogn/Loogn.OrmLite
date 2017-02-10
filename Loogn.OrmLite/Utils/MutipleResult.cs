@@ -51,6 +51,11 @@ namespace Loogn.OrmLite
             _reader = reader;
         }
 
+        /// <summary>
+        /// 从DataReader获取多行数据，填充为TModel集合返回
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <returns></returns>
         public List<TModel> FetchList<TModel>()
         {
             if (_reader == null) return new List<TModel>();
@@ -63,6 +68,11 @@ namespace Loogn.OrmLite
             return Mapping.ReaderToObjectList<TModel>(_reader);
         }
 
+        /// <summary>
+        /// 从DataReader获取一行数据，填充为TModel返回
+        /// </summary>
+        /// <typeparam name="TModel"></typeparam>
+        /// <returns></returns>
         public TModel FetchObject<TModel>()
         {
             if (_reader == null) return default(TModel);
@@ -75,6 +85,11 @@ namespace Loogn.OrmLite
             return Mapping.ReaderToObject<TModel>(_reader);
         }
 
+        /// <summary>
+        /// 从DataReader获取首行首列的值
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <returns></returns>
         public TValue FetchScalar<TValue>()
         {
             if (_reader == null) return default(TValue);
@@ -86,7 +101,6 @@ namespace Loogn.OrmLite
             _firstResult = false;
             return Mapping.ReaderToScalar<TValue>(_reader);
         }
-
     }
 
 

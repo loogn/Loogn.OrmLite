@@ -43,7 +43,6 @@ namespace Loogn.OrmLite
         #endregion
 
         DbDataReader _reader;
-        bool _firstResult = true;
 
         public MutipleResult() { }
         public MutipleResult(DbDataReader reader)
@@ -58,14 +57,14 @@ namespace Loogn.OrmLite
         /// <returns></returns>
         public List<TModel> FetchList<TModel>()
         {
-            if (_reader == null) return new List<TModel>();
-            if (!_firstResult)
+            if (_reader == null || _reader.IsClosed) return new List<TModel>();
+
+            var list = Mapping.ReaderToObjectList<TModel>(_reader);
+            if (!_reader.NextResult())
             {
-                var hasResult = _reader.NextResult();
-                if (!hasResult) return new List<TModel>();
+                _reader.Close();
             }
-            _firstResult = false;
-            return Mapping.ReaderToObjectList<TModel>(_reader);
+            return list;
         }
 
         /// <summary>
@@ -75,14 +74,14 @@ namespace Loogn.OrmLite
         /// <returns></returns>
         public TModel FetchObject<TModel>()
         {
-            if (_reader == null) return default(TModel);
-            if (!_firstResult)
+            if (_reader == null || _reader.IsClosed) return default(TModel);
+
+            var m = Mapping.ReaderToObject<TModel>(_reader);
+            if (!_reader.NextResult())
             {
-                var hasResult = _reader.NextResult();
-                if (!hasResult) return default(TModel);
+                _reader.Close();
             }
-            _firstResult = false;
-            return Mapping.ReaderToObject<TModel>(_reader);
+            return m;
         }
 
         /// <summary>
@@ -92,14 +91,14 @@ namespace Loogn.OrmLite
         /// <returns></returns>
         public TValue FetchScalar<TValue>()
         {
-            if (_reader == null) return default(TValue);
-            if (!_firstResult)
+            if (_reader == null || _reader.IsClosed) return default(TValue);
+
+            var scalar = Mapping.ReaderToScalar<TValue>(_reader);
+            if (!_reader.NextResult())
             {
-                var hasResult = _reader.NextResult();
-                if (!hasResult) return default(TValue);
+                _reader.Close();
             }
-            _firstResult = false;
-            return Mapping.ReaderToScalar<TValue>(_reader);
+            return scalar;
         }
     }
 

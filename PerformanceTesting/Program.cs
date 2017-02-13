@@ -52,24 +52,15 @@ namespace PerformanceTesting
                     new MutipleCmd { CmdText="select top 1 * from TestEntity where F_Int64>@fint", Params=new Dictionary<string, object> { {"fint",23 } } },
                     new MutipleCmd { CmdText="select top 1 F_Int64 from TestEntity where F_Int64>@fint",Params=new Dictionary<string, object> { {"fint",20 } } },
                 };
+                var result = db.SelectMutipleResult(cmds);
 
-
-                List<TestEntity> list;
-                TestEntity entity;
-                long f_int64;
-
-                using (var result = db.SelectMutipleResult(cmds))
-                {
-                    list = result.FetchList<TestEntity>();
-                    entity = result.FetchObject<TestEntity>();
-                    f_int64 = result.FetchScalar<long>();
-                }
+                var list = result.FetchList<TestEntity>();
+                var entity = result.FetchObject<TestEntity>();
+                var f_int64 = result.FetchScalar<long>();
 
                 Console.WriteLine(list[1].F_String);
                 Console.WriteLine(entity.F_String);
                 Console.WriteLine(f_int64);
-
-
             }
         }
     }

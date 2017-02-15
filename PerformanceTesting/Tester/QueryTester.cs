@@ -100,7 +100,7 @@ namespace PerformanceTesting
         {
             using (var context = new MsSqlContext(Utils.ConnStr))
             {
-                var list = context.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity where Id>@Id", limit.ToString()), DbParam.Create("@Id", minId)).ToList();
+                var list = context.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId.ToString())).ToList();
             }
         }
 
@@ -108,7 +108,7 @@ namespace PerformanceTesting
         {
             using (var conn = Utils.CreateConnection())
             {
-                var list = conn.Query<TestEntity>(string.Format("select top {0} * from TestEntity where Id>@Id", limit.ToString()), new { Id = minId }).ToList();
+                var list = conn.Query<TestEntity>(string.Format("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId.ToString())).ToList();
             }
         }
 
@@ -124,7 +124,7 @@ namespace PerformanceTesting
         {
             using (EFContext efContext = new EFContext())
             {
-                var list = efContext.Database.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity where Id>@Id", limit.ToString()), new SqlParameter("@Id", minId)).ToList();
+                var list = efContext.Database.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId.ToString())).ToList();
             }
         }
 
@@ -158,7 +158,7 @@ namespace PerformanceTesting
             var dbFactory = new OrmLiteConnectionFactory(Utils.ConnStr, SqlServerDialect.Provider);
             using (var db = dbFactory.Open())
             {
-                var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where ID>@id", limit), DictBuilder.Assign("id", minId));
+                var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where ID>{1}", limit, minId));
             }
         }
     }

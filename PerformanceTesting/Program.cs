@@ -25,8 +25,8 @@ namespace PerformanceTesting
         static void Main(string[] args)
         {
 
-            TestMutileResult();
-            return;
+            //TestMutileResult();
+            //return;
 
             init();
 
@@ -40,6 +40,7 @@ namespace PerformanceTesting
 
             MappingTester.Test();
             //QueryTester.Test();
+            
             //SingleContextQueryTester.Test();
         }
 

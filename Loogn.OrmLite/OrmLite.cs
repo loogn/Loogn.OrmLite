@@ -87,5 +87,27 @@ namespace Loogn.OrmLite
             get { return updateIgnoreFields; }
         }
 
+        /// <summary>
+        /// 获取参数分段长度
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static int? GetParameterSize(object value)
+        {
+            if (value == null || value is DBNull) return null;
+            if (value is string)
+            {
+                var length = ((string)value).Length;
+                if (length <= 100) return 100;
+                if (length <= 200) return 200;
+                if (length <= 500) return 500;
+                if (length <= 1000) return 1000;
+                if (length <= 2000) return 2000;
+                if (length <= 5000) return 5000;
+                if (length <= 8000) return 8000;
+                return null;
+            }
+            return null;
+        }
     }
 }

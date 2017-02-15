@@ -30,7 +30,7 @@ namespace PerformanceTesting
             Dapper(2);
             //EF(2);
             EFSql(2);
-            Loogn(2);
+            LoognOrmLite(2);
             CRL(2);
             ServiceStack(2);
 
@@ -66,7 +66,7 @@ namespace PerformanceTesting
 
             CodeTimer.Time("SingleContextQuery-Loogn", 1, () =>
             {
-                Loogn(limit);
+                LoognOrmLite(limit);
             });
 
             CodeTimer.Time("SingleContextQuery-CRL", 1, () =>
@@ -144,13 +144,14 @@ namespace PerformanceTesting
             }
         }
 
-        static void Loogn(int limit)
+        static void LoognOrmLite(int limit)
         {
             using (var db = Utils.CreateConnection())
             {
                 for (int i = 0; i < queryCount; i++)
                 {
-                    var list = db.SelectFmt<TestEntity>("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId);
+                    //var list = Loogn.OrmLite.OrmLiteReadApi.Select<TestEntity>(db, "select top " + limit.ToString() + " * from TestEntity where Id>@id", DictBuilder.Assign("id", minId));
+                    var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId));
                 }
             }
         }

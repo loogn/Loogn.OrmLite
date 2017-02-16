@@ -28,13 +28,7 @@ namespace Loogn.OrmLite
         /// <returns></returns>
         public DbParameter CreateParameter(string name, object value)
         {
-            var size = OrmLite.GetParameterSize(value);
-            var p = new SqlParameter(name, value);
-            if (size != null)
-            {
-                p.Size = size.Value;
-            }
-            return p;
+            return new SqlParameter(name, value);
         }
     }
 }

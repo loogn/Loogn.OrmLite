@@ -73,18 +73,18 @@ namespace Loogn.OrmLite
             }
             else
             {
-                if (modelType.Name.EndsWith("Info", StringComparison.OrdinalIgnoreCase))
-                {
-                    TableName = modelType.Name.Substring(0, modelType.Name.Length - 4);
-                }
-                else if (modelType.Name.EndsWith("Model", StringComparison.OrdinalIgnoreCase))
-                {
-                    TableName = modelType.Name.Substring(0, modelType.Name.Length - 5);
-                }
-                else
-                {
-                    TableName = modelType.Name;
-                }
+                //if (modelType.Name.EndsWith("Info", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    TableName = modelType.Name.Substring(0, modelType.Name.Length - 4);
+                //}
+                //else if (modelType.Name.EndsWith("Model", StringComparison.OrdinalIgnoreCase))
+                //{
+                //    TableName = modelType.Name.Substring(0, modelType.Name.Length - 5);
+                //}
+                //else
+                //{
+                TableName = modelType.Name;
+                //}
             }
 
             Properties = modelType.GetProperties(BindingFlags.Instance | BindingFlags.Public);

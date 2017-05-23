@@ -98,7 +98,7 @@ namespace Loogn.OrmLite
             };
         }
 
-        public override CmdInfo Single<T>(Dictionary<string, object> conditions)
+        public override CmdInfo Single<T>(IDictionary<string, object> conditions)
         {
             StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = ReflectionHelper.GetInfo<T>().TableName;

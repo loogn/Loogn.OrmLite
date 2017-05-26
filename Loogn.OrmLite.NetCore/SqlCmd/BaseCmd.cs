@@ -248,7 +248,7 @@ namespace Loogn.OrmLite.NetCore
             }
         }
 
-        abstract public CmdInfo Single<T>(Dictionary<string, object> conditions);
+        abstract public CmdInfo Single<T>(IDictionary<string, object> conditions);
 
 
         abstract public CmdInfo Single<T>(object conditions);

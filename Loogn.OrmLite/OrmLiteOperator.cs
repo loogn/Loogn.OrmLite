@@ -63,7 +63,7 @@ namespace Loogn.OrmLite
         /// <param name="m">实体类</param>
         /// <param name="selectIdentity">是否返回自增列</param>
         /// <returns></returns>
-        public int Insert(T m, bool selectIdentity = false)
+        public long Insert(T m, bool selectIdentity = false)
         {
             using (var db = openDb())
             {
@@ -79,7 +79,7 @@ namespace Loogn.OrmLite
         /// <param name="fields">字段字典</param>
         /// <param name="selectIdentity">是否返回自增列</param>
         /// <returns></returns>
-        public int Insert(string table, IDictionary<string, object> fields, bool selectIdentity = false)
+        public long Insert(string table, IDictionary<string, object> fields, bool selectIdentity = false)
         {
             using (var db = openDb())
             {
@@ -94,7 +94,7 @@ namespace Loogn.OrmLite
         /// <param name="anonType">拥有表字段的匿名对象</param>
         /// <param name="selectIdentity">是否返回自增列</param>
         /// <returns></returns>
-        public int Insert(string table, object anonType, bool selectIdentity = false)
+        public long Insert(string table, object anonType, bool selectIdentity = false)
         {
             using (var db = openDb())
             {

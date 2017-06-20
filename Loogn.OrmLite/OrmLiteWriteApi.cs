@@ -114,7 +114,7 @@ namespace Loogn.OrmLite
         /// <param name="obj"></param>
         /// <param name="selectIdentity">是否返回自增列</param>
         /// <returns></returns>
-        public static int Insert<T>(this DbConnection dbConn, T obj, bool selectIdentity = false)
+        public static long Insert<T>(this DbConnection dbConn, T obj, bool selectIdentity = false)
         {
             var cmd = BaseCmd.GetCmd(dbConn.GetProviderType()).Insert<T>(obj, selectIdentity);
             if (selectIdentity)
@@ -124,11 +124,7 @@ namespace Loogn.OrmLite
                 {
                     return 0;
                 }
-                if (identity is int)
-                {
-                    return (int)identity;
-                }
-                return Convert.ToInt32(identity);
+                return Convert.ToInt64(identity);
             }
             else
             {
@@ -145,7 +141,7 @@ namespace Loogn.OrmLite
         /// <param name="fields">字段字典</param>
         /// <param name="selectIdentity">是否返回自增列</param>
         /// <returns></returns>
-        public static int Insert(this DbConnection dbConn, string table, IDictionary<string, object> fields, bool selectIdentity = false)
+        public static long Insert(this DbConnection dbConn, string table, IDictionary<string, object> fields, bool selectIdentity = false)
         {
             var cmd = BaseCmd.GetCmd(dbConn.GetProviderType()).Insert(table, fields, selectIdentity);
             if (selectIdentity)
@@ -155,11 +151,7 @@ namespace Loogn.OrmLite
                 {
                     return 0;
                 }
-                if (identity is int)
-                {
-                    return (int)identity;
-                }
-                return Convert.ToInt32(identity);
+                return Convert.ToInt64(identity);
             }
             else
             {
@@ -176,7 +168,7 @@ namespace Loogn.OrmLite
         /// <param name="anonType">字典匿名对象</param>
         /// <param name="selectIdentity">是否返回自增列</param>
         /// <returns></returns>
-        public static int Insert(this DbConnection dbConn, string table, object anonType, bool selectIdentity = false)
+        public static long Insert(this DbConnection dbConn, string table, object anonType, bool selectIdentity = false)
         {
             var cmd = BaseCmd.GetCmd(dbConn.GetProviderType()).Insert(table, anonType, selectIdentity);
             if (selectIdentity)
@@ -186,11 +178,7 @@ namespace Loogn.OrmLite
                 {
                     return 0;
                 }
-                if (identity is int)
-                {
-                    return (int)identity;
-                }
-                return Convert.ToInt32(identity);
+                return Convert.ToInt64(identity);
             }
             else
             {

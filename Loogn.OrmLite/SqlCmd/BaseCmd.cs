@@ -689,37 +689,7 @@ namespace Loogn.OrmLite
         }
 
         abstract public string PageSql(OrmLitePageFactor factor);
-
-
-        private static string PageSql(OrmLiteProviderType providerType, OrmLitePageFactor factor)
-        {
-            StringBuilder sb = new StringBuilder(100);
-            if (providerType == OrmLiteProviderType.SqlServer)
-            {
-                sb.AppendFormat("select * from (");
-                sb.AppendFormat(" select top {0} {1},ROW_NUMBER() over(order by {2}) rowid from {3}", factor.PageIndex * factor.PageSize, factor.Fields, factor.OrderBy, factor.TableName);
-                if (!string.IsNullOrEmpty(factor.Conditions))
-                {
-                    sb.AppendFormat(" where {0}", factor.Conditions);
-                }
-                sb.AppendFormat(")t where t.rowid>{0}", (factor.PageIndex - 1) * factor.PageSize);
-            }
-            else if (providerType == OrmLiteProviderType.MySql || providerType == OrmLiteProviderType.Sqlite)
-            {
-                sb.AppendFormat("select {0} from {1}", factor.Fields, factor.TableName);
-                if (!string.IsNullOrEmpty(factor.Conditions))
-                {
-                    sb.AppendFormat(" where {0}", factor.Conditions);
-                }
-                sb.AppendFormat(" order by {0} limit {1},{2}", factor.OrderBy, (factor.PageIndex - 1) * factor.PageSize, factor.PageSize);
-            }
-            else
-            {
-                throw new Exception("没有为" + providerType + "提供PageSql");
-            }
-            return sb.ToString();
-        }
-
+        
         abstract public CmdInfo TableMetaDataSql(string dbName);
         abstract public CmdInfo ColumnMetaDataSql(string dbName, string tableName);
     }

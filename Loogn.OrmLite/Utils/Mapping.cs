@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Common;
+using System.Data;
 
 namespace Loogn.OrmLite
 {
@@ -21,23 +22,22 @@ namespace Loogn.OrmLite
         /// <typeparam name="T">类型参数</typeparam>
         /// <param name="reader">dataReader</param>
         /// <returns></returns>
-        public static T ReaderToObject<T>(DbDataReader reader)
+        public static T ReaderToObject<T>(IDataReader reader)
         {
             if (reader.Read())
             {
-                var refInfo = ReflectionHelper.GetInfo<T>();
-
-                T obj = refInfo.NewInstance();
+                var typeInfo = TypeCachedDict.GetTypeCachedInfo(typeof(T));
+                T obj = (T)typeInfo.NewInvoker();
                 var length = reader.FieldCount;
                 object[] values = new object[length];
                 reader.GetValues(values);
 
                 for (int i = 0; i < length; i++)
                 {
-                    var accessor = refInfo.GetAccessor(reader.GetName(i));
-                    if (accessor != null)
+                    var accessor = typeInfo.GetAccessor(reader.GetName(i));
+                    if (accessor != null && accessor.CanInvoker)
                     {
-                        accessor.Set(obj, values[i]);
+                        accessor.SetterInvoker(obj, values[i]);
                     }
                 }
                 return obj;
@@ -54,7 +54,7 @@ namespace Loogn.OrmLite
         /// <typeparam name="TValue"></typeparam>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static TValue ReaderToScalar<TValue>(DbDataReader reader)
+        public static TValue ReaderToScalar<TValue>(IDataReader reader)
         {
             if (reader.Read())
             {
@@ -73,31 +73,26 @@ namespace Loogn.OrmLite
         /// <typeparam name="T"></typeparam>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static List<T> ReaderToObjectList<T>(DbDataReader reader)
+        public static List<T> ReaderToObjectList<T>(IDataReader reader)
         {
-            if (!reader.HasRows)
-            {
-                return new List<T>();
-            }
-            var refInfo = ReflectionHelper.GetInfo<T>();
+            var typeInfo = TypeCachedDict.GetTypeCachedInfo(typeof(T));
             List<T> list = new List<T>();
             var first = true;
             int length = reader.FieldCount;
-            ReflectionInfo<T>.Accessor[] accessorArray = new ReflectionInfo<T>.Accessor[length];
+            PropAccessor[] propAccessorArr = new PropAccessor[length];
             object[] values = new object[length];
             while (reader.Read())
             {
                 reader.GetValues(values);
-                T obj = refInfo.NewInstance();
+                T obj = (T)typeInfo.NewInvoker();
                 if (first)
                 {
                     for (int i = 0; i < length; i++)
                     {
                         var fieldName = reader.GetName(i);
-                        var accessor = refInfo.GetAccessor(fieldName);
-                        accessorArray[i] = accessor;
-
-                        accessor.Set(obj, values[i]);
+                        var accessor = typeInfo.GetAccessor(fieldName);
+                        propAccessorArr[i] = accessor;
+                        accessor.SetterInvoker(obj, values[i]);
                     }
                     first = false;
                 }
@@ -105,12 +100,11 @@ namespace Loogn.OrmLite
                 {
                     for (var i = 0; i < length; i++)
                     {
-                        accessorArray[i].Set(obj, values[i]);
+                        propAccessorArr[i].SetterInvoker(obj, values[i]);
                     }
                 }
                 list.Add(obj);
             }
-
             return list;
         }
 
@@ -125,7 +119,7 @@ namespace Loogn.OrmLite
                 var type = typeof(T);
                 object newobj = obj;
 
-                if (ReferenceEquals(type, PrimitiveTypes.Int32))
+                if (ReferenceEquals(type, Types.Int32))
                 {
                     newobj = Convert.ToInt32(obj);
                 }
@@ -140,9 +134,8 @@ namespace Loogn.OrmLite
         /// <typeparam name="T">对应reader第一个列的类型</typeparam>
         /// <param name="reader">DataReader</param>
         /// <returns></returns>
-        public static List<T> ReaderToColumnList<T>(DbDataReader reader)
+        public static List<T> ReaderToColumnList<T>(IDataReader reader)
         {
-            if (!reader.HasRows) return new List<T>();
             List<T> list = new List<T>();
             while (reader.Read())
             {
@@ -157,9 +150,8 @@ namespace Loogn.OrmLite
         /// <typeparam name="T">对应reader第一个列的类型</typeparam>
         /// <param name="reader">DataReader</param>
         /// <returns></returns>
-        public static HashSet<T> ReaderToColumnSet<T>(DbDataReader reader)
+        public static HashSet<T> ReaderToColumnSet<T>(IDataReader reader)
         {
-            if (!reader.HasRows) return new HashSet<T>();
             HashSet<T> set = new HashSet<T>();
             while (reader.Read())
             {
@@ -173,7 +165,7 @@ namespace Loogn.OrmLite
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static dynamic ReaderToDynamic(DbDataReader reader)
+        public static dynamic ReaderToDynamic(IDataReader reader)
         {
             if (reader.Read())
             {
@@ -199,12 +191,8 @@ namespace Loogn.OrmLite
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static List<dynamic> ReaderToDynamicList(DbDataReader reader)
+        public static List<dynamic> ReaderToDynamicList(IDataReader reader)
         {
-            if (!reader.HasRows)
-            {
-                return new List<dynamic>();
-            }
             List<dynamic> list = new List<dynamic>();
             while (reader.Read())
             {
@@ -228,9 +216,8 @@ namespace Loogn.OrmLite
         /// <typeparam name="V"></typeparam>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static Dictionary<K, List<V>> ReaderToLookup<K, V>(DbDataReader reader)
+        public static Dictionary<K, List<V>> ReaderToLookup<K, V>(IDataReader reader)
         {
-            if (!reader.HasRows) return new Dictionary<K, List<V>>();
 
             var dict = new Dictionary<K, List<V>>();
             var values = new object[2];
@@ -262,10 +249,8 @@ namespace Loogn.OrmLite
         /// <typeparam name="V"></typeparam>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public static Dictionary<K, V> ReaderToDictionary<K, V>(DbDataReader reader)
+        public static Dictionary<K, V> ReaderToDictionary<K, V>(IDataReader reader)
         {
-            if (!reader.HasRows) return new Dictionary<K, V>();
-
             var dict = new Dictionary<K, V>();
             var values = new object[2];
             while (reader.Read())

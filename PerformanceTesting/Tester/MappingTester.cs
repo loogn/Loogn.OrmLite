@@ -29,10 +29,10 @@ namespace PerformanceTesting
             Dapper(2);
             //EF(2);
             EFSql(2);
-            Loogn(2);
+            Loogn1(2);
             SqlSugar(2);
             CRL(2);
-            ServiceStack(2);
+            // ServiceStack(2);
 
 
 
@@ -50,10 +50,10 @@ namespace PerformanceTesting
             //    ChloeSql(limit);
             //});
 
-            CodeTimer.Time("Mapping-Dapper", 1, () =>
-            {
-                Dapper(limit);
-            });
+            //CodeTimer.Time("Mapping-Dapper", 1, () =>
+            //{
+            //    Dapper(limit);
+            //});
 
             //CodeTimer.Time("Mapping-EF", 1, () =>
             //{
@@ -65,9 +65,9 @@ namespace PerformanceTesting
             //    EFSql(limit);
             //});
 
-            CodeTimer.Time("Mapping-Loogn", 1, () =>
+            CodeTimer.Time("Mapping-Loogn1", 1, () =>
             {
-                Loogn(limit);
+                Loogn1(limit);
             });
 
             CodeTimer.Time("Mapping-CRL", 1, () =>
@@ -80,10 +80,10 @@ namespace PerformanceTesting
                 SqlSugar(limit);
             });
 
-            CodeTimer.Time("Mapping-ServiceStack", 1, () =>
-            {
-                ServiceStack(limit);
-            });
+            //CodeTimer.Time("Mapping-ServiceStack", 1, () =>
+            //{
+            //    ServiceStack(limit);
+            //});
         }
 
         static void Chloe(int limit)
@@ -131,9 +131,9 @@ namespace PerformanceTesting
             }
         }
 
-        static void Loogn(int limit)
+        static void Loogn1(int limit)
         {
-            using (var db = Utils.CreateConnection())
+            using (var db = OrmLite.Open(Utils.ConnStr))
             {
                 var list = db.SelectFmt<TestEntity>("select top {0} * from TestEntity", limit);
             }
@@ -147,14 +147,14 @@ namespace PerformanceTesting
             var list = db.ExecList<testentity>(string.Format("select top {0} * from TestEntity", limit));
         }
 
-        static void ServiceStack(int limit)
-        {
-            var dbFactory = new OrmLiteConnectionFactory(Utils.ConnStr, SqlServerDialect.Provider);
-            using (var db = dbFactory.Open())
-            {
-                var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
-            }
-        }
+        //static void ServiceStack(int limit)
+        //{
+        //    var dbFactory = new OrmLiteConnectionFactory(Utils.ConnStr, SqlServerDialect.Provider);
+        //    using (var db = dbFactory.Open())
+        //    {
+        //        var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
+        //    }
+        //}
 
         static void SqlSugar(int limit)
         {

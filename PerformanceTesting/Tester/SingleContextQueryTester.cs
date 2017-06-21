@@ -4,7 +4,6 @@ using CRL;
 using Dapper;
 using Loogn.OrmLite;
 using Loogn.Utils;
-using ServiceStack.OrmLite;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -32,7 +31,7 @@ namespace PerformanceTesting
             EFSql(2);
             LoognOrmLite(2);
             CRL(2);
-            ServiceStack(2);
+            // ServiceStack(2);
 
             queryCount = 20000;
 
@@ -81,10 +80,10 @@ namespace PerformanceTesting
             });
 
 
-            CodeTimer.Time("SingleContextQuery-ServiceStack", 1, () =>
-            {
-                ServiceStack(limit);
-            });
+            //CodeTimer.Time("SingleContextQuery-ServiceStack", 1, () =>
+            //{
+            //    ServiceStack(limit);
+            //});
 
 
         }
@@ -179,16 +178,16 @@ namespace PerformanceTesting
             }
         }
 
-        static void ServiceStack(int limit)
-        {
-            var dbFactory = new OrmLiteConnectionFactory(Utils.ConnStr, SqlServerDialect.Provider);
-            using (var db = dbFactory.Open())
-            {
-                for (int i = 0; i < queryCount; i++)
-                {
-                    var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where ID>@id", limit), DictBuilder.Assign("id", minId));
-                }
-            }
-        }
+        //static void ServiceStack(int limit)
+        //{
+        //    var dbFactory = new OrmLiteConnectionFactory(Utils.ConnStr, SqlServerDialect.Provider);
+        //    using (var db = dbFactory.Open())
+        //    {
+        //        for (int i = 0; i < queryCount; i++)
+        //        {
+        //            var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where ID>@id", limit), DictBuilder.Assign("id", minId));
+        //        }
+        //    }
+        //}
     }
 }

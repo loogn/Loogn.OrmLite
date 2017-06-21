@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
+
     /// <summary>
     /// 实体类特性，用户类上，指明表名
     /// </summary>
@@ -26,7 +27,7 @@ namespace Loogn.OrmLite
             Name = name;
         }
         /// <summary>
-        /// 指定表名，推荐模型类命名为"表名Info"，不用指定
+        /// 指定表名
         /// </summary>
         public string Name { get; set; }
     }

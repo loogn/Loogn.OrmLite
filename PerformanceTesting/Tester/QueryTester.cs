@@ -31,10 +31,10 @@ namespace PerformanceTesting
             Dapper(2);
             //EF(2);
             EFSql(2);
-            Loogn(2);
+            Loogn1(2);
             CRL(2);
             SqlSugar(2);
-            ServiceStack(2);
+            // ServiceStack(2);
 
 
             Console.WriteLine(string.Format("Query count:{0},Limit {1} ", queryCount, limit));
@@ -46,28 +46,28 @@ namespace PerformanceTesting
             //    Chloe(limit);
             //});
 
-            CodeTimer.Time("Query-ChloeSql", queryCount, () =>
-            {
-                ChloeSql(limit);
-            });
+            //CodeTimer.Time("Query-ChloeSql", queryCount, () =>
+            //{
+            //    ChloeSql(limit);
+            //});
 
             CodeTimer.Time("Query-Dapper", queryCount, () =>
             {
                 Dapper(limit);
             });
 
-            CodeTimer.Time("Query-EF", queryCount, () =>
-            {
-                EF(limit);
-            });
-            CodeTimer.Time("Query-EFSql", queryCount, () =>
-            {
-                EFSql(limit);
-            });
+            //CodeTimer.Time("Query-EF", queryCount, () =>
+            //{
+            //    EF(limit);
+            //});
+            //CodeTimer.Time("Query-EFSql", queryCount, () =>
+            //{
+            //    EFSql(limit);
+            //});
 
-            CodeTimer.Time("Query-Loogn", queryCount, () =>
+            CodeTimer.Time("Query-Loogn1", queryCount, () =>
             {
-                Loogn(limit);
+                Loogn1(limit);
             });
 
             CodeTimer.Time("Query-SqlSugar", queryCount, () =>
@@ -82,10 +82,10 @@ namespace PerformanceTesting
             });
 
 
-            CodeTimer.Time("Query-ServiceStack", queryCount, () =>
-            {
-                ServiceStack(limit);
-            });
+            //CodeTimer.Time("Query-ServiceStack", queryCount, () =>
+            //{
+            //    ServiceStack(limit);
+            //});
         }
 
         static void Chloe(int limit)
@@ -128,13 +128,14 @@ namespace PerformanceTesting
             }
         }
 
-        static void Loogn(int limit)
+        static void Loogn1(int limit)
         {
-            using (var db = Utils.CreateConnection())
+            using (var db = OrmLite.Open(Utils.ConnStr))
             {
                 var list = db.SelectFmt<TestEntity>("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId.ToString());
             }
         }
+
 
         static void CRL(int limit)
         {
@@ -153,13 +154,13 @@ namespace PerformanceTesting
             }
         }
 
-        static void ServiceStack(int limit)
-        {
-            var dbFactory = new OrmLiteConnectionFactory(Utils.ConnStr, SqlServerDialect.Provider);
-            using (var db = dbFactory.Open())
-            {
-                var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where ID>{1}", limit, minId));
-            }
-        }
+        //static void ServiceStack(int limit)
+        //{
+        //    var dbFactory = new OrmLiteConnectionFactory(Utils.ConnStr, SqlServerDialect.Provider);
+        //    using (var db = dbFactory.Open())
+        //    {
+        //        var list = db.Select<TestEntity>(string.Format("select top {0} * from TestEntity where ID>{1}", limit, minId));
+        //    }
+        //}
     }
 }

@@ -28,12 +28,12 @@ namespace Loogn.OrmLite
         /// </summary>
         /// <param name="command">The command to which the parameters will be added</param>
         /// <param name="commandParameters">An array of MySqlParameters to be added to command</param>
-        private static void AttachParameters(DbCommand command, DbParameter[] commandParameters)
+        private static void AttachParameters(IDbCommand command, IDbDataParameter[] commandParameters)
         {
             if (command == null) throw new ArgumentNullException("command");
             if (commandParameters != null)
             {
-                foreach (DbParameter p in commandParameters)
+                foreach (IDbDataParameter p in commandParameters)
                 {
                     if (p != null)
                     {
@@ -61,7 +61,7 @@ namespace Loogn.OrmLite
         /// <param name="commandText">The stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">An array of MySqlParameters to be associated with the command or 'null' if no parameters are required</param>
         /// <param name="mustCloseConnection"><c>true</c> if the connection was opened by the method, otherwose is false.</param>
-        private static void PrepareCommand(DbCommand command, DbConnection connection, DbTransaction transaction, CommandType commandType, string commandText, DbParameter[] commandParameters, out bool mustCloseConnection)
+        private static void PrepareCommand(IDbCommand command, IDbConnection connection, IDbTransaction transaction, CommandType commandType, string commandText, IDbDataParameter[] commandParameters, out bool mustCloseConnection)
         {
             if (command == null) throw new ArgumentNullException("command");
             if (commandText == null || commandText.Length == 0) throw new ArgumentNullException("commandText");
@@ -118,14 +118,14 @@ namespace Loogn.OrmLite
         /// <param name="commandText">The stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">An array of SqlParamters used to execute the command</param>
         /// <returns>An int representing the number of rows affected by the command</returns>
-        public static int ExecuteNonQuery(DbConnection connection, CommandType commandType, string commandText, params DbParameter[] commandParameters)
+        public static int ExecuteNonQuery(IDbConnection connection, CommandType commandType, string commandText, params IDbDataParameter[] commandParameters)
         {
             if (connection == null) throw new ArgumentNullException("connection");
 
             // Create a command and prepare it for execution
-            DbCommand cmd = connection.CreateCommand();
+            IDbCommand cmd = connection.CreateCommand();
             bool mustCloseConnection = false;
-            PrepareCommand(cmd, connection, (DbTransaction)null, commandType, commandText, commandParameters, out mustCloseConnection);
+            PrepareCommand(cmd, connection, (IDbTransaction)null, commandType, commandText, commandParameters, out mustCloseConnection);
 
             // Finally, execute the command
             int retval = cmd.ExecuteNonQuery();
@@ -150,13 +150,13 @@ namespace Loogn.OrmLite
         /// <param name="commandText">The stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">An array of SqlParamters used to execute the command</param>
         /// <returns>An int representing the number of rows affected by the command</returns>
-        public static int ExecuteNonQuery(DbTransaction transaction, CommandType commandType, string commandText, params DbParameter[] commandParameters)
+        public static int ExecuteNonQuery(IDbTransaction transaction, CommandType commandType, string commandText, params IDbDataParameter[] commandParameters)
         {
             if (transaction == null) throw new ArgumentNullException("transaction");
             if (transaction != null && transaction.Connection == null) throw new ArgumentException("The transaction was rollbacked or commited, please provide an open transaction.", "transaction");
 
             // Create a command and prepare it for execution
-            DbCommand cmd = transaction.Connection.CreateCommand();
+            IDbCommand cmd = transaction.Connection.CreateCommand();
 
             bool mustCloseConnection = false;
             PrepareCommand(cmd, transaction.Connection, transaction, commandType, commandText, commandParameters, out mustCloseConnection);
@@ -201,19 +201,19 @@ namespace Loogn.OrmLite
         /// <param name="commandParameters">An array of MySqlParameters to be associated with the command or 'null' if no parameters are required</param>
         /// <param name="connectionOwnership">Indicates whether the connection parameter was provided by the caller, or created by SqlHelper</param>
         /// <returns>MySqlDataReader containing the results of the command</returns>
-        private static DbDataReader ExecuteReader(DbConnection connection, DbTransaction transaction, CommandType commandType, string commandText, DbParameter[] commandParameters, MySqlConnectionOwnership connectionOwnership)
+        private static IDataReader ExecuteReader(IDbConnection connection, IDbTransaction transaction, CommandType commandType, string commandText, IDbDataParameter[] commandParameters, MySqlConnectionOwnership connectionOwnership)
         {
             if (connection == null) throw new ArgumentNullException("connection");
 
             bool mustCloseConnection = false;
             // Create a command and prepare it for execution
-            DbCommand cmd = connection.CreateCommand();
+            IDbCommand cmd = connection.CreateCommand();
             try
             {
                 PrepareCommand(cmd, connection, transaction, commandType, commandText, commandParameters, out mustCloseConnection);
 
                 // Create a reader
-                DbDataReader dataReader;
+                IDataReader dataReader;
 
                 // Call ExecuteReader with the appropriate CommandBehavior
                 if (connectionOwnership == MySqlConnectionOwnership.External)
@@ -231,7 +231,7 @@ namespace Loogn.OrmLite
                 // then the SqlReader can´t set its values. 
                 // When this happen, the parameters can´t be used again in other command.
                 bool canClear = true;
-                foreach (DbParameter commandParameter in cmd.Parameters)
+                foreach (IDbDataParameter commandParameter in cmd.Parameters)
                 {
                     if (commandParameter.Direction != ParameterDirection.Input)
                         canClear = false;
@@ -266,10 +266,10 @@ namespace Loogn.OrmLite
         /// <param name="commandText">The stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">An array of SqlParamters used to execute the command</param>
         /// <returns>A MySqlDataReader containing the resultset generated by the command</returns>
-        public static DbDataReader ExecuteReader(DbConnection connection, CommandType commandType, string commandText, params DbParameter[] commandParameters)
+        public static IDataReader ExecuteReader(IDbConnection connection, CommandType commandType, string commandText, params IDbDataParameter[] commandParameters)
         {
             // Pass through the call to the private overload using a null transaction value and an externally owned connection
-            return ExecuteReader(connection, (DbTransaction)null, commandType, commandText, commandParameters, MySqlConnectionOwnership.External);
+            return ExecuteReader(connection, (IDbTransaction)null, commandType, commandText, commandParameters, MySqlConnectionOwnership.External);
         }
 
 
@@ -286,7 +286,7 @@ namespace Loogn.OrmLite
         /// <param name="commandText">The stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">An array of SqlParamters used to execute the command</param>
         /// <returns>A MySqlDataReader containing the resultset generated by the command</returns>
-        public static DbDataReader ExecuteReader(DbTransaction transaction, CommandType commandType, string commandText, params DbParameter[] commandParameters)
+        public static IDataReader ExecuteReader(IDbTransaction transaction, CommandType commandType, string commandText, params IDbDataParameter[] commandParameters)
         {
             if (transaction == null) throw new ArgumentNullException("transaction");
             if (transaction != null && transaction.Connection == null) throw new ArgumentException("The transaction was rollbacked or commited, please provide an open transaction.", "transaction");
@@ -313,15 +313,15 @@ namespace Loogn.OrmLite
         /// <param name="commandText">The stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">An array of SqlParamters used to execute the command</param>
         /// <returns>An object containing the value in the 1x1 resultset generated by the command</returns>
-        public static object ExecuteScalar(DbConnection connection, CommandType commandType, string commandText, params DbParameter[] commandParameters)
+        public static object ExecuteScalar(IDbConnection connection, CommandType commandType, string commandText, params IDbDataParameter[] commandParameters)
         {
             if (connection == null) throw new ArgumentNullException("connection");
 
             // Create a command and prepare it for execution
-            DbCommand cmd = connection.CreateCommand();
+            IDbCommand cmd = connection.CreateCommand();
 
             bool mustCloseConnection = false;
-            PrepareCommand(cmd, connection, (DbTransaction)null, commandType, commandText, commandParameters, out mustCloseConnection);
+            PrepareCommand(cmd, connection, (IDbTransaction)null, commandType, commandText, commandParameters, out mustCloseConnection);
 
             // Execute the command & return the results
             object retval = cmd.ExecuteScalar();
@@ -349,13 +349,13 @@ namespace Loogn.OrmLite
         /// <param name="commandText">The stored procedure name or T-SQL command</param>
         /// <param name="commandParameters">An array of SqlParamters used to execute the command</param>
         /// <returns>An object containing the value in the 1x1 resultset generated by the command</returns>
-        public static object ExecuteScalar(DbTransaction transaction, CommandType commandType, string commandText, params DbParameter[] commandParameters)
+        public static object ExecuteScalar(IDbTransaction transaction, CommandType commandType, string commandText, params IDbDataParameter[] commandParameters)
         {
             if (transaction == null) throw new ArgumentNullException("transaction");
             if (transaction != null && transaction.Connection == null) throw new ArgumentException("The transaction was rollbacked or commited, please provide an open transaction.", "transaction");
 
             // Create a command and prepare it for execution
-            DbCommand cmd = transaction.Connection.CreateCommand();
+            IDbCommand cmd = transaction.Connection.CreateCommand();
             bool mustCloseConnection = false;
             PrepareCommand(cmd, transaction.Connection, transaction, commandType, commandText, commandParameters, out mustCloseConnection);
 

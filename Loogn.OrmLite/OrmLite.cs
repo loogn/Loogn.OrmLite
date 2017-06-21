@@ -1,67 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.Common;
-using System.Data.SqlClient;
 
 namespace Loogn.OrmLite
 {
-    /// <summary>
-    /// OrmLite配置类
-    /// </summary>
-    public class OrmLite
+    public static class OrmLite
     {
-        private static IOrmLiteProvider SqlServerProvider;
-        private static IOrmLiteProvider MySqlProvider;
-        private static IOrmLiteProvider SqliteProvider;
+        internal static Dictionary<string, ICommandDialectProvider> CommandDialectProviderCache = new Dictionary<string, ICommandDialectProvider>();
 
-        /// <summary>
-        /// 注册提供程序，SqlServer默认已注册
-        /// </summary>
-        /// <param name="type">OrmLiteProviderType枚举</param>
-        /// <param name="provider">实现IOrmLiteProvider接口的提供程序类</param>
-        public static void RegisterProvider(OrmLiteProviderType type, IOrmLiteProvider provider)
+        public static IDbConnection Open(string connectionString, ICommandDialectProvider provider)
         {
-            if (type == OrmLiteProviderType.SqlServer && SqlServerProvider == null)
+            var conn = provider.CreateConnection();
+            conn.ConnectionString = connectionString;
+
+            var name = conn.GetType().Name;
+            if (!CommandDialectProviderCache.ContainsKey(name))
             {
-                SqlServerProvider = new WrapOrmLiteProvider(provider);
+                CommandDialectProviderCache[name] = provider;
             }
-            else if (type == OrmLiteProviderType.MySql && MySqlProvider == null)
-            {
-                MySqlProvider = new WrapOrmLiteProvider(provider);
-            }
-            else if (type == OrmLiteProviderType.Sqlite && SqliteProvider == null)
-            {
-                SqliteProvider = new WrapOrmLiteProvider(provider);
-            }
+            return conn;
+        }
+        public static IDbConnection Open(string connectionString)
+        {
+            return Open(connectionString, OrmLite.DefaultCommandDialectProvider);
         }
 
-
-        static OrmLite()
-        {
-            //默认注册sqlserver
-            RegisterProvider(OrmLiteProviderType.SqlServer, SqlServerOrmLiteProvider.Instance);
-        }
-
-        internal static IOrmLiteProvider GetProvider(OrmLiteProviderType type)
-        {
-            if (type == OrmLiteProviderType.SqlServer)
-            {
-                return SqlServerProvider;
-            }
-            else if (type == OrmLiteProviderType.MySql)
-            {
-                return MySqlProvider;
-            }
-            else if (type == OrmLiteProviderType.Sqlite)
-            {
-                return SqliteProvider;
-            }
-            throw new ArgumentException("OrmLiteProviderType 参数错误");
-        }
+        #region config
 
         /// <summary>
         /// 默认主键
@@ -86,6 +53,24 @@ namespace Loogn.OrmLite
         {
             get { return updateIgnoreFields; }
         }
-        
+
+        private static ICommandDialectProvider defaultCommandDialectProvider = SqlServerCommandDialectProvider.Instance;
+        /// <summary>
+        /// 默认命令方言提供程序，不设置的时候是SqlServer
+        /// </summary>
+        public static ICommandDialectProvider DefaultCommandDialectProvider
+        {
+            get
+            {
+                return defaultCommandDialectProvider;
+            }
+            set
+            {
+                defaultCommandDialectProvider = value;
+            }
+        }
+
+        #endregion
+
     }
 }

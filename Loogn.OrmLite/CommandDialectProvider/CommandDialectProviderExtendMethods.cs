@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
-    static class CommandDialectProviderExtendMethods
+    public static class CommandDialectProviderExtendMethods
     {
         public static ICommandDialectProvider GetCommandDialectProvider(this IDbConnection conn)
         {
@@ -18,7 +18,7 @@ namespace Loogn.OrmLite
             {
                 return provider;
             }
-            return OrmLite.DefaultCommandDialectProvider;
+            throw new Exception("未找到所需的CommandDialectProvider，请先调用OrmLite.RegisterProvider()方法注册");
         }
 
         public static ICommandDialectProvider GetCommandDialectProvider(this IDbTransaction trans)

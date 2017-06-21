@@ -163,7 +163,7 @@ ORDER BY colorder ASC
             StringBuilder sqlbuilder = new StringBuilder(50);
 
             sqlbuilder.AppendFormat("SELECT top 1 * FROM [{0}]", GetTableName<T>());
-            var ps = Transform2Parameters.Dictionary2Params(this, conditions, sqlbuilder);
+            var ps = this.Dictionary2Params(conditions, sqlbuilder);
             return new CommandInfo
             {
                 CommandText = sqlbuilder.ToString(),
@@ -176,7 +176,7 @@ ORDER BY colorder ASC
             StringBuilder sqlbuilder = new StringBuilder(50);
 
             sqlbuilder.AppendFormat("SELECT top 1 * FROM [{0}]", GetTableName<T>());
-            var ps = Transform2Parameters.Object2Params(this, conditions, sqlbuilder);
+            var ps = this.Object2Params(conditions, sqlbuilder);
 
             return new CommandInfo
             {

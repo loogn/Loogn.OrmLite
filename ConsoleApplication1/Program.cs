@@ -14,17 +14,6 @@ using System.Threading.Tasks;
 
 namespace ConsoleApplication1
 {
-    public class Pser
-    {
-        public int id { get; set; }
-        public string name { get; set; }
-        public Pser()
-        {
-            name = "no name";
-        }
-
-    }
-
 
 
 
@@ -33,52 +22,11 @@ namespace ConsoleApplication1
         static string MySqlConnstr = "Server=192.168.2.254;Uid=admin;Password=123456;Database=test;Port=3308;TreatTinyAsBoolean=false";
 
 
-        public static Func<object, object> BuilderGetterInvoker(MethodInfo methodInfo)
-        {
-            var instanceParameter = Expression.Parameter(typeof(object), "instance");
-            var instanceExpr = methodInfo.IsStatic ? null : Expression.Convert(instanceParameter, methodInfo.ReflectedType);
-            var callExpr = Expression.Call(instanceExpr, methodInfo, null);
-            UnaryExpression castCallExpr = Expression.Convert(callExpr, typeof(object));
-            var fun = Expression.Lambda<Func<object, object>>(castCallExpr, instanceParameter).Compile();
-            return fun;
-        }
-
-        public static Action<object, object> BuilderSetterInvoker(MethodInfo methodInfo)
-        {
-            var instanceParameter = Expression.Parameter(typeof(object), "instance");
-            var parametersParameter = Expression.Parameter(typeof(object), "value");
-            var instanceExpr = methodInfo.IsStatic ? null : Expression.Convert(instanceParameter, methodInfo.ReflectedType);
-            var paramInfo = methodInfo.GetParameters().First();
-            var arrCase = Expression.Convert(parametersParameter, paramInfo.ParameterType);
-            var callExpr = Expression.Call(instanceExpr, methodInfo, arrCase);
-            var action = Expression.Lambda<Action<object, object>>(callExpr,
-                instanceParameter, parametersParameter).Compile();
-            return action;
-        }
-
-
+       
         static void Main(string[] args)
         {
-            var ctor = typeof(Pser).GetProperty("name").GetGetMethod(true);
-            var get = BuilderGetterInvoker(ctor);
-            var s = get(new Pser());
-
-            Console.WriteLine(s);
-            ctor = typeof(Pser).GetProperty("name").GetSetMethod(true);
-            var set = BuilderSetterInvoker(ctor);
-            var obj = new Pser();
-            set(obj, "abc");
-
-            Console.WriteLine(obj.name);
-
-
-
-            return;
-            OrmLite.RegisterProvider(OrmLiteProviderType.MySql, MySqlOrmLiteProvider.Instance);
-
-
-
-
+          
+       
             using (var db = new MySqlConnection(MySqlConnstr))
             {
                 int totalCount;

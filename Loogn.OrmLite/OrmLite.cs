@@ -7,25 +7,29 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
+    /// <summary>
+    /// OrmLite
+    /// </summary>
     public static class OrmLite
     {
         internal static Dictionary<string, ICommandDialectProvider> CommandDialectProviderCache = new Dictionary<string, ICommandDialectProvider>();
 
-        public static IDbConnection Open(string connectionString, ICommandDialectProvider provider)
+        /// <summary>
+        /// 注册命令方言提供程序
+        /// </summary>
+        /// <param name="provider"></param>
+        public static void RegisterProvider(ICommandDialectProvider provider)
         {
             var conn = provider.CreateConnection();
-            conn.ConnectionString = connectionString;
-
-            var name = conn.GetType().Name;
-            if (!CommandDialectProviderCache.ContainsKey(name))
+            var connName = conn.GetType().Name;
+            if (!CommandDialectProviderCache.ContainsKey(connName))
             {
-                CommandDialectProviderCache[name] = provider;
+                CommandDialectProviderCache[connName] = provider;
             }
-            return conn;
         }
-        public static IDbConnection Open(string connectionString)
+        static OrmLite()
         {
-            return Open(connectionString, OrmLite.DefaultCommandDialectProvider);
+            RegisterProvider(SqlServerCommandDialectProvider.Instance);
         }
 
         #region config
@@ -52,22 +56,6 @@ namespace Loogn.OrmLite
         public static List<string> UpdateIgnoreFields
         {
             get { return updateIgnoreFields; }
-        }
-
-        private static ICommandDialectProvider defaultCommandDialectProvider = SqlServerCommandDialectProvider.Instance;
-        /// <summary>
-        /// 默认命令方言提供程序，不设置的时候是SqlServer
-        /// </summary>
-        public static ICommandDialectProvider DefaultCommandDialectProvider
-        {
-            get
-            {
-                return defaultCommandDialectProvider;
-            }
-            set
-            {
-                defaultCommandDialectProvider = value;
-            }
         }
 
         #endregion

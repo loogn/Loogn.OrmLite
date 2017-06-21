@@ -130,7 +130,7 @@ namespace PerformanceTesting
 
         static void Loogn1(int limit)
         {
-            using (var db = OrmLite.Open(Utils.ConnStr))
+            using (var db = Utils.CreateConnection())
             {
                 var list = db.SelectFmt<TestEntity>("select top {0} * from TestEntity where Id>{1}", limit.ToString(), minId.ToString());
             }

@@ -8,30 +8,57 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
+    /// <summary>
+    /// 命令方言基类
+    /// </summary>
     public abstract class CommandDialectBaseProvider : ICommandDialectProvider
     {
+        /// <summary>
+        /// 获取报名
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         protected string GetTableName<T>()
         {
             var tableName = TypeCachedDict.GetTypeCachedInfo(typeof(T)).TableName;
             return tableName;
         }
+        /// <summary>
+        /// 左引号
+        /// </summary>
         public abstract string CloseQuote
         {
             get;
         }
 
+        /// <summary>
+        /// 判断是否为null的函数
+        /// </summary>
         public abstract string IsNullFunc
         {
             get;
         }
-
+        /// <summary>
+        /// 右引号
+        /// </summary>
         public abstract string OpenQuote
         {
             get;
         }
 
+        /// <summary>
+        /// 获取列元数据
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         public abstract CommandInfo ColumnMetaData(string dbName, string tableName);
 
+        /// <summary>
+        /// 获取Count命令
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public CommandInfo Count<T>()
         {
             var tableName = GetTableName<T>();
@@ -47,7 +74,7 @@ namespace Loogn.OrmLite
             StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = GetTableName<T>();
             sqlbuilder.AppendFormat("SELECT COUNT(0) FROM {1}{0}{2}", tableName, OpenQuote, CloseQuote);
-            var ps = Transform2Parameters.Object2Params(this, conditions, sqlbuilder);
+            var ps = TransformToParameters.ObjectToParams(this, conditions, sqlbuilder);
             return new CommandInfo
             {
                 CommandText = sqlbuilder.ToString(),
@@ -60,7 +87,7 @@ namespace Loogn.OrmLite
             StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = GetTableName<T>();
             sqlbuilder.AppendFormat("SELECT COUNT(0) FROM {1}{0}{2}", tableName, OpenQuote, CloseQuote);
-            var ps = Transform2Parameters.Dictionary2Params(this, conditions, sqlbuilder);
+            var ps = TransformToParameters.DictionaryToParams(this, conditions, sqlbuilder);
             return new CommandInfo
             {
                 CommandText = sqlbuilder.ToString(),
@@ -162,7 +189,7 @@ namespace Loogn.OrmLite
             var tableName = GetTableName<T>();
             StringBuilder sb = new StringBuilder(50);
             sb.AppendFormat(" DELETE FROM {0}{1}{2}", OpenQuote, tableName, CloseQuote);
-            var ps = Transform2Parameters.Object2Params(this, obj, sb);
+            var ps = TransformToParameters.ObjectToParams(this, obj, sb);
             return new CommandInfo
             {
                 CommandText = sb.ToString(),
@@ -175,7 +202,7 @@ namespace Loogn.OrmLite
             var tableName = GetTableName<T>();
             StringBuilder sb = new StringBuilder(50);
             sb.AppendFormat(" DELETE FROM {0}{1}{2}", OpenQuote, tableName, CloseQuote);
-            var ps = Transform2Parameters.Dictionary2Params(this, conditions, sb);
+            var ps = TransformToParameters.DictionaryToParams(this, conditions, sb);
             return new CommandInfo
             {
                 CommandText = sb.ToString(),
@@ -446,7 +473,7 @@ namespace Loogn.OrmLite
             StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = GetTableName<T>();
             sqlbuilder.AppendFormat("SELECT * FROM {1}{0}{2}", tableName, OpenQuote, CloseQuote);
-            var ps = Transform2Parameters.Object2Params(this, conditions, sqlbuilder);
+            var ps = TransformToParameters.ObjectToParams(this, conditions, sqlbuilder);
 
             return new CommandInfo
             {
@@ -460,7 +487,7 @@ namespace Loogn.OrmLite
             StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = GetTableName<T>();
             sqlbuilder.AppendFormat("SELECT * FROM {1}{0}{2}", tableName, OpenQuote, CloseQuote);
-            var ps = Transform2Parameters.Dictionary2Params(this, conditions, sqlbuilder);
+            var ps = TransformToParameters.DictionaryToParams(this, conditions, sqlbuilder);
 
             return new CommandInfo
             {
@@ -563,7 +590,7 @@ namespace Loogn.OrmLite
             {
                 sbsql.AppendFormat(" where {0}", conditions);
             }
-            var conditionPS = Transform2Parameters.Dictionary2Params(this, parameters);
+            var conditionPS = TransformToParameters.DictionaryToParams(this, parameters);
             if (conditionPS != null)
             {
                 ps.AddRange(conditionPS);

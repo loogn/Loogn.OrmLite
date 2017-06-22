@@ -21,7 +21,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
-                return Mapping.ReaderToObjectList<T>(reader);
+                return TransformForDataReader.ReaderToObjectList<T>(reader);
             }
         }
 
@@ -29,7 +29,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
-                return Mapping.ReaderToDynamicList(reader);
+                return TransformForDataReader.ReaderToDynamicList(reader);
             }
         }
 
@@ -37,7 +37,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
-                return Mapping.ReaderToObject<T>(reader);
+                return TransformForDataReader.ReaderToObject<T>(reader);
             }
         }
 
@@ -45,21 +45,21 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
-                return Mapping.ReaderToDynamic(reader);
+                return TransformForDataReader.ReaderToDynamic(reader);
             }
         }
 
         public static T ScalarOriginal<T>(this IDbTransaction dbTrans, CommandType commandType, string commandText, params IDbDataParameter[] ps)
         {
             var obj = SqlHelper.ExecuteScalar(dbTrans, commandType, commandText, ps);
-            return Mapping.ConvertToPrimitiveType<T>(obj);
+            return TransformForDataReader.ConvertToPrimitiveType<T>(obj);
         }
 
         public static List<T> ColumnOriginal<T>(this IDbTransaction dbTrans, CommandType commandType, string commandText, params IDbDataParameter[] ps)
         {
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
-                return Mapping.ReaderToColumnList<T>(reader);
+                return TransformForDataReader.ReaderToColumnList<T>(reader);
             }
         }
 
@@ -67,7 +67,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
-                return Mapping.ReaderToColumnSet<T>(reader);
+                return TransformForDataReader.ReaderToColumnSet<T>(reader);
             }
         }
 
@@ -75,7 +75,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
-                return Mapping.ReaderToLookup<K, V>(reader);
+                return TransformForDataReader.ReaderToLookup<K, V>(reader);
             }
         }
 
@@ -83,14 +83,14 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbTrans, commandType, commandText, ps))
             {
-                return Mapping.ReaderToDictionary<K, V>(reader);
+                return TransformForDataReader.ReaderToDictionary<K, V>(reader);
             }
         }
 
         public static int CountOriginal(this IDbTransaction dbTrans, CommandType commandType, string commandText, params IDbDataParameter[] ps)
         {
             var obj = SqlHelper.ExecuteScalar(dbTrans, commandType, commandText, ps);
-            return Mapping.ConvertToPrimitiveType<int>(obj);
+            return TransformForDataReader.ConvertToPrimitiveType<int>(obj);
         }
 
         #endregion

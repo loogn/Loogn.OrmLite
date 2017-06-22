@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
-    static class Transform2Parameters
+    static class TransformToParameters
     {
-        public static IDbDataParameter[] Object2Params(ICommandDialectProvider dialectProvider, object obj)
+        public static IDbDataParameter[] ObjectToParams(ICommandDialectProvider dialectProvider, object obj)
         {
             if (obj != null)
             {
@@ -28,7 +28,7 @@ namespace Loogn.OrmLite
             return null;
         }
 
-        public static IDbDataParameter[] Object2Params(ICommandDialectProvider dialectProvider, object obj, StringBuilder appendWhere)
+        public static IDbDataParameter[] ObjectToParams(ICommandDialectProvider dialectProvider, object obj, StringBuilder appendWhere)
         {
             if (obj != null)
             {
@@ -52,7 +52,7 @@ namespace Loogn.OrmLite
             return null;
         }
 
-        public static IDbDataParameter[] Dictionary2Params(ICommandDialectProvider dialectProvider, IDictionary<string, object> dict)
+        public static IDbDataParameter[] DictionaryToParams(ICommandDialectProvider dialectProvider, IDictionary<string, object> dict)
         {
             if (dict != null && dict.Count > 0)
             {
@@ -70,7 +70,7 @@ namespace Loogn.OrmLite
             return null;
         }
 
-        public static IDbDataParameter[] Dictionary2Params(ICommandDialectProvider dialectProvider, IDictionary<string, object> dict, StringBuilder appendWhere)
+        public static IDbDataParameter[] DictionaryToParams(ICommandDialectProvider dialectProvider, IDictionary<string, object> dict, StringBuilder appendWhere)
         {
             if (dict != null && dict.Count > 0)
             {

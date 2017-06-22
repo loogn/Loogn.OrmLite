@@ -60,7 +60,7 @@ namespace Loogn.OrmLite
         {
             if (_reader == null || _reader.IsClosed) return new List<TModel>();
 
-            var list = Mapping.ReaderToObjectList<TModel>(_reader);
+            var list = TransformForDataReader.ReaderToObjectList<TModel>(_reader);
             if (!_reader.NextResult())
             {
                 _reader.Close();
@@ -77,7 +77,7 @@ namespace Loogn.OrmLite
         {
             if (_reader == null || _reader.IsClosed) return default(TModel);
 
-            var m = Mapping.ReaderToObject<TModel>(_reader);
+            var m = TransformForDataReader.ReaderToObject<TModel>(_reader);
             if (!_reader.NextResult())
             {
                 _reader.Close();
@@ -94,7 +94,7 @@ namespace Loogn.OrmLite
         {
             if (_reader == null || _reader.IsClosed) return default(TValue);
 
-            var scalar = Mapping.ReaderToScalar<TValue>(_reader);
+            var scalar = TransformForDataReader.ReaderToScalar<TValue>(_reader);
             if (!_reader.NextResult())
             {
                 _reader.Close();

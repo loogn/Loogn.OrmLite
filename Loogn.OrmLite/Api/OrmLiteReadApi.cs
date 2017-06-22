@@ -42,7 +42,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
             {
-                return Mapping.ReaderToObjectList<T>(reader);
+                return TransformForDataReader.ReaderToObjectList<T>(reader);
             }
         }
 
@@ -63,7 +63,7 @@ namespace Loogn.OrmLite
             {
                 var cmd = cmds[i];
                 sqls.Add(cmd.GetMatchedCmdText(i));
-                ps.AddRange(Transform2Parameters.Dictionary2Params(provider, cmd.GetUniqueParams(i)));
+                ps.AddRange(TransformToParameters.DictionaryToParams(provider, cmd.GetUniqueParams(i)));
             }
             var sql = string.Join(";", sqls);
             var reader = SqlHelper.ExecuteReader(dbConn, CommandType.Text, sql, ps.ToArray());
@@ -82,7 +82,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
             {
-                return Mapping.ReaderToDynamicList(reader);
+                return TransformForDataReader.ReaderToDynamicList(reader);
             }
         }
 
@@ -99,7 +99,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
             {
-                return Mapping.ReaderToObject<T>(reader);
+                return TransformForDataReader.ReaderToObject<T>(reader);
             }
         }
 
@@ -115,7 +115,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
             {
-                return Mapping.ReaderToDynamic(reader);
+                return TransformForDataReader.ReaderToDynamic(reader);
             }
         }
 
@@ -131,7 +131,7 @@ namespace Loogn.OrmLite
         public static TValue ScalarOriginal<TValue>(this IDbConnection dbConn, CommandType commandType, string commandText, params IDbDataParameter[] ps)
         {
             var obj = SqlHelper.ExecuteScalar(dbConn, commandType, commandText, ps);
-            return Mapping.ConvertToPrimitiveType<TValue>(obj);
+            return TransformForDataReader.ConvertToPrimitiveType<TValue>(obj);
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
             {
-                return Mapping.ReaderToColumnList<TField>(reader);
+                return TransformForDataReader.ReaderToColumnList<TField>(reader);
             }
         }
 
@@ -164,7 +164,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
             {
-                return Mapping.ReaderToColumnSet<T>(reader);
+                return TransformForDataReader.ReaderToColumnSet<T>(reader);
             }
         }
 
@@ -182,7 +182,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
             {
-                return Mapping.ReaderToLookup<K, V>(reader);
+                return TransformForDataReader.ReaderToLookup<K, V>(reader);
             }
         }
 
@@ -200,7 +200,7 @@ namespace Loogn.OrmLite
         {
             using (var reader = SqlHelper.ExecuteReader(dbConn, commandType, commandText, ps))
             {
-                return Mapping.ReaderToDictionary<K, V>(reader);
+                return TransformForDataReader.ReaderToDictionary<K, V>(reader);
             }
         }
 
@@ -215,7 +215,7 @@ namespace Loogn.OrmLite
         public static int CountOriginal(this IDbConnection dbConn, CommandType commandType, string commandText, params IDbDataParameter[] ps)
         {
             var obj = SqlHelper.ExecuteScalar(dbConn, commandType, commandText, ps);
-            return Mapping.ConvertToPrimitiveType<int>(obj);
+            return TransformForDataReader.ConvertToPrimitiveType<int>(obj);
         }
 
         #endregion

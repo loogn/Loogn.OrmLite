@@ -30,22 +30,22 @@ namespace Loogn.OrmLite
 
         public static IDbDataParameter[] Object2Params(this ICommandDialectProvider provider, object obj)
         {
-            return Transform2Parameters.Object2Params(provider, obj);
+            return TransformToParameters.ObjectToParams(provider, obj);
         }
 
         public static IDbDataParameter[] Object2Params(this ICommandDialectProvider provider, object obj, StringBuilder appendWhere)
         {
-            return Transform2Parameters.Object2Params(provider, obj, appendWhere);
+            return TransformToParameters.ObjectToParams(provider, obj, appendWhere);
         }
 
         public static IDbDataParameter[] Dictionary2Params(this ICommandDialectProvider provider, IDictionary<string, object> dict)
         {
-            return Transform2Parameters.Dictionary2Params(provider, dict);
+            return TransformToParameters.DictionaryToParams(provider, dict);
         }
 
         public static IDbDataParameter[] Dictionary2Params(this ICommandDialectProvider provider, IDictionary<string, object> dict, StringBuilder appendWhere)
         {
-            return Transform2Parameters.Dictionary2Params(provider, dict, appendWhere);
+            return TransformToParameters.DictionaryToParams(provider, dict, appendWhere);
         }
     }
 }

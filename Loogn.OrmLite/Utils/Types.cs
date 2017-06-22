@@ -11,6 +11,6 @@ namespace Loogn.OrmLite
         public static Type OrmLiteTable = typeof(OrmLiteTableAttribute);
         public static Type OrmLiteField = typeof(OrmLiteFieldAttribute);
         public static Type String = typeof(string);
-        public static Type Int32 = typeof(Int32);
+        public static Type Int32 = typeof(int);
     }
 }

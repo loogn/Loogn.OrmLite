@@ -10,7 +10,7 @@
     <projectUrl>http://git.oschina.net/loogn/Loogn.OrmLite</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>升级到V2</releaseNotes>
+    <releaseNotes>升级到V2,优化代码</releaseNotes>
     <copyright>Copyright 2016</copyright>
     <tags>ORM Loogn Loogn.OrmLite OrmLite</tags>
   </metadata>

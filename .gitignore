@@ -149,3 +149,8 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
+
+*.nupkg
+*.nuspec
+Loogn.OrmLite.Sqlite*/
+*.nupkg

@@ -3,30 +3,16 @@
 
 # 特点
 1. 支持sqlserver、mysql、sqlite3数据库；
-2. 通过扩展方法扩展 _DbConnection_ 和 _DbTransaction_ ；
+2. 通过扩展方法扩展 _IDbConnection_ 和 _IDbTransaction_ ；
 3. 支持数据库事务和批量插入
 4. 支持 _dynamic_ 类型的模型（不定义模型也可使用此ORM）
-5. 超高的效率，超小的体积，比Dapper快，比Dapper小，Loogn.OrmLite.dll只有 **61kb** 
+5. 超高的效率，超小的体积，比Dapper快，比Dapper小，Loogn.OrmLite.dll只有 **70kb** 
 
-# 支持mysql(sqlite3基本一样，可用nuget引入System.Data.SQLite.Core)
-1. 引入MySql.Data.dll
-2. 实现IOrmLiteProvider
+# 支持mysql，sqlite3(sqlserver默认已注册)
+1. 引入Loogn.OrmLite.MySql
+2. 注册MySql提供程序 **(只用在程序启动时执行一次)** 
 ```
-public class MySqlOrmLiteProvider : IOrmLiteProvider
-{
-    private MySqlOrmLiteProvider() { }
-
-    public static MySqlOrmLiteProvider Instance = new MySqlOrmLiteProvider();
-
-    public DbParameter CreateParameter(string name, object value)
-    {
-        return new MySqlParameter(name, value);
-    }
-}
-```
-3. 注册mysql  **(只用在程序启动时执行一次)** 
-```
-OrmLite.RegisterProvider(OrmLiteProviderType.MySql, MySqlOrmLiteProvider.Instance);
+OrmLite.RegisterProvider(MySqlCommandDialectProvider.Instance)
 ```
 
 #API预览

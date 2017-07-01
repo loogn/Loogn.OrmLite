@@ -16,6 +16,13 @@ namespace Loogn.OrmLite
     /// </summary>
     public static class TransformForDataReader
     {
+        private static bool HasValue(object obj)
+        {
+            return obj != null && obj != DBNull.Value;
+        }
+
+
+
         /// <summary>
         /// 用reader填充T类型的对象，并返回
         /// </summary>
@@ -35,7 +42,7 @@ namespace Loogn.OrmLite
                 for (int i = 0; i < length; i++)
                 {
                     var accessor = typeInfo.GetAccessor(reader.GetName(i));
-                    if (accessor != null && accessor.CanInvoker)
+                    if (accessor.CanInvoker && HasValue(values[i]))
                     {
                         accessor.SetterInvoker(obj, values[i]);
                     }
@@ -59,6 +66,10 @@ namespace Loogn.OrmLite
             if (reader.Read())
             {
                 var obj = reader.GetValue(0);
+                if (obj == null || obj is DBNull)
+                {
+                    return default(TValue);
+                }
                 return ConvertToPrimitiveType<TValue>(obj);
             }
             else
@@ -92,7 +103,10 @@ namespace Loogn.OrmLite
                         var fieldName = reader.GetName(i);
                         var accessor = typeInfo.GetAccessor(fieldName);
                         propAccessorArr[i] = accessor;
-                        accessor.SetterInvoker(obj, values[i]);
+                        if (accessor.CanInvoker && HasValue(values[i]))
+                        {
+                            accessor.SetterInvoker(obj, values[i]);
+                        }
                     }
                     first = false;
                 }
@@ -100,7 +114,11 @@ namespace Loogn.OrmLite
                 {
                     for (var i = 0; i < length; i++)
                     {
-                        propAccessorArr[i].SetterInvoker(obj, values[i]);
+                        var accessor = propAccessorArr[i];
+                        if (accessor.CanInvoker && HasValue(values[i]))
+                        {
+                            accessor.SetterInvoker(obj, values[i]);
+                        }
                     }
                 }
                 list.Add(obj);

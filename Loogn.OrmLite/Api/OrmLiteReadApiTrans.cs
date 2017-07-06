@@ -87,10 +87,10 @@ namespace Loogn.OrmLite
             }
         }
 
-        public static int CountOriginal(this IDbTransaction dbTrans, CommandType commandType, string commandText, params IDbDataParameter[] ps)
+        public static long CountOriginal(this IDbTransaction dbTrans, CommandType commandType, string commandText, params IDbDataParameter[] ps)
         {
             var obj = SqlHelper.ExecuteScalar(dbTrans, commandType, commandText, ps);
-            return TransformForDataReader.ConvertToPrimitiveType<int>(obj);
+            return TransformForDataReader.ConvertToPrimitiveType<long>(obj);
         }
 
         #endregion
@@ -178,7 +178,7 @@ namespace Loogn.OrmLite
             return SelectOriginal<T>(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
-        public static List<T> SelectPage<T>(this IDbTransaction dbTrans, OrmLitePageFactor factor, out int totalCount)
+        public static List<T> SelectPage<T>(this IDbTransaction dbTrans, OrmLitePageFactor factor, out long totalCount)
         {
             if (factor.PageIndex < 1)
             {
@@ -230,7 +230,7 @@ namespace Loogn.OrmLite
             return list;
         }
 
-        public static List<dynamic> SelectPage(this IDbTransaction dbTrans, OrmLitePageFactor factor, out int totalCount)
+        public static List<dynamic> SelectPage(this IDbTransaction dbTrans, OrmLitePageFactor factor, out long totalCount)
         {
             if (factor.PageIndex < 1)
             {
@@ -274,7 +274,7 @@ namespace Loogn.OrmLite
 
         public static OrmLitePageResult<T> SelectPage<T>(this IDbTransaction dbTrans, OrmLitePageFactor factor)
         {
-            int totalCount;
+            long totalCount;
             OrmLitePageResult<T> pageInfo = new OrmLitePageResult<T>();
             pageInfo.List = dbTrans.SelectPage<T>(factor, out totalCount);
             pageInfo.PageIndex = factor.PageIndex;
@@ -285,7 +285,7 @@ namespace Loogn.OrmLite
 
         public static OrmLitePageResult<dynamic> SelectPage(this IDbTransaction dbTrans, OrmLitePageFactor factor)
         {
-            int totalCount;
+            long totalCount;
             OrmLitePageResult<dynamic> pageInfo = new OrmLitePageResult<dynamic>();
             pageInfo.List = dbTrans.SelectPage(factor, out totalCount);
             pageInfo.PageIndex = factor.PageIndex;
@@ -493,33 +493,33 @@ namespace Loogn.OrmLite
         #endregion
 
         #region Count
-        public static int Count<T>(this IDbTransaction dbTrans)
+        public static long Count<T>(this IDbTransaction dbTrans)
         {
             var provider = dbTrans.GetCommandDialectProvider();
             var cmd = provider.Count<T>();
             return CountOriginal(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
-        public static int Count<T>(this IDbTransaction dbTrans, string sql)
+        public static long Count<T>(this IDbTransaction dbTrans, string sql)
         {
             var provider = dbTrans.GetCommandDialectProvider();
             var cmd = provider.FullCount<T>(sql);
             return CountOriginal(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
-        public static int Count<T>(this IDbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
+        public static long Count<T>(this IDbTransaction dbTrans, string sql, IDictionary<string, object> parameters)
         {
             var provider = dbTrans.GetCommandDialectProvider();
             var cmd = provider.FullCount<T>(sql);
             return CountOriginal(dbTrans, cmd.CommandType, cmd.CommandText, provider.Dictionary2Params(parameters));
         }
-        public static int Count<T>(this IDbTransaction dbTrans, string sql, object parameters)
+        public static long Count<T>(this IDbTransaction dbTrans, string sql, object parameters)
         {
             var provider = dbTrans.GetCommandDialectProvider();
             var cmd = provider.FullCount<T>(sql);
             return CountOriginal(dbTrans, cmd.CommandType, cmd.CommandText, provider.Object2Params(parameters));
         }
 
-        public static int CountWhere<T>(this IDbTransaction dbTrans, string name, object value)
+        public static long CountWhere<T>(this IDbTransaction dbTrans, string name, object value)
         {
             var provider = dbTrans.GetCommandDialectProvider();
             var cmd = provider.CountWhere<T>(name, value);
@@ -527,14 +527,14 @@ namespace Loogn.OrmLite
             return CountOriginal(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
-        public static int CountWhere<T>(this IDbTransaction dbTrans, IDictionary<string, object> conditions)
+        public static long CountWhere<T>(this IDbTransaction dbTrans, IDictionary<string, object> conditions)
         {
             var provider = dbTrans.GetCommandDialectProvider();
             var cmd = provider.CountWhere<T>(conditions);
             return CountOriginal(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
-        public static int CountWhere<T>(this IDbTransaction dbTrans, object conditions)
+        public static long CountWhere<T>(this IDbTransaction dbTrans, object conditions)
         {
             var provider = dbTrans.GetCommandDialectProvider();
             var cmd = provider.CountWhere<T>(conditions);
@@ -542,7 +542,7 @@ namespace Loogn.OrmLite
         }
 
 
-        public static int CountFmt(this IDbTransaction dbTrans, string sqlFormat, params object[] parameters)
+        public static long CountFmt(this IDbTransaction dbTrans, string sqlFormat, params object[] parameters)
         {
             return CountOriginal(dbTrans, CommandType.Text, string.Format(sqlFormat, parameters));
         }

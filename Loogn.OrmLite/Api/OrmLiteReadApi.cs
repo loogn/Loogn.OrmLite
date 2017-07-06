@@ -212,10 +212,10 @@ namespace Loogn.OrmLite
         /// <param name="commandText">命令文本</param>
         /// <param name="ps"></param>
         /// <returns></returns>
-        public static int CountOriginal(this IDbConnection dbConn, CommandType commandType, string commandText, params IDbDataParameter[] ps)
+        public static long CountOriginal(this IDbConnection dbConn, CommandType commandType, string commandText, params IDbDataParameter[] ps)
         {
             var obj = SqlHelper.ExecuteScalar(dbConn, commandType, commandText, ps);
-            return TransformForDataReader.ConvertToPrimitiveType<int>(obj);
+            return TransformForDataReader.ConvertToPrimitiveType<long>(obj);
         }
 
         #endregion
@@ -408,7 +408,7 @@ namespace Loogn.OrmLite
         /// <param name="factor">分页因子,TableName可选</param>
         /// <param name="totalCount">输出参数，总条数</param>
         /// <returns></returns>
-        public static List<T> SelectPage<T>(this IDbConnection dbConn, OrmLitePageFactor factor, out int totalCount)
+        public static List<T> SelectPage<T>(this IDbConnection dbConn, OrmLitePageFactor factor, out long totalCount)
         {
             if (factor.PageIndex < 1)
             {
@@ -458,7 +458,7 @@ namespace Loogn.OrmLite
         /// <param name="factor">分页因子，TableName必填</param>
         /// <param name="totalCount"></param>
         /// <returns></returns>
-        public static List<dynamic> SelectPage(this IDbConnection dbConn, OrmLitePageFactor factor, out int totalCount)
+        public static List<dynamic> SelectPage(this IDbConnection dbConn, OrmLitePageFactor factor, out long totalCount)
         {
             if (factor.PageIndex < 1)
             {
@@ -510,7 +510,7 @@ namespace Loogn.OrmLite
         /// <returns></returns>
         public static OrmLitePageResult<T> SelectPage<T>(this IDbConnection dbConn, OrmLitePageFactor factor)
         {
-            int totalCount;
+            long totalCount;
             OrmLitePageResult<T> pageInfo = new OrmLitePageResult<T>();
             pageInfo.List = dbConn.SelectPage<T>(factor, out totalCount);
             pageInfo.PageIndex = factor.PageIndex;
@@ -527,7 +527,7 @@ namespace Loogn.OrmLite
         /// <returns></returns>
         public static OrmLitePageResult<dynamic> SelectPage(this IDbConnection dbConn, OrmLitePageFactor factor)
         {
-            int totalCount;
+            long totalCount;
             OrmLitePageResult<dynamic> pageInfo = new OrmLitePageResult<dynamic>();
             pageInfo.List = dbConn.SelectPage(factor, out totalCount);
             pageInfo.PageIndex = factor.PageIndex;
@@ -991,7 +991,7 @@ namespace Loogn.OrmLite
         /// <typeparam name="T"></typeparam>
         /// <param name="dbConn"></param>
         /// <returns></returns>
-        public static int Count<T>(this IDbConnection dbConn)
+        public static long Count<T>(this IDbConnection dbConn)
         {
             var cmd = dbConn.GetCommandDialectProvider().Count<T>();
             return CountOriginal(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
@@ -1004,7 +1004,7 @@ namespace Loogn.OrmLite
         /// <param name="dbConn"></param>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static int Count<T>(this IDbConnection dbConn, string sql)
+        public static long Count<T>(this IDbConnection dbConn, string sql)
         {
             var cmd = dbConn.GetCommandDialectProvider().FullCount<T>(sql);
             return CountOriginal(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
@@ -1018,7 +1018,7 @@ namespace Loogn.OrmLite
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public static int Count<T>(this IDbConnection dbConn, string sql, IDictionary<string, object> parameters)
+        public static long Count<T>(this IDbConnection dbConn, string sql, IDictionary<string, object> parameters)
         {
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.FullCount<T>(sql);
@@ -1033,7 +1033,7 @@ namespace Loogn.OrmLite
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public static int Count<T>(this IDbConnection dbConn, string sql, object parameters)
+        public static long Count<T>(this IDbConnection dbConn, string sql, object parameters)
         {
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.FullCount<T>(sql);
@@ -1048,7 +1048,7 @@ namespace Loogn.OrmLite
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static int CountWhere<T>(this IDbConnection dbConn, string name, object value)
+        public static long CountWhere<T>(this IDbConnection dbConn, string name, object value)
         {
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.CountWhere<T>(name, value);
@@ -1062,7 +1062,7 @@ namespace Loogn.OrmLite
         /// <param name="dbConn"></param>
         /// <param name="conditions"></param>
         /// <returns></returns>
-        public static int CountWhere<T>(this IDbConnection dbConn, IDictionary<string, object> conditions)
+        public static long CountWhere<T>(this IDbConnection dbConn, IDictionary<string, object> conditions)
         {
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.CountWhere<T>(conditions);
@@ -1076,7 +1076,7 @@ namespace Loogn.OrmLite
         /// <param name="dbConn"></param>
         /// <param name="conditions"></param>
         /// <returns></returns>
-        public static int CountWhere<T>(this IDbConnection dbConn, object conditions)
+        public static long CountWhere<T>(this IDbConnection dbConn, object conditions)
         {
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.CountWhere<T>(conditions);
@@ -1090,7 +1090,7 @@ namespace Loogn.OrmLite
         /// <param name="sqlFormat"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public static int CountFmt(this IDbConnection dbConn, string sqlFormat, params object[] parameters)
+        public static long CountFmt(this IDbConnection dbConn, string sqlFormat, params object[] parameters)
         {
             return CountOriginal(dbConn, CommandType.Text, string.Format(sqlFormat, parameters));
         }

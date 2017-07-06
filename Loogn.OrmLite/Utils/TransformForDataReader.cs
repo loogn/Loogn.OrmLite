@@ -141,6 +141,10 @@ namespace Loogn.OrmLite
                 {
                     newobj = Convert.ToInt32(obj);
                 }
+                else if (ReferenceEquals(type, Types.Int64))
+                {
+                    newobj = Convert.ToInt64(obj);
+                }
                 return (T)newobj;
 
             }

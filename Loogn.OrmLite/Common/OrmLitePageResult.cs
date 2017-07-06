@@ -14,12 +14,12 @@ namespace Loogn.OrmLite
         /// <summary>
         /// 总条数
         /// </summary>
-        public int TotalCount { get; set; }
+        public long TotalCount { get; set; }
 
         /// <summary>
         /// 总页数
         /// </summary>
-        public int PageCount
+        public long PageCount
         {
             get
             {

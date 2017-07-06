@@ -12,5 +12,6 @@ namespace Loogn.OrmLite
         public static Type OrmLiteField = typeof(OrmLiteFieldAttribute);
         public static Type String = typeof(string);
         public static Type Int32 = typeof(int);
+        public static Type Int64 = typeof(long);
     }
 }

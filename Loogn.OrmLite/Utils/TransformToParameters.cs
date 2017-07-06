@@ -20,7 +20,7 @@ namespace Loogn.OrmLite
                 {
                     var p = dialectProvider.CreateParameter();
                     p.ParameterName = "@" + kv.Key;
-                    p.Value = kv.Value.GetterInvoker(obj);
+                    p.Value = kv.Value.Get(obj);
                     ps[index++] = p;
                 }
                 return ps;
@@ -42,7 +42,7 @@ namespace Loogn.OrmLite
                     {
                         var p = dialectProvider.CreateParameter();
                         p.ParameterName = "@" + kv.Key;
-                        p.Value = kv.Value.GetterInvoker(obj);
+                        p.Value = kv.Value.Get(obj);
                         ps[index++] = p;
                         appendWhere.AppendFormat(" {0}=@{0} and ", kv.Key);
                     }

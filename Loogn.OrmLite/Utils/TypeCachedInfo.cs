@@ -56,8 +56,8 @@ namespace Loogn.OrmLite
 
         public PropertyInfo Property;
         public OrmLiteFieldAttribute OrmLiteField;
-        public Action<object, object> SetterInvoker;
-        public Func<object, object> GetterInvoker;
+        private Action<object, object> SetterInvoker;
+        private Func<object, object> GetterInvoker;
         public bool CanInvoker;
         private PropAccessor()
         {
@@ -65,6 +65,28 @@ namespace Loogn.OrmLite
             GetterInvoker = DynamicMethodHelper.BuildGetterInvoker(null);
             CanInvoker = false;
         }
+        public void Set(object obj, object value)
+        {
+            if (value != null && value != DBNull.Value)
+            {
+                if (Property.PropertyType == Types.Bool && !(value is bool))
+                {
+                    SetterInvoker(obj, Convert.ToBoolean(value));
+                    return;
+                }
+                if (Property.PropertyType == Types.Byte && !(value is byte))
+                {
+                    SetterInvoker(obj, Convert.ToByte(value));
+                    return;
+                }
+                SetterInvoker(obj, value);
+            }
+        }
+        public object Get(object obj)
+        {
+            return GetterInvoker(obj);
+        }
+
         public PropAccessor(PropertyInfo prop)
         {
             Property = prop;

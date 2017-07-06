@@ -44,7 +44,7 @@ namespace Loogn.OrmLite
                     var accessor = typeInfo.GetAccessor(reader.GetName(i));
                     if (accessor.CanInvoker && HasValue(values[i]))
                     {
-                        accessor.SetterInvoker(obj, values[i]);
+                        accessor.Set(obj, values[i]);
                     }
                 }
                 return obj;
@@ -105,7 +105,7 @@ namespace Loogn.OrmLite
                         propAccessorArr[i] = accessor;
                         if (accessor.CanInvoker && HasValue(values[i]))
                         {
-                            accessor.SetterInvoker(obj, values[i]);
+                            accessor.Set(obj, values[i]);
                         }
                     }
                     first = false;
@@ -117,7 +117,7 @@ namespace Loogn.OrmLite
                         var accessor = propAccessorArr[i];
                         if (accessor.CanInvoker && HasValue(values[i]))
                         {
-                            accessor.SetterInvoker(obj, values[i]);
+                            accessor.Set(obj, values[i]);
                         }
                     }
                 }

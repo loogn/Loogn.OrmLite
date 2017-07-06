@@ -221,7 +221,7 @@ namespace Loogn.OrmLite
                 foreach (var kv in typeInfo.PropInvokerDict)
                 {
                     var fieldName = kv.Key;
-                    var val = kv.Value.GetterInvoker(anonType);
+                    var val = kv.Value.Get(anonType);
                     sbsql.AppendFormat("{1}{0}{2},", fieldName, l, r);
                     sbParams.AppendFormat("@{0},", fieldName);
 

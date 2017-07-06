@@ -279,7 +279,7 @@ namespace Loogn.OrmLite
             foreach (var kv in propInvokerDict)
             {
                 var fieldName = kv.Key;
-                var val = kv.Value.GetterInvoker(obj);
+                var val = kv.Value.Get(obj);
                 sbsql.AppendFormat("{1}{0}{2},", fieldName, l, r);
                 sbParams.AppendFormat("@{0},", fieldName);
                 ps[index++] = CreateParameter(fieldName, val ?? DBNull.Value);
@@ -370,7 +370,7 @@ namespace Loogn.OrmLite
                         continue;
                     }
 
-                    var val = kv.Value.GetterInvoker(obj);
+                    var val = kv.Value.Get(obj);
                     if (val == null)
                     {
                         if (kv.Value.Property.PropertyType == Types.String)
@@ -536,13 +536,13 @@ namespace Loogn.OrmLite
                 if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase))
                 {
                     condition = string.Format("{1}{0}{2} = @{0}", fieldName, l, r);
-                    var val = kv.Value.GetterInvoker(obj);
+                    var val = kv.Value.Get(obj);
                     ps.Add(CreateParameter(fieldName, val ?? DBNull.Value));
                 }
                 else
                 {
                     sbsql.AppendFormat("{1}{0}{2} = @{0},", fieldName, l, r);
-                    var val = kv.Value.GetterInvoker(obj);
+                    var val = kv.Value.Get(obj);
                     ps.Add(CreateParameter(fieldName, val ?? DBNull.Value));
                 }
             }
@@ -626,7 +626,7 @@ namespace Loogn.OrmLite
                     if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
                     {
                         condition = string.Format("{1}{0}{2} = @{0}", fieldName, l, r);
-                        var val = kv.Value.GetterInvoker(obj);
+                        var val = kv.Value.Get(obj);
                         ps.Add(CreateParameter(fieldName, val ?? DBNull.Value));
                     }
                     else
@@ -634,7 +634,7 @@ namespace Loogn.OrmLite
                         if (FieldsContains(updateFields, fieldName))
                         {
                             sbsql.AppendFormat("{1}{0}{2} = @{0},", fieldName, l, r);
-                            var val = kv.Value.GetterInvoker(obj);
+                            var val = kv.Value.Get(obj);
                             ps.Add(CreateParameter(fieldName, val ?? DBNull.Value));
                         }
                     }

@@ -23,6 +23,31 @@ namespace Loogn.OrmLite
             var tableName = TypeCachedDict.GetTypeCachedInfo(typeof(T)).TableName;
             return tableName;
         }
+
+        /// <summary>
+        /// 处理默认值，string datetime
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        protected object DealDefaultValue(object value, Type type)
+        {
+            if (value == null)
+            {
+                if (type == Types.String)
+                {
+                    return string.Empty; ;
+                }
+            }
+            else
+            {
+                if (value is DateTime && DateTime.MinValue.Equals(value))
+                {
+                    return DateTime.Now;
+                }
+            }
+            return value;
+        }
+
         /// <summary>
         /// 左引号
         /// </summary>
@@ -371,20 +396,7 @@ namespace Loogn.OrmLite
                     }
 
                     var val = kv.Value.Get(obj);
-                    if (val == null)
-                    {
-                        if (kv.Value.Property.PropertyType == Types.String)
-                        {
-                            val = string.Empty;
-                        }
-                    }
-                    else
-                    {
-                        if (val is DateTime && DateTime.MinValue.Equals(val))
-                        {
-                            val = DateTime.Now;
-                        }
-                    }
+                    val = DealDefaultValue(val, kv.Value.Property.PropertyType);
                     sbsql.AppendFormat("{1}{0}{2},", kv.Key, l, r);
                     sbParams.AppendFormat("@{0},", kv.Key);
                     ps.Add(CreateParameter(kv.Key, val ?? DBNull.Value));
@@ -635,6 +647,7 @@ namespace Loogn.OrmLite
                         {
                             sbsql.AppendFormat("{1}{0}{2} = @{0},", fieldName, l, r);
                             var val = kv.Value.Get(obj);
+                            val = DealDefaultValue(val, kv.Value.Property.PropertyType);
                             ps.Add(CreateParameter(fieldName, val ?? DBNull.Value));
                         }
                     }

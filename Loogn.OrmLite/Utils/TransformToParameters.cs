@@ -35,6 +35,9 @@ namespace Loogn.OrmLite
                 var typeInfo = TypeCachedDict.GetTypeCachedInfo(obj.GetType());
                 if (typeInfo.PropInvokerDict.Count > 0)
                 {
+                    var OpenQuote = dialectProvider.OpenQuote;
+                    var CloseQuote = dialectProvider.CloseQuote;
+
                     var ps = new IDbDataParameter[typeInfo.PropInvokerDict.Count];
                     var index = 0;
                     appendWhere.Append(" where ");
@@ -44,7 +47,7 @@ namespace Loogn.OrmLite
                         p.ParameterName = "@" + kv.Key;
                         p.Value = kv.Value.Get(obj);
                         ps[index++] = p;
-                        appendWhere.AppendFormat(" {0}=@{0} and ", kv.Key);
+                        appendWhere.AppendFormat(" {1}{0}{2}=@{0} and ", kv.Key, OpenQuote, CloseQuote);
                     }
                     return ps;
                 }
@@ -74,6 +77,8 @@ namespace Loogn.OrmLite
         {
             if (dict != null && dict.Count > 0)
             {
+                var OpenQuote = dialectProvider.OpenQuote;
+                var CloseQuote = dialectProvider.CloseQuote;
                 var ps = new IDbDataParameter[dict.Count];
                 var index = 0;
                 appendWhere.Append(" where ");
@@ -83,7 +88,7 @@ namespace Loogn.OrmLite
                     p.ParameterName = "@" + kv.Key;
                     p.Value = kv.Value;
                     ps[index++] = p;
-                    appendWhere.AppendFormat(" {0}=@{0} and ", kv.Key);
+                    appendWhere.AppendFormat(" {1}{0}{2}=@{0} and ", kv.Key, OpenQuote, CloseQuote);
                 }
                 appendWhere.Length -= 4;
                 return ps;

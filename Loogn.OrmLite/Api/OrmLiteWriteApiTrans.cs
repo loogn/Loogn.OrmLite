@@ -192,9 +192,7 @@ namespace Loogn.OrmLite
         }
         private static int InsertTrans(this IDbTransaction dbTrans, string table, object anonType)
         {
-            var typeInfo = TypeCachedDict.GetTypeCachedInfo(anonType.GetType());
             var provider = dbTrans.GetCommandDialectProvider();
-
             var l = provider.OpenQuote;
             var r = provider.CloseQuote;
             StringBuilder sbsql = new StringBuilder(50);
@@ -218,6 +216,7 @@ namespace Loogn.OrmLite
             }
             else
             {
+                var typeInfo = TypeCachedDict.GetTypeCachedInfo(anonType.GetType());
                 foreach (var kv in typeInfo.PropInvokerDict)
                 {
                     var fieldName = kv.Key;

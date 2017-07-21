@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <package >
   <metadata>
     <id>$id$</id>
@@ -10,8 +10,8 @@
     <projectUrl>http://git.oschina.net/loogn/Loogn.OrmLite</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Count方法返回long,处理mysql数据类型bit和tinyint到.net类型的映射 </releaseNotes>
-    <copyright>Copyright 2016</copyright>
+    <releaseNotes> fix some bug </releaseNotes>
+    <copyright>Copyright 2015-2017</copyright>
     <tags>ORM Loogn Loogn.OrmLite OrmLite</tags>
   </metadata>
 </package>

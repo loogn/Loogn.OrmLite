@@ -37,7 +37,17 @@ namespace Loogn.OrmLite
         public static Func<object> BuildConstructorInvoker(Type type)
         {
             var constructor = type.GetConstructor(Type.EmptyTypes);
-            return BuildConstructorInvoker(constructor);
+            if (constructor != null)
+            {
+                return BuildConstructorInvoker(constructor);
+            }
+            else
+            {
+                return () =>
+                {
+                    throw new Exception(type.FullName + " 类型没有无参构造，无法实例化。");
+                };
+            }
         }
 
         public static Func<object, object> BuildGetterInvoker(MethodInfo methodInfo)

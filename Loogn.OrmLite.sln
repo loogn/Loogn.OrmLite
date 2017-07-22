@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite", "Loogn.OrmLite\Loogn.OrmLite.csproj", "{3FBB8792-9DAD-430E-A91B-C3A8789D443B}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApplication1", "Cons
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceTesting", "PerformanceTesting\PerformanceTesting.csproj", "{43AC4ED8-95B3-4ECA-95BD-D342E12296DF}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Loogn.OrmLite.NetCore", "Loogn.OrmLite.NetCore\Loogn.OrmLite.NetCore.xproj", "{5C81C3A1-57C4-444D-B2A7-F92AD4213A2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loogn.OrmLite.NetCore", "Loogn.OrmLite.NetCore\Loogn.OrmLite.NetCore.csproj", "{5C81C3A1-57C4-444D-B2A7-F92AD4213A2A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite.MySql", "Loogn.OrmLite.MySql\Loogn.OrmLite.MySql.csproj", "{9F79DC4F-EA50-4508-B09C-D690633761A1}"
 EndProject

@@ -73,7 +73,7 @@ FROM    syscolumns c
         LEFT JOIN systypes t ON c.xtype = t.xtype
                                 AND t.name <> 'sysname'
         LEFT JOIN sys.extended_properties p ON c.colid = p.minor_id
-                                               AND p.major_id = c.id
+                                               AND p.major_id = c.id  AND p.name='MS_Description' 
         LEFT JOIN syscomments m ON c.cdefault = m.id
 WHERE   c.id = OBJECT_ID(@tableName)
 ORDER BY colorder ASC
@@ -201,10 +201,10 @@ ORDER BY colorder ASC
         {
             string GetTablesSql = @"
 SELECT  t.Name ,
-        ISNULL(p.value, '') Description
+        CONVERT(VARCHAR(200),ISNULL(p.value, ''))  Description
 FROM    sysobjects t
         LEFT JOIN sys.extended_properties p ON t.id = p.major_id
-                                               AND p.minor_id = 0
+                                               AND p.minor_id = 0 and p.name='MS_Description' 
 WHERE   t.xtype = 'U'
         AND t.name <> 'dtproperties'
 ORDER BY t.name";

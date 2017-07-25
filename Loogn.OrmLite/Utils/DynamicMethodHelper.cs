@@ -79,7 +79,18 @@ namespace Loogn.OrmLite
 
         public static Func<T> BuildConstructorInvoker<T>(Type type)
         {
-            return Expression.Lambda<Func<T>>(Expression.New(type)).Compile();
+            var constructor = type.GetConstructor(Type.EmptyTypes);
+            if (constructor != null)
+            {
+                return Expression.Lambda<Func<T>>(Expression.New(constructor)).Compile();
+            }
+            else
+            {
+                return () =>
+                {
+                    throw new Exception(type.FullName + " 类型没有无参构造，无法实例化。");
+                };
+            }
         }
 
         public static Action<TObject, TValue> BuildSetterInvoker<TObject, TValue>(PropertyInfo propInfo)

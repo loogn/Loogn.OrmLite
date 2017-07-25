@@ -117,8 +117,7 @@ namespace Loogn.OrmLite
         public string TableName { get; set; }
 
         public Dictionary<string, Accessor> accessorDict;
-        public Dictionary<PropertyInfo, OrmLiteFieldAttribute> FieldAttrDict { get; private set; }
-        public PropertyInfo[] Properties { get; set; }
+
         public Func<TObject> NewInvoker;
         public TypeCachedInfo(Type modelType)
         {
@@ -132,7 +131,6 @@ namespace Loogn.OrmLite
             {
                 TableName = modelType.Name;
             }
-            Properties = modelType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             //构造委托
             NewInvoker = DynamicMethodHelper.BuildConstructorInvoker<TObject>(modelType);
             InitInfo();
@@ -140,8 +138,9 @@ namespace Loogn.OrmLite
 
         private void InitInfo()
         {
+            var Properties = Type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             accessorDict = new Dictionary<string, Accessor>(Properties.Length);
-            FieldAttrDict = new Dictionary<PropertyInfo, OrmLiteFieldAttribute>(Properties.Length);
+
             foreach (var prop in Properties)
             {
                 Accessor accessor = null;
@@ -254,16 +253,6 @@ namespace Loogn.OrmLite
                     accessor = new TimeSpanNullableAccessor(prop);
                 }
                 accessorDict[propName] = accessor;
-                //自定义属性
-                var customerAttributes = prop.GetCustomAttributes(Types.OrmLiteField, false);
-                if (customerAttributes == null || !customerAttributes.Any())
-                {
-                    FieldAttrDict[prop] = null;
-                }
-                else
-                {
-                    FieldAttrDict[prop] = (OrmLiteFieldAttribute)customerAttributes.First();
-                }
             }
         }
 
@@ -277,21 +266,6 @@ namespace Loogn.OrmLite
             }
             return new EmptyAccessor();
         }
-
-
-        public OrmLiteFieldAttribute GetFieldAttr(PropertyInfo prop)
-        {
-            OrmLiteFieldAttribute attr;
-            if (FieldAttrDict.TryGetValue(prop, out attr))
-            {
-                return attr;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
 
         public abstract class Accessor
         {
@@ -385,7 +359,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -400,7 +374,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? 0 : getter(obj);
+                return !CanGet ? 0 : getter(obj);
             }
         }
 
@@ -415,7 +389,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? 0 : getter(obj);
+                return !CanGet ? 0 : getter(obj);
             }
         }
 
@@ -430,7 +404,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? DateTime.MinValue : getter(obj);
+                return !CanGet ? DateTime.MinValue : getter(obj);
             }
         }
 
@@ -446,7 +420,7 @@ namespace Loogn.OrmLite
 
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -462,7 +436,7 @@ namespace Loogn.OrmLite
 
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? 0 : getter(obj);
+                return !CanGet ? 0 : getter(obj);
             }
         }
 
@@ -477,7 +451,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -492,7 +466,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? 0 : getter(obj);
+                return !CanGet ? 0 : getter(obj);
             }
         }
 
@@ -507,7 +481,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -522,7 +496,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? 0 : getter(obj);
+                return !CanGet ? 0 : getter(obj);
             }
         }
 
@@ -537,7 +511,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -552,7 +526,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? Guid.Empty : getter(obj);
+                return !CanGet ? Guid.Empty : getter(obj);
             }
         }
 
@@ -568,7 +542,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -594,7 +568,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? 0 : getter(obj);
+                return !CanGet ? 0 : getter(obj);
             }
         }
         public class ByteNullableAccessor : AccessorTpl<byte?>
@@ -618,7 +592,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -633,7 +607,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? 0 : getter(obj);
+                return !CanGet ? 0 : getter(obj);
             }
         }
         public class ShortNullableAccessor : AccessorTpl<short?>
@@ -647,7 +621,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? 0 : getter(obj);
+                return !CanGet ? 0 : getter(obj);
             }
         }
 
@@ -662,7 +636,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? char.MinValue : getter(obj);
+                return !CanGet ? char.MinValue : getter(obj);
             }
         }
 
@@ -677,7 +651,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -702,7 +676,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? false : getter(obj);
+                return !CanGet ? false : getter(obj);
             }
         }
 
@@ -727,7 +701,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -742,7 +716,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? TimeSpan.Zero : getter(obj);
+                return !CanGet ? TimeSpan.Zero : getter(obj);
             }
         }
 
@@ -757,7 +731,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -772,7 +746,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? 0M : getter(obj);
+                return !CanGet ? 0M : getter(obj);
             }
         }
 
@@ -787,7 +761,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 
@@ -802,7 +776,7 @@ namespace Loogn.OrmLite
             }
             protected override object DoGet(TObject obj)
             {
-                return getter == null ? null : getter(obj);
+                return !CanGet ? null : getter(obj);
             }
         }
 

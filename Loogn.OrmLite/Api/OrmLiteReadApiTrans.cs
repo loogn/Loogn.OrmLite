@@ -190,7 +190,7 @@ namespace Loogn.OrmLite
             }
             if (factor.TableName == null || factor.TableName.Length == 0)
             {
-                factor.TableName = TypeCachedDict.GetTypeCachedInfo(typeof(T)).TableName;
+                factor.TableName = TypeCachedDict.GetTypeCachedInfo<T>().TableName;
             }
             if (string.IsNullOrEmpty(factor.Fields))
             {

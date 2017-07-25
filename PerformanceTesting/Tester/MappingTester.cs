@@ -70,15 +70,19 @@ namespace PerformanceTesting
                 Loogn1(limit);
             });
 
+            CodeTimer.Time("Mapping-SqlSugar", 1, () =>
+            {
+                SqlSugar(limit);
+            });
+
+
             CodeTimer.Time("Mapping-CRL", 1, () =>
             {
                 CRL(limit);
             });
 
-            CodeTimer.Time("Mapping-SqlSugar", 1, () =>
-            {
-                SqlSugar(limit);
-            });
+
+
 
             //CodeTimer.Time("Mapping-ServiceStack", 1, () =>
             //{

@@ -354,7 +354,7 @@ namespace Loogn.OrmLite
         public static int UpdateAnonymous<T>(this IDbTransaction dbTrans, object anonymous)
         {
             var provider = dbTrans.GetCommandDialectProvider();
-            var cmd = provider.Update(TypeCachedDict.GetTypeCachedInfo(typeof(T)).TableName, anonymous);
+            var cmd = provider.Update(TypeCachedDict.GetTypeCachedInfo<T>().TableName, anonymous);
             int c = ExecuteNonQuery(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
         }
@@ -409,7 +409,7 @@ namespace Loogn.OrmLite
         public static int Update<T>(this IDbTransaction dbTrans, IDictionary<string, object> updateFields, string conditions, IDictionary<string, object> parameters)
         {
             var provider = dbTrans.GetCommandDialectProvider();
-            var cmd = provider.Update(TypeCachedDict.GetTypeCachedInfo(typeof(T)).TableName, updateFields, conditions, parameters);
+            var cmd = provider.Update(TypeCachedDict.GetTypeCachedInfo<T>().TableName, updateFields, conditions, parameters);
             int c = ExecuteNonQuery(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
         }

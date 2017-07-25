@@ -20,7 +20,7 @@ namespace Loogn.OrmLite
         /// <returns></returns>
         protected string GetTableName<T>()
         {
-            var tableName = TypeCachedDict.GetTypeCachedInfo(typeof(T)).TableName;
+            var tableName = TypeCachedDict.GetTypeCachedInfo<T>().TableName;
             return tableName;
         }
 
@@ -366,7 +366,7 @@ namespace Loogn.OrmLite
 
         public CommandInfo Insert<T>(T obj, bool selectIdentity = false)
         {
-            var typeInfo = TypeCachedDict.GetTypeCachedInfo(typeof(T));
+            var typeInfo = TypeCachedDict.GetTypeCachedInfo<T>();
 
             var table = typeInfo.TableName;
 
@@ -378,7 +378,7 @@ namespace Loogn.OrmLite
             StringBuilder sbParams = new StringBuilder(") values (", 50);
             var ps = new List<IDbDataParameter>();
 
-            foreach (var kv in typeInfo.PropInvokerDict)
+            foreach (var kv in typeInfo.accessorDict)
             {
                 var fieldAttr = kv.Value.OrmLiteField;
                 if (kv.Key.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase))
@@ -390,13 +390,13 @@ namespace Loogn.OrmLite
                 }
                 if (fieldAttr == null || (!fieldAttr.InsertIgnore && !fieldAttr.Ignore))
                 {
-                    if (!kv.Value.CanInvoker)
+                    if (!kv.Value.CanGet)
                     {
                         continue;
                     }
 
                     var val = kv.Value.Get(obj);
-                    val = DealDefaultValue(val, kv.Value.Property.PropertyType);
+                    val = DealDefaultValue(val, kv.Value.prop.PropertyType);
                     sbsql.AppendFormat("{1}{0}{2},", kv.Key, l, r);
                     sbParams.AppendFormat("@{0},", kv.Key);
                     ps.Add(CreateParameter(kv.Key, val ?? DBNull.Value));
@@ -618,7 +618,7 @@ namespace Loogn.OrmLite
         {
             var l = OpenQuote;
             var r = CloseQuote;
-            var typeInfo = TypeCachedDict.GetTypeCachedInfo(typeof(T));
+            var typeInfo = TypeCachedDict.GetTypeCachedInfo<T>();
 
             var tableName = typeInfo.TableName;
 
@@ -627,13 +627,13 @@ namespace Loogn.OrmLite
             string condition = null;
             var ps = new List<IDbDataParameter>();
 
-            foreach (var kv in typeInfo.PropInvokerDict)
+            foreach (var kv in typeInfo.accessorDict)
             {
                 var fieldName = kv.Key;
                 var fieldAttr = kv.Value.OrmLiteField;
                 if (fieldAttr == null || (!fieldAttr.UpdateIgnore && !fieldAttr.Ignore))
                 {
-                    if (!kv.Value.CanInvoker) continue;
+                    if (!kv.Value.CanGet) continue;
 
                     if (fieldName.Equals(OrmLite.DefaultKeyName, StringComparison.OrdinalIgnoreCase) || (fieldAttr != null && fieldAttr.IsPrimaryKey))
                     {
@@ -647,7 +647,7 @@ namespace Loogn.OrmLite
                         {
                             sbsql.AppendFormat("{1}{0}{2} = @{0},", fieldName, l, r);
                             var val = kv.Value.Get(obj);
-                            val = DealDefaultValue(val, kv.Value.Property.PropertyType);
+                            val = DealDefaultValue(val, kv.Value.prop.PropertyType);
                             ps.Add(CreateParameter(fieldName, val ?? DBNull.Value));
                         }
                     }

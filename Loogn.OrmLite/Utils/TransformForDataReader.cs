@@ -33,19 +33,15 @@ namespace Loogn.OrmLite
         {
             if (reader.Read())
             {
-                var typeInfo = TypeCachedDict.GetTypeCachedInfo(typeof(T));
-                T obj = (T)typeInfo.NewInvoker();
+                var typeInfo = TypeCachedDict.GetTypeCachedInfo<T>();
+                T obj = typeInfo.NewInvoker();
                 var length = reader.FieldCount;
                 object[] values = new object[length];
                 reader.GetValues(values);
-
                 for (int i = 0; i < length; i++)
                 {
                     var accessor = typeInfo.GetAccessor(reader.GetName(i));
-                    if (accessor.CanInvoker && HasValue(values[i]))
-                    {
-                        accessor.Set(obj, values[i]);
-                    }
+                    accessor.Set(obj, values[i]);
                 }
                 return obj;
             }
@@ -86,16 +82,16 @@ namespace Loogn.OrmLite
         /// <returns></returns>
         public static List<T> ReaderToObjectList<T>(IDataReader reader)
         {
-            var typeInfo = TypeCachedDict.GetTypeCachedInfo(typeof(T));
+            var typeInfo = TypeCachedDict.GetTypeCachedInfo<T>();
             List<T> list = new List<T>();
             var first = true;
             int length = reader.FieldCount;
-            PropAccessor[] propAccessorArr = new PropAccessor[length];
+            TypeCachedInfo<T>.Accessor[] propAccessorArr = new TypeCachedInfo<T>.Accessor[length];
             object[] values = new object[length];
             while (reader.Read())
             {
                 reader.GetValues(values);
-                T obj = (T)typeInfo.NewInvoker();
+                T obj = typeInfo.NewInvoker();
                 if (first)
                 {
                     for (int i = 0; i < length; i++)
@@ -103,10 +99,7 @@ namespace Loogn.OrmLite
                         var fieldName = reader.GetName(i);
                         var accessor = typeInfo.GetAccessor(fieldName);
                         propAccessorArr[i] = accessor;
-                        if (accessor.CanInvoker && HasValue(values[i]))
-                        {
-                            accessor.Set(obj, values[i]);
-                        }
+                        accessor.Set(obj, values[i]);
                     }
                     first = false;
                 }
@@ -115,10 +108,7 @@ namespace Loogn.OrmLite
                     for (var i = 0; i < length; i++)
                     {
                         var accessor = propAccessorArr[i];
-                        if (accessor.CanInvoker && HasValue(values[i]))
-                        {
-                            accessor.Set(obj, values[i]);
-                        }
+                        accessor.Set(obj, values[i]);
                     }
                 }
                 list.Add(obj);

@@ -24,5 +24,23 @@ namespace Loogn.OrmLite
                 return info;
             }
         }
+        
+        static Dictionary<Type, object> GDict = new Dictionary<Type, object>(50);
+        public static TypeCachedInfo<TObject> GetTypeCachedInfo<TObject>()
+        {
+            var type = typeof(TObject);
+            object info;
+            if (GDict.TryGetValue(type, out info))
+            {
+                return (TypeCachedInfo<TObject>)info;
+            }
+            else
+            {
+                var refInfo = new TypeCachedInfo<TObject>(type);
+                GDict[type] = refInfo;
+                return refInfo;
+            }
+        }
+
     }
 }

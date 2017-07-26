@@ -334,14 +334,14 @@ namespace Loogn.OrmLite
                 if (setMethod != null)
                 {
                     CanSet = true;
-                    setter = DynamicMethodHelper.BuildSetterInvoker<TObject, TValue>(prop);
+                    setter = (Action<TObject, TValue>)Delegate.CreateDelegate(typeof(Action<TObject, TValue>), setMethod);
                 }
                 var getMethod = prop.GetGetMethod(true);
                 if (getMethod != null)
                 {
 
                     CanGet = true;
-                    getter = DynamicMethodHelper.BuildGetterInvoker<TObject, TValue>(prop);
+                    getter = (Func<TObject, TValue>)Delegate.CreateDelegate(typeof(Func<TObject, TValue>), getMethod);
                 }
             }
         }

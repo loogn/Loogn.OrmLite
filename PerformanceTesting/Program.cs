@@ -24,27 +24,16 @@ namespace PerformanceTesting
 
         static void Main(string[] args)
         {
-
             //TestMutileResult();
             //return;
-
             init();
+            for (int i = 0; i < 3; i++)
+            {
+                MappingTester.Test();
+                //QueryTester.Test();
+                //SingleContextQueryTester.Test();
+            }
 
-            //QueryTester.Test();
-            //QueryTester.Test();
-            //QueryTester.Test();
-            //QueryTester.Test();
-            //QueryTester.Test();
-            //QueryTester.Test();
-
-
-            MappingTester.Test();
-            MappingTester.Test();
-            MappingTester.Test();
-            //QueryTester.Test();
-
-
-            //SingleContextQueryTester.Test();
         }
 
         static void TestMutileResult()
@@ -61,7 +50,6 @@ namespace PerformanceTesting
                 var list = result.FetchList<TestEntity>();
                 var entity = result.FetchObject<TestEntity>();
                 var f_int64 = result.FetchScalar<long>();
-
                 Console.WriteLine(list[1].F_String);
                 Console.WriteLine(entity.F_String);
                 Console.WriteLine(f_int64);

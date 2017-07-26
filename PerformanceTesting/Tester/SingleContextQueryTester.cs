@@ -17,7 +17,7 @@ namespace PerformanceTesting
     class SingleContextQueryTester
     {
 
-        static int queryCount = 20000;
+        static int queryCount = 2000;
         static int limit = 10;
         static int minId = 1;
         public static void Test()
@@ -44,24 +44,24 @@ namespace PerformanceTesting
             //    Chloe(limit);
             //});
 
-            CodeTimer.Time("SingleContextQuery-ChloeSql", 1, () =>
-            {
-                ChloeSql(limit);
-            });
+            //CodeTimer.Time("SingleContextQuery-ChloeSql", 1, () =>
+            //{
+            //    ChloeSql(limit);
+            //});
 
-            CodeTimer.Time("SingleContextQuery-Dapper", 1, () =>
-            {
-                Dapper(limit);
-            });
+            //CodeTimer.Time("SingleContextQuery-Dapper", 1, () =>
+            //{
+            //    Dapper(limit);
+            //});
 
             //CodeTimer.Time("SingleContextQuery-EF", 1, () =>
             //{
             //    EF(limit);
             //});
-            CodeTimer.Time("SingleContextQuery-EFSql", 1, () =>
-            {
-                EFSql(limit);
-            });
+            //CodeTimer.Time("SingleContextQuery-EFSql", 1, () =>
+            //{
+            //    EFSql(limit);
+            //});
 
             CodeTimer.Time("SingleContextQuery-Loogn", 1, () =>
             {

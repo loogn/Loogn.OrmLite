@@ -277,10 +277,13 @@ namespace Loogn.OrmLite
             {
                 this.prop = prop;
                 //自定义属性
-                var customerAttributes = prop.GetCustomAttributes(Types.OrmLiteField, false);
-                if (customerAttributes != null && customerAttributes.Length > 0)
+                if (prop != null)
                 {
-                    OrmLiteField = (OrmLiteFieldAttribute)customerAttributes[0];
+                    var customerAttributes = prop.GetCustomAttributes(Types.OrmLiteField, false);
+                    if (customerAttributes != null && customerAttributes.Length > 0)
+                    {
+                        OrmLiteField = (OrmLiteFieldAttribute)customerAttributes[0];
+                    }
                 }
             }
 

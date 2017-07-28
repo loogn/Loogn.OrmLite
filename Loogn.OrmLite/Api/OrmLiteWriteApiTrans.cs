@@ -243,17 +243,7 @@ namespace Loogn.OrmLite
             return raw;
         }
 
-        /// <summary>
-        /// 批量插入数据
-        /// </summary>
-        /// <param name="dbTrans"></param>
-        /// <param name="table">表名</param>
-        /// <param name="objs">匿名对象列表</param>
-        public static void Insert(this IDbTransaction dbTrans, string table, params object[] objs)
-        {
-            InsertAll(dbTrans, table, objs);
-        }
-
+        
         /// <summary>
         /// 批量插入数据
         /// </summary>
@@ -276,20 +266,7 @@ namespace Loogn.OrmLite
             }
             return true;
         }
-
-        /// <summary>
-        /// 批量插入数据
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dbTrans"></param>
-        /// <param name="objs"></param>
-        /// <returns></returns>
-        public static bool Insert<T>(this IDbTransaction dbTrans, params T[] objs)
-        {
-            return InsertAll<T>(dbTrans, objs);
-        }
-
-
+        
         /// <summary>
         /// 批量插入数据
         /// </summary>
@@ -366,19 +343,7 @@ namespace Loogn.OrmLite
             int c = ExecuteNonQuery(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
         }
-
-        /// <summary>
-        /// 根据主键批量修改数据
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dbTrans"></param>
-        /// <param name="objs">数据集合</param>
-        /// <returns></returns>
-        public static int Update<T>(this IDbTransaction dbTrans, params T[] objs)
-        {
-            return UpdateAll<T>(dbTrans, objs);
-        }
-
+        
         /// <summary>
         /// 根据主键批量修改数据
         /// </summary>

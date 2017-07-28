@@ -194,19 +194,7 @@ namespace Loogn.OrmLite
                 return raw;
             }
         }
-
-        /// <summary>
-        /// 批量插入数据
-        /// </summary>
-        /// <param name="dbConn"></param>
-        /// <param name="table">表名</param>
-        /// <param name="objs">匿名对象列表</param>
-        /// <returns></returns>
-        public static bool Insert(this IDbConnection dbConn, string table, params object[] objs)
-        {
-            return InsertAll(dbConn, table, objs);
-        }
-
+        
         /// <summary>
         /// 批量插入数据
         /// </summary>
@@ -246,19 +234,7 @@ namespace Loogn.OrmLite
             }
             return true;
         }
-
-        /// <summary>
-        /// 批量插入数据
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dbConn"></param>
-        /// <param name="objs"></param>
-        /// <returns></returns>
-        public static bool Insert<T>(this IDbConnection dbConn, params T[] objs)
-        {
-            return InsertAll<T>(dbConn, objs);
-        }
-
+        
         /// <summary>
         /// 批量插入数据
         /// </summary>
@@ -343,18 +319,6 @@ namespace Loogn.OrmLite
             var cmd = provider.Update(TypeCachedDict.GetTypeCachedInfo<T>().TableName, anonymous);
             int c = ExecuteNonQuery(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
-        }
-
-        /// <summary>
-        /// 根据主键批量修改数据
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dbConn"></param>
-        /// <param name="objs">数据集合</param>
-        /// <returns></returns>
-        public static int Update<T>(this IDbConnection dbConn, params T[] objs)
-        {
-            return UpdateAll<T>(dbConn, objs);
         }
 
         /// <summary>

@@ -35,7 +35,7 @@ namespace Loogn.OrmLite
             {
                 if (type == Types.String)
                 {
-                    return string.Empty; ;
+                    return string.Empty;
                 }
             }
             else

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Loogn.OrmLite
 {
-    static class TransformToParameters
+    public static class TransformToParameters
     {
         public static IDbDataParameter[] ObjectToParams(ICommandDialectProvider dialectProvider, object obj)
         {

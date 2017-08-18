@@ -49,23 +49,24 @@ namespace PerformanceTesting
 
         static List<ITester> GetTesters(int limit)
         {
-            List<ITester> list = new List<ITester>();
-
-            list.Add(new EFSqlTester());
-            list.Add(new CRLTester());
-            list.Add(new DapperTester());
-            list.Add(new ServiceStackTester());
-            list.Add(new LoognTester());
-            list.Add(new SqlSugarTester());
-
+            List<ITester> list = new List<ITester>
+            {
+                new EFSqlTester(),
+                new CRLTester(),
+                new DapperTester(),
+                new ServiceStackTester(),
+                new SqlSugarTester(),
+                new LoognTester()
+            };
             //数据库预热
+            list.First().GetList(limit);
             list.First().GetList(limit);
             //类库预热
             for (int i = 0; i < 5; i++)
             {
                 foreach (var tester in list)
                 {
-                    tester.GetList(1);
+                    tester.GetList(10);
                 }
             }
             return list;

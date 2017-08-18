@@ -15,7 +15,7 @@ namespace PerformanceTesting
         static void Main(string[] args)
         {
             //TesterRunner.TestMapping(500000);
-            TesterRunner.TestRepeat(2000, 100);
+            TesterRunner.TestRepeat(1000, 100);
             //TesterRunner.TestRepeatSingleContext(2000, 100);
 
         }

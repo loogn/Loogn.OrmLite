@@ -12,22 +12,22 @@ namespace PerformanceTesting.Tester
         public string Name => "SqlSugar";
         public List<TestEntity> GetList(int limit)
         {
-            using (var db = new SqlSugarClient(DB.ConnStr))
+            using (var db = new SqlSugarClient(connConfig))
             {
-                var list = db.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
+                var list = db.Ado.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
                 return list;
             }
         }
-
-        SqlSugarClient _client;
+        ConnectionConfig connConfig = new ConnectionConfig { ConnectionString = DB.ConnStr, DbType = DbType.SqlServer };
+        SqlSugarClient context;
         public SqlSugarTester()
         {
-            _client = new SqlSugarClient(DB.ConnStr);
+            context = new SqlSugarClient(connConfig);
         }
 
         public List<TestEntity> GetListSingleContent(int limit)
         {
-            var list = _client.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
+            var list = context.Ado.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
             return list;
         }
     }

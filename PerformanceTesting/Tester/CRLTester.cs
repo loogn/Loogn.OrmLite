@@ -10,7 +10,6 @@ namespace PerformanceTesting.Tester
 
     public class CRLTester : ITester
     {
-
         static CRLTester()
         {
             CRL.SettingConfig.GetDbAccess = (type) =>
@@ -31,15 +30,15 @@ namespace PerformanceTesting.Tester
         }
 
 
-        private AbsDBExtend _db;
+        private AbsDBExtend context;
         public CRLTester()
         {
-            _db = DBExtendFactory.CreateDBExtend(dbContext);
+            context = DBExtendFactory.CreateDBExtend(dbContext);
 
         }
         public List<TestEntity> GetListSingleContent(int limit)
         {
-            var list = _db.ExecList<testentity>(string.Format("select top {0} * from TestEntity", limit));
+            var list = context.ExecList<testentity>(string.Format("select top {0} * from TestEntity", limit));
             return null;
         }
     }

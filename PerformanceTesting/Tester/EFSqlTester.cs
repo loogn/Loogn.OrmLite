@@ -20,12 +20,12 @@ namespace PerformanceTesting.Tester
                 return list;
             }
         }
-        EFContext _context = new EFContext();
+        EFContext context = new EFContext();
 
 
         public List<TestEntity> GetListSingleContent(int limit)
         {
-            var list = _context.Database.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit.ToString())).ToList();
+            var list = context.Database.SqlQuery<TestEntity>(string.Format("select top {0} * from TestEntity", limit.ToString())).ToList();
             return list;
         }
     }

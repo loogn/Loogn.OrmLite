@@ -22,15 +22,15 @@ namespace PerformanceTesting.Tester
             }
         }
 
-        IDbConnection _conn;
+        IDbConnection context;
         public ServiceStackTester()
         {
-            _conn = dbFactory.Open();
+            context = dbFactory.Open();
         }
 
         public List<TestEntity> GetListSingleContent(int limit)
         {
-            var list = _conn.Select<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
+            var list = context.Select<TestEntity>(string.Format("select top {0} * from TestEntity", limit));
             return list;
         }
     }

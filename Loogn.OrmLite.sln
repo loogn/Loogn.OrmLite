@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite", "Loogn.OrmL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceTesting", "PerformanceTesting\PerformanceTesting.csproj", "{43AC4ED8-95B3-4ECA-95BD-D342E12296DF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loogn.OrmLite.NetCore", "Loogn.OrmLite.NetCore\Loogn.OrmLite.NetCore.csproj", "{5C81C3A1-57C4-444D-B2A7-F92AD4213A2A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite.MySql", "Loogn.OrmLite.MySql\Loogn.OrmLite.MySql.csproj", "{9F79DC4F-EA50-4508-B09C-D690633761A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite.Sqlite", "Loogn.OrmLite.Sqlite\Loogn.OrmLite.Sqlite.csproj", "{7A205021-799C-4CAC-AE09-D3BA4A8A4763}"
@@ -27,10 +25,6 @@ Global
 		{43AC4ED8-95B3-4ECA-95BD-D342E12296DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43AC4ED8-95B3-4ECA-95BD-D342E12296DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43AC4ED8-95B3-4ECA-95BD-D342E12296DF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5C81C3A1-57C4-444D-B2A7-F92AD4213A2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C81C3A1-57C4-444D-B2A7-F92AD4213A2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C81C3A1-57C4-444D-B2A7-F92AD4213A2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C81C3A1-57C4-444D-B2A7-F92AD4213A2A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9F79DC4F-EA50-4508-B09C-D690633761A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9F79DC4F-EA50-4508-B09C-D690633761A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F79DC4F-EA50-4508-B09C-D690633761A1}.Release|Any CPU.ActiveCfg = Release|Any CPU

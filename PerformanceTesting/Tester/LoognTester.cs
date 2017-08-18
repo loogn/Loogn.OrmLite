@@ -19,10 +19,10 @@ namespace PerformanceTesting.Tester
                 return list;
             }
         }
-        private SqlConnection _conn = DB.CreateConnection();
+        private SqlConnection context = DB.CreateConnection();
         public List<TestEntity> GetListSingleContent(int limit)
         {
-            var list = _conn.SelectFmt<TestEntity>("select top {0} * from TestEntity", limit);
+            var list = context.SelectFmt<TestEntity>("select top {0} * from TestEntity", limit);
             return list;
         }
     }

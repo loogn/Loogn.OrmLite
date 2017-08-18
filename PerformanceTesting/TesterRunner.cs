@@ -1,0 +1,75 @@
+﻿using Loogn.Utils;
+using PerformanceTesting.Tester;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PerformanceTesting
+{
+    public class TesterRunner
+    {
+        public static void TestRepeat(int repeat, int limit)
+        {
+            Console.WriteLine("查询{0}次，每次{1}条", repeat, limit);
+            var testers = GetTesters(limit);
+
+            CodeTimer.Initialize();
+
+            foreach (var tester in testers)
+            {
+                CodeTimer.Time(tester.Name, repeat, () =>
+                {
+                    tester.GetList(limit);
+                });
+            }
+        }
+
+        public static void TestMapping(int limit)
+        {
+            TestRepeat(1, limit);
+        }
+
+        public static void TestRepeatSingleContext(int repeat, int limit)
+        {
+            Console.WriteLine("查询{0}次，每次{1}条", repeat, limit);
+            var testers = GetTesters(limit);
+
+            CodeTimer.Initialize();
+
+            foreach (var tester in testers)
+            {
+                CodeTimer.Time(tester.Name, repeat, () =>
+                {
+                    tester.GetListSingleContent(limit);
+                });
+            }
+        }
+
+        static List<ITester> GetTesters(int limit)
+        {
+            List<ITester> list = new List<ITester>();
+
+            list.Add(new EFSqlTester());
+            list.Add(new CRLTester());
+            list.Add(new DapperTester());
+            list.Add(new ServiceStackTester());
+            list.Add(new LoognTester());
+            list.Add(new SqlSugarTester());
+
+            //数据库预热
+            list.First().GetList(limit);
+            //类库预热
+            for (int i = 0; i < 5; i++)
+            {
+                foreach (var tester in list)
+                {
+                    tester.GetList(1);
+                }
+            }
+            return list;
+        }
+
+    }
+}

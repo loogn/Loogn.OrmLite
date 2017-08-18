@@ -57,13 +57,26 @@ namespace ConsoleApplication1
         {
             using (var db = DB.Open())
             {
-                db.SingleById<Person>(1);
-                db.Single<Person>("select ID,Name from Person where age>10 and sex=1");
-
-
-
+                db.EnsureOpen();
+                var trans = db.BeginTransaction();
+                try
+                {
+                    var flag1 = trans.Update(new Person { Id = 1, Name = "loogn2" });
+                    var flag2 = trans.Insert(new Person { Id = 2, Name = "loogn1" });
+                    if (flag1 > 0 && flag2 > 0)
+                    {
+                        trans.Commit();
+                    }
+                    else
+                    {
+                        trans.Rollback();
+                    }
+                }
+                catch (Exception exp)
+                {
+                    trans.Rollback();
+                }
             }
-
         }
 
 

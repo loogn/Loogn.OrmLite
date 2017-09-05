@@ -52,10 +52,9 @@ namespace PerformanceTesting
             List<ITester> list = new List<ITester>
             {
                 new EFSqlTester(),
-                new CRLTester(),
+                new NativeTester(),
                 new DapperTester(),
                 new ServiceStackTester(),
-                new SqlSugarTester(),
                 new LoognTester()
             };
             //数据库预热

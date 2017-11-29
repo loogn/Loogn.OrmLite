@@ -63,7 +63,11 @@ namespace Loogn.OrmLite
             {
                 var cmd = cmds[i];
                 sqls.Add(cmd.GetMatchedCmdText(i));
-                ps.AddRange(TransformToParameters.DictionaryToParams(provider, cmd.GetUniqueParams(i)));
+                var cmdPs = TransformToParameters.DictionaryToParams(provider, cmd.GetUniqueParams(i));
+                if (cmdPs != null)
+                {
+                    ps.AddRange(cmdPs);
+                }
             }
             var sql = string.Join(";", sqls);
             var reader = SqlHelper.ExecuteReader(dbConn, CommandType.Text, sql, ps.ToArray());

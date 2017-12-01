@@ -29,7 +29,10 @@ namespace Loogn.OrmLite
             if (inParams != null)
             {
                 var provider = dbTrans.GetCommandDialectProvider();
-                var ps = provider.Object2Params(inParams);
+
+                var ps = inParams is IDictionary<string, object> ?
+                provider.Dictionary2Params(inParams as IDictionary<string, object>) :
+                provider.Object2Params(inParams);
                 foreach (var p in ps)
                 {
                     cmd.Parameters.Add(p);
@@ -243,7 +246,7 @@ namespace Loogn.OrmLite
             return raw;
         }
 
-        
+
         /// <summary>
         /// 批量插入数据
         /// </summary>
@@ -266,7 +269,7 @@ namespace Loogn.OrmLite
             }
             return true;
         }
-        
+
         /// <summary>
         /// 批量插入数据
         /// </summary>
@@ -343,7 +346,7 @@ namespace Loogn.OrmLite
             int c = ExecuteNonQuery(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
         }
-        
+
         /// <summary>
         /// 根据主键批量修改数据
         /// </summary>

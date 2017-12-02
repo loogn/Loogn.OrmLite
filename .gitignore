@@ -154,3 +154,5 @@ $RECYCLE.BIN/
 *.nuspec
 Loogn.OrmLite.Sqlite*/
 *.nupkg
+
+.vs/

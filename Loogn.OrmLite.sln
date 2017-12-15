@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite", "Loogn.OrmLite\Loogn.OrmLite.csproj", "{3FBB8792-9DAD-430E-A91B-C3A8789D443B}"
 EndProject
@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite.MySql", "Loog
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite.Sqlite", "Loogn.OrmLite.Sqlite\Loogn.OrmLite.Sqlite.csproj", "{7A205021-799C-4CAC-AE09-D3BA4A8A4763}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCore.Orm", "NetCore.Orm\NetCore.Orm.csproj", "{F886CFA4-228A-4565-A733-39802B53CEE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Orm", "NetCore.Orm\NetCore.Orm.csproj", "{F886CFA4-228A-4565-A733-39802B53CEE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

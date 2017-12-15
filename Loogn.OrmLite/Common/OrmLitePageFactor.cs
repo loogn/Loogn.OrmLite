@@ -19,8 +19,7 @@ namespace Loogn.OrmLite
         /// 表名，可选
         /// </summary>
         public string TableName { get; set; }
-
-
+        
         /// <summary>
         /// 查询字段，可选，默认为*
         /// </summary>

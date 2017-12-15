@@ -126,15 +126,8 @@ ORDER BY colorder ASC
             StringBuilder sb = new StringBuilder(100);
             sb.AppendFormat("select * from (");
 
-            var l = OpenQuote;
-            var r = CloseQuote;
-            //多表连接查询
-            if (factor.TableName.IndexOf(" ") > 0)
-            {
-                l = "";
-                r = "";
-            }
-            sb.AppendFormat(" select top {0} {1},ROW_NUMBER() over(order by {2}) rowid from {4}{3}{5}", factor.PageIndex * factor.PageSize, factor.Fields, factor.OrderBy, factor.TableName, l, r);
+            
+            sb.AppendFormat(" select top {0} {1},ROW_NUMBER() over(order by {2}) rowid from {3}", factor.PageIndex * factor.PageSize, factor.Fields, factor.OrderBy, factor.TableName);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);

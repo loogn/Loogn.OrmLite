@@ -27,7 +27,15 @@ namespace Loogn.OrmLite
                 {
                     return 0;
                 }
-                return TotalCount / PageSize;
+                var mod = TotalCount % PageSize;
+                if (mod > 0)
+                {
+                    return TotalCount / PageSize + 1;
+                }
+                else
+                {
+                    return TotalCount / PageSize;
+                }
             }
         }
 
@@ -46,6 +54,6 @@ namespace Loogn.OrmLite
         /// 分页数据
         /// </summary>
         public List<T> List { get; set; }
-        
+
     }
 }

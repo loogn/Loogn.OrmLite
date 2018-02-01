@@ -19,19 +19,23 @@ namespace Loogn.OrmLite
         /// <returns></returns>
         public static Func<object> BuildConstructorInvoker(ConstructorInfo constructor)
         {
-            //动态方法
-            var dynamicMethod = new DynamicMethod(Guid.NewGuid().ToString("N"), typeof(object), new[] { typeof(object[]) }, true);
-            //方法IL
-            ILGenerator il = dynamicMethod.GetILGenerator();
-            //实例化命令
-            il.Emit(OpCodes.Newobj, constructor);
-            //如果是值类型装箱
-            if (constructor.ReflectedType.IsValueType)
-                il.Emit(OpCodes.Box, constructor.ReflectedType);
-            //返回
-            il.Emit(OpCodes.Ret);
-            //用FUNC去关联方法
-            return (Func<object>)dynamicMethod.CreateDelegate(typeof(Func<object>));
+            var newConstructor = Expression.New(constructor);
+            UnaryExpression castCallExpr = Expression.Convert(newConstructor, typeof(object));
+            var func = Expression.Lambda<Func<object>>(castCallExpr).Compile();
+            return func;
+            ////动态方法
+            //var dynamicMethod = new DynamicMethod(Guid.NewGuid().ToString("N"), typeof(object), new[] { typeof(object[]) }, true);
+            ////方法IL
+            //ILGenerator il = dynamicMethod.GetILGenerator();
+            ////实例化命令
+            //il.Emit(OpCodes.Newobj, constructor);
+            ////如果是值类型装箱
+            //if (constructor.ReflectedType.IsValueType)
+            //    il.Emit(OpCodes.Box, constructor.ReflectedType);
+            ////返回
+            //il.Emit(OpCodes.Ret);
+            ////用FUNC去关联方法
+            //return (Func<object>)dynamicMethod.CreateDelegate(typeof(Func<object>));
         }
 
         public static Func<object> BuildConstructorInvoker(Type type)

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 
@@ -30,6 +30,7 @@ namespace Loogn.OrmLite.Sqlite
 
         public override string OpenQuote
         {
+
             get
             {
                 return "`";
@@ -43,12 +44,13 @@ namespace Loogn.OrmLite.Sqlite
 
         public override IDbConnection CreateConnection()
         {
-            return new SQLiteConnection();
+
+            return new SqliteConnection();
         }
 
         public override IDbDataParameter CreateParameter()
         {
-            return new SQLiteParameter();
+            return new SqliteParameter();
         }
 
         public override CommandInfo FullSingle<T>(string sqlOrCondition)

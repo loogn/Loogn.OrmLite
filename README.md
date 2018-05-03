@@ -1,5 +1,5 @@
 # 简要
-   ***Loogn.OrmLite是一个超简单、超高效、超灵活的基于.NET Framework 4.0的数据访问组件！***   
+   ***Loogn.OrmLite是一个超简单、超高效、超灵活的基于.net standard 2.0的数据访问组件！***   
 
 # 特点
 1. 支持sqlserver、mysql、sqlite3数据库；

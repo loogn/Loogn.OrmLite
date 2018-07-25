@@ -168,6 +168,14 @@ namespace Loogn.OrmLite
         public CommandInfo DeleteByIds<T>(IEnumerable idValues, string idField)
         {
             if (idValues == null) return new CommandInfo { CommandText = "" };
+            if (idValues.GetType() == Types.String)
+            {
+                var tableName = GetTableName<T>();
+                return new CommandInfo
+                {
+                    CommandText = string.Format("DELETE from {2}{0}{3} where {2}{1}{3} in ({4})", tableName, idField, OpenQuote, CloseQuote, idValues.ToString())
+                };
+            }
             bool any = false;
             var needQuot = false;
             StringBuilder sql = null;
@@ -438,6 +446,14 @@ namespace Loogn.OrmLite
         public CommandInfo SelectByIds<T>(IEnumerable idValues, string idField, string selectFields = "*")
         {
             if (idValues == null) return new CommandInfo { CommandText = string.Empty };
+            if (idValues.GetType() == Types.String)
+            {
+                var tableName = GetTableName<T>();
+                return new CommandInfo
+                {
+                    CommandText = string.Format("Select {2} from {3}{0}{4} where {3}{1}{4} in ({5})", tableName, idField, selectFields, OpenQuote, CloseQuote, idValues.ToString())
+                };
+            }
             bool any = false;
             var needQuot = false;
             StringBuilder sql = null;

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net40;net45;net46;netstandard2.0</TargetFrameworks>
-    <Version>3.0.3</Version>
+    <Version>3.0.4</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageTags>ORM Loogn Loogn.OrmLite OrmLite</PackageTags>
     <Copyright>Loogn 2015-2018</Copyright>
@@ -11,9 +11,9 @@
     <PackageIconUrl></PackageIconUrl>
     <Description>Loogn.OrmLite是一个简单、高效的基于.NET的数据访问组件！,支持SqlServer、MySql和Sqlite3</Description>
     <Authors>Loogn</Authors>
-    <PackageReleaseNotes>使用同步字典保存反射缓存的类型数据</PackageReleaseNotes>
-    <AssemblyVersion>3.0.3.0</AssemblyVersion>
-    <FileVersion>3.0.3.0</FileVersion>
+    <PackageReleaseNotes>添加UpdateWhere方法</PackageReleaseNotes>
+    <AssemblyVersion>3.0.4.0</AssemblyVersion>
+    <FileVersion>3.0.4.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">

@@ -172,6 +172,11 @@ namespace Loogn.OrmLite
                     appendWhere.Append(") and ");
                 }
             }
+            else
+            {
+                appendWhere.AppendFormat(" {1}{0}{2} {4} ({3}) and ", name, OpenQuote, CloseQuote, "null", opt);
+                return;
+            }
         }
     }
 }

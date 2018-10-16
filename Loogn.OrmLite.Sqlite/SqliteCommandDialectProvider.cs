@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 
@@ -30,6 +30,7 @@ namespace Loogn.OrmLite.Sqlite
 
         public override string OpenQuote
         {
+
             get
             {
                 return "`";
@@ -43,12 +44,13 @@ namespace Loogn.OrmLite.Sqlite
 
         public override IDbConnection CreateConnection()
         {
-            return new SQLiteConnection();
+
+            return new SqliteConnection();
         }
 
         public override IDbDataParameter CreateParameter()
         {
-            return new SQLiteParameter();
+            return new SqliteParameter();
         }
 
         public override CommandInfo FullSingle<T>(string sqlOrCondition)
@@ -75,15 +77,7 @@ namespace Loogn.OrmLite.Sqlite
         {
             StringBuilder sb = new StringBuilder(100);
 
-            var l = OpenQuote;
-            var r = CloseQuote;
-            if (factor.TableName.IndexOf(" ") > 0)
-            {
-                l = "";
-                r = "";
-            }
-
-            sb.AppendFormat("select {0} from {2}{1}{3}", factor.Fields, factor.TableName, l, r);
+            sb.AppendFormat("select {0} from {1}", factor.Fields, factor.TableName);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);

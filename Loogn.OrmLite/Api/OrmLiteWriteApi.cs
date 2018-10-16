@@ -125,7 +125,7 @@ namespace Loogn.OrmLite
             var cmd = provider.Insert<T>(obj, selectIdentity);
             if (selectIdentity)
             {
-                var identity = ExecuteScalar(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+                var identity = ExecuteScalar(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
                 if (identity == null || identity is DBNull)
                 {
                     return 0;
@@ -134,7 +134,7 @@ namespace Loogn.OrmLite
             }
             else
             {
-                var raw = ExecuteNonQuery(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+                var raw = ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
                 return raw;
             }
         }
@@ -153,7 +153,7 @@ namespace Loogn.OrmLite
             var cmd = provider.Insert(table, fields, selectIdentity);
             if (selectIdentity)
             {
-                var identity = ExecuteScalar(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+                var identity = ExecuteScalar(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
                 if (identity == null || identity is DBNull)
                 {
                     return 0;
@@ -162,7 +162,7 @@ namespace Loogn.OrmLite
             }
             else
             {
-                var raw = ExecuteNonQuery(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+                var raw = ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
                 return raw;
             }
         }
@@ -181,7 +181,7 @@ namespace Loogn.OrmLite
             var cmd = provider.Insert(table, anonType, selectIdentity);
             if (selectIdentity)
             {
-                var identity = ExecuteScalar(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+                var identity = ExecuteScalar(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
                 if (identity == null || identity is DBNull)
                 {
                     return 0;
@@ -190,11 +190,11 @@ namespace Loogn.OrmLite
             }
             else
             {
-                var raw = ExecuteNonQuery(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+                var raw = ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
                 return raw;
             }
         }
-        
+
         /// <summary>
         /// 批量插入数据
         /// </summary>
@@ -234,7 +234,7 @@ namespace Loogn.OrmLite
             }
             return true;
         }
-        
+
         /// <summary>
         /// 批量插入数据
         /// </summary>
@@ -287,7 +287,7 @@ namespace Loogn.OrmLite
         {
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.Update<T>(obj, updateFields);
-            int c = ExecuteNonQuery(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+            int c = ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
         }
 
@@ -302,7 +302,7 @@ namespace Loogn.OrmLite
         {
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.Update(tableName, anonymous);
-            int c = ExecuteNonQuery(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+            int c = ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
         }
 
@@ -317,7 +317,7 @@ namespace Loogn.OrmLite
         {
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.Update(TypeCachedDict.GetTypeCachedInfo<T>().TableName, anonymous);
-            int c = ExecuteNonQuery(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+            int c = ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
         }
 
@@ -377,7 +377,7 @@ namespace Loogn.OrmLite
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.Update(TypeCachedDict.GetTypeCachedInfo<T>().TableName, updateFields, conditions, parameters);
 
-            int c = ExecuteNonQuery(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+            int c = ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
         }
 
@@ -394,7 +394,24 @@ namespace Loogn.OrmLite
         {
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.Update(tableName, updateFields, conditions, parameters);
-            int c = ExecuteNonQuery(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+            int c = ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
+            return c;
+        }
+
+
+        public static int UpdateWhere<T>(this IDbConnection dbConn, IDictionary<string, object> updateFields, IDictionary<string, object> conditions)
+        {
+            var provider = dbConn.GetCommandDialectProvider();
+            var cmd = provider.UpdateWhere(TypeCachedDict.GetTypeCachedInfo<T>().TableName, updateFields, conditions);
+            int c = ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
+            return c;
+        }
+
+        public static int UpdateWhere(this IDbConnection dbConn, string tableName, IDictionary<string, object> updateFields, IDictionary<string, object> conditions)
+        {
+            var provider = dbConn.GetCommandDialectProvider();
+            var cmd = provider.UpdateWhere(tableName, updateFields, conditions);
+            int c = ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
         }
 
@@ -451,7 +468,7 @@ namespace Loogn.OrmLite
         public static int Delete(this IDbConnection dbConn, string sql, IDictionary<string, object> parameters = null)
         {
             var provider = dbConn.GetCommandDialectProvider();
-            return ExecuteNonQuery(dbConn,CommandType.Text, sql, provider.Dictionary2Params(parameters));
+            return ExecuteNonQuery(dbConn, CommandType.Text, sql, provider.Dictionary2Params(parameters));
         }
 
         /// <summary>
@@ -466,7 +483,7 @@ namespace Loogn.OrmLite
         {
             var provider = dbConn.GetCommandDialectProvider();
             var cmd = provider.DeleteById<T>(id, idField);
-            return ExecuteNonQuery(dbConn,cmd.CommandType, cmd.CommandText, cmd.Params);
+            return ExecuteNonQuery(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
         /// <summary>

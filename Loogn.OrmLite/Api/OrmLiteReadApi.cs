@@ -436,6 +436,17 @@ namespace Loogn.OrmLite
                 provider.Dictionary2Params(factor.Params as IDictionary<string, object>) :
                 provider.Object2Params(factor.Params);
 
+            var l = provider.OpenQuote;
+            var r = provider.CloseQuote;
+            //多表连接查询
+            if (factor.TableName.IndexOf(" ") > 0)
+            {
+                l = "";
+                r = "";
+            }
+            //修改表名
+            factor.TableName = l + factor.TableName + r;
+
             StringBuilder sb = new StringBuilder(200);
 
             sb.AppendFormat("select count(0) from {0}", factor.TableName);
@@ -486,6 +497,17 @@ namespace Loogn.OrmLite
               provider.Dictionary2Params(factor.Params as IDictionary<string, object>) :
               provider.Object2Params(factor.Params);
 
+            var l = provider.OpenQuote;
+            var r = provider.CloseQuote;
+            //多表连接查询
+            if (factor.TableName.IndexOf(" ") > 0)
+            {
+                l = "";
+                r = "";
+            }
+            //修改表名
+            factor.TableName = l + factor.TableName + r;
+            
             StringBuilder sb = new StringBuilder(200);
 
             sb.AppendFormat("select count(0) from {0}", factor.TableName);

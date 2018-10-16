@@ -168,6 +168,14 @@ namespace Loogn.OrmLite
         public CommandInfo DeleteByIds<T>(IEnumerable idValues, string idField)
         {
             if (idValues == null) return new CommandInfo { CommandText = "" };
+            if (idValues.GetType() == Types.String)
+            {
+                var tableName = GetTableName<T>();
+                return new CommandInfo
+                {
+                    CommandText = string.Format("DELETE from {2}{0}{3} where {2}{1}{3} in ({4})", tableName, idField, OpenQuote, CloseQuote, idValues.ToString())
+                };
+            }
             bool any = false;
             var needQuot = false;
             StringBuilder sql = null;
@@ -438,6 +446,14 @@ namespace Loogn.OrmLite
         public CommandInfo SelectByIds<T>(IEnumerable idValues, string idField, string selectFields = "*")
         {
             if (idValues == null) return new CommandInfo { CommandText = string.Empty };
+            if (idValues.GetType() == Types.String)
+            {
+                var tableName = GetTableName<T>();
+                return new CommandInfo
+                {
+                    CommandText = string.Format("Select {2} from {3}{0}{4} where {3}{1}{4} in ({5})", tableName, idField, selectFields, OpenQuote, CloseQuote, idValues.ToString())
+                };
+            }
             bool any = false;
             var needQuot = false;
             StringBuilder sql = null;
@@ -614,6 +630,48 @@ namespace Loogn.OrmLite
             };
         }
 
+
+        public CommandInfo UpdateWhere(string tableName, IDictionary<string, object> updateFields, IDictionary<string, object> conditions)
+        {
+            var l = OpenQuote;
+            var r = CloseQuote;
+            StringBuilder sbsql = new StringBuilder(50);
+            sbsql.AppendFormat("update {1}{0}{2} set ", tableName, l, r);
+            var ps = new List<IDbDataParameter>();
+            var nofield = true;
+            foreach (var field in updateFields)
+            {
+                if (field.Key.StartsWith("$") || field.Key.StartsWith("_"))
+                {
+                    sbsql.AppendFormat("{2}{0}{3} = {1},", field.Key.Substring(1), field.Value, l, r);
+                    nofield = false;
+                }
+                else
+                {
+                    sbsql.AppendFormat("{1}{0}{2} = @{0},", field.Key, l, r);
+                    ps.Add(CreateParameter(field.Key, field.Value));
+                }
+            }
+            if (ps.Count == 0 && nofield)
+            {
+                throw new ArgumentException("updateFields里没有字段，无法修改");
+            }
+            sbsql.Remove(sbsql.Length - 1, 1);
+
+            var conditionPS = TransformToParameters.DictionaryToParams(this, conditions, sbsql);
+
+            if (conditionPS != null)
+            {
+                ps.AddRange(conditionPS);
+            }
+            return new CommandInfo
+            {
+                CommandText = sbsql.ToString(),
+                Params = ps.ToArray()
+            };
+        }
+
+
         public CommandInfo Update<T>(T obj, params string[] updateFields)
         {
             var l = OpenQuote;
@@ -695,6 +753,7 @@ namespace Loogn.OrmLite
         }
 
         public abstract IDbConnection CreateConnection();
+
 
     }
 }

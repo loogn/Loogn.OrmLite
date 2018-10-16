@@ -1,0 +1,4 @@
+language: csharp
+solution: Loogn.OrmLite.sln
+install:
+  - nuget restore Loogn.OrmLite.sln

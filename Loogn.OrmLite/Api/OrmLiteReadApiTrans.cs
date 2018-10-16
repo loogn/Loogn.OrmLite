@@ -202,7 +202,6 @@ namespace Loogn.OrmLite
             var ps = factor.Params is IDictionary<string, object> ?
                 provider.Dictionary2Params(factor.Params as IDictionary<string, object>) :
                 provider.Object2Params(factor.Params);
-            StringBuilder sb = new StringBuilder(200);
 
             var l = provider.OpenQuote;
             var r = provider.CloseQuote;
@@ -212,8 +211,11 @@ namespace Loogn.OrmLite
                 l = "";
                 r = "";
             }
+            //修改表名
+            factor.TableName = l + factor.TableName + r;
+            StringBuilder sb = new StringBuilder(200);
 
-            sb.AppendFormat("select count(0) from {1}{0}{2}", factor.TableName, l, r);
+            sb.AppendFormat("select count(0) from {0}", factor.TableName);
 
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
@@ -254,6 +256,17 @@ namespace Loogn.OrmLite
             var ps = factor.Params is IDictionary<string, object> ?
                 provider.Dictionary2Params(factor.Params as IDictionary<string, object>)
                 : provider.Object2Params(factor.Params);
+
+            var l = provider.OpenQuote;
+            var r = provider.CloseQuote;
+
+            if (factor.TableName.IndexOf(" ") > 0)
+            {
+                l = "";
+                r = "";
+            }
+            //修改表名
+            factor.TableName = l + factor.TableName + r;
             StringBuilder sb = new StringBuilder(200);
 
             sb.AppendFormat("select count(0) from {0}", factor.TableName);

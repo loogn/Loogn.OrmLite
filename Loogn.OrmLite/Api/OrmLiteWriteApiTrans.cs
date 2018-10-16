@@ -382,6 +382,22 @@ namespace Loogn.OrmLite
             return c;
         }
 
+        public static int UpdateWhere<T>(this IDbTransaction dbTrans, IDictionary<string, object> updateFields, IDictionary<string, object> conditions)
+        {
+            var provider = dbTrans.GetCommandDialectProvider();
+            var cmd = provider.UpdateWhere(TypeCachedDict.GetTypeCachedInfo<T>().TableName, updateFields, conditions);
+            int c = ExecuteNonQuery(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
+            return c;
+        }
+
+        public static int UpdateWhere(this IDbTransaction dbTrans, string tableName, IDictionary<string, object> updateFields, IDictionary<string, object> conditions)
+        {
+            var provider = dbTrans.GetCommandDialectProvider();
+            var cmd = provider.UpdateWhere(tableName, updateFields, conditions);
+            int c = ExecuteNonQuery(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
+            return c;
+        }
+
         /// <summary>
         /// 根据条件修改数据
         /// </summary>
@@ -398,6 +414,8 @@ namespace Loogn.OrmLite
             int c = ExecuteNonQuery(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
             return c;
         }
+
+
 
         /// <summary>
         /// 根据单个字段修数据

@@ -91,16 +91,8 @@ case Is_Nullable when 'NO' then 0 else 1 end IsNullable
         public override CommandInfo Paged(OrmLitePageFactor factor)
         {
             StringBuilder sb = new StringBuilder(100);
-
-            var l = OpenQuote;
-            var r = CloseQuote;
-            if (factor.TableName.IndexOf(" ") > 0)
-            {
-                l = "";
-                r = "";
-            }
-
-            sb.AppendFormat("select {0} from {2}{1}{3}", factor.Fields, factor.TableName, l, r);
+            
+            sb.AppendFormat("select {0} from {1}", factor.Fields, factor.TableName);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
                 sb.AppendFormat(" where {0}", factor.Conditions);

@@ -161,6 +161,9 @@ namespace Loogn.OrmLite
 
         CommandInfo Update(string tableName, IDictionary<string, object> updateFields, string conditions, IDictionary<string, object> parameters);
 
+        CommandInfo UpdateWhere(string tableName, IDictionary<string, object> updateFields,  IDictionary<string, object> conditions);
+
+        
         CommandInfo Insert<T>(T obj, bool selectIdentity = false);
         CommandInfo Insert(string table, IDictionary<string, object> fields, bool selectIdentity = false);
         CommandInfo Insert(string table, object obj, bool selectIdentity = false);

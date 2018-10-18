@@ -1,7 +1,8 @@
-﻿using Microsoft.Data.Sqlite;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 
@@ -45,12 +46,12 @@ namespace Loogn.OrmLite.Sqlite
         public override IDbConnection CreateConnection()
         {
 
-            return new SqliteConnection();
+            return new SQLiteConnection();
         }
 
         public override IDbDataParameter CreateParameter()
         {
-            return new SqliteParameter();
+            return new SQLiteParameter();
         }
 
         public override CommandInfo FullSingle<T>(string sqlOrCondition)

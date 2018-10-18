@@ -252,7 +252,10 @@ namespace Loogn.OrmLite
                 {
                     accessor = new TimeSpanNullableAccessor(prop);
                 }
-                accessorDict[propName] = accessor;
+                if (accessor != null)
+                {
+                    accessorDict[propName] = accessor;
+                }
             }
         }
 

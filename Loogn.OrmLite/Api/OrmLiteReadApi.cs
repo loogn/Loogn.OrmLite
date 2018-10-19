@@ -523,7 +523,7 @@ namespace Loogn.OrmLite
             }
             var cmd = provider.Paged(factor);
 
-            var list = SelectOriginal<dynamic>(dbConn, cmd.CommandType, cmd.CommandText, ps);
+            var list = SelectOriginal(dbConn, cmd.CommandType, cmd.CommandText, ps);
             return list;
         }
 

@@ -69,21 +69,21 @@ namespace Loogn.OrmLite
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        CommandInfo SelectWhere<T>(string name, object value);
+        CommandInfo SelectWhere<T>(string name, object value, string orderBy);
         /// <summary>
         /// 根据字典条件查询
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conditions"></param>
         /// <returns></returns>
-        CommandInfo SelectWhere<T>(IDictionary<string, object> conditions);
+        CommandInfo SelectWhere<T>(IDictionary<string, object> conditions, string orderBy);
         /// <summary>
         ///根据对象条件查询
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conditions"></param>
         /// <returns></returns>
-        CommandInfo SelectWhere<T>(object conditions);
+        CommandInfo SelectWhere<T>(object conditions, string orderBy);
         /// <summary>
         /// 根据编号查询
         /// </summary>
@@ -115,21 +115,21 @@ namespace Loogn.OrmLite
         /// <param name="name"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        CommandInfo SingleWhere<T>(string name, object value);
+        CommandInfo SingleWhere<T>(string name, object value,string orderBy);
         /// <summary>
         /// 根据字典条件查询单条数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conditions"></param>
         /// <returns></returns>
-        CommandInfo SingleWhere<T>(IDictionary<string, object> conditions);
+        CommandInfo SingleWhere<T>(IDictionary<string, object> conditions,string orderBy);
         /// <summary>
         /// 根据对象条件查询单条数据
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conditions"></param>
         /// <returns></returns>
-        CommandInfo SingleWhere<T>(object conditions);
+        CommandInfo SingleWhere<T>(object conditions, string orderBy);
         /// <summary>
         /// 查询数量
         /// </summary>

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net40;net45;net46;netstandard2.0</TargetFrameworks>
-    <Version>3.0.6</Version>
+    <Version>3.0.7</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageTags>ORM Loogn Loogn.OrmLite OrmLite</PackageTags>
     <Copyright>Loogn 2015-2018</Copyright>
@@ -11,9 +11,10 @@
     <PackageIconUrl></PackageIconUrl>
     <Description>Loogn.OrmLite是一个超简单、超高效、超灵活的基于.net standard 2.0的数据访问组件，支持SqlServer、MySql和Sqlite3！</Description>
     <Authors>Loogn</Authors>
-    <PackageReleaseNotes>修复有OrmLiteField对象的复杂类型插入时的Bug</PackageReleaseNotes>
-    <AssemblyVersion>3.0.6.0</AssemblyVersion>
-    <FileVersion>3.0.6.0</FileVersion>
+    <PackageReleaseNotes>SelectWhere和SingleWhere加入orderby</PackageReleaseNotes>
+    <AssemblyVersion>3.0.7.0</AssemblyVersion>
+    <FileVersion>3.0.7.0</FileVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">

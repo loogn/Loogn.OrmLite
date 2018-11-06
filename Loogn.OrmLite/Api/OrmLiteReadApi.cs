@@ -325,11 +325,12 @@ namespace Loogn.OrmLite
         /// <param name="dbConn"></param>
         /// <param name="name">条件字段名</param>
         /// <param name="value">条件字段值</param>
+        /// <param name="orderBy">排序</param>
         /// <returns></returns>
-        public static List<T> SelectWhere<T>(this IDbConnection dbConn, string name, object value)
+        public static List<T> SelectWhere<T>(this IDbConnection dbConn, string name, object value, string orderBy = "")
         {
             var provider = dbConn.GetCommandDialectProvider();
-            var cmd = provider.SelectWhere<T>(name, value);
+            var cmd = provider.SelectWhere<T>(name, value, orderBy);
             return SelectOriginal<T>(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
@@ -339,11 +340,12 @@ namespace Loogn.OrmLite
         /// <typeparam name="T"></typeparam>
         /// <param name="dbConn"></param>
         /// <param name="conditions">字段字典</param>
+        /// <param name="orderBy">排序</param>
         /// <returns></returns>
-        public static List<T> SelectWhere<T>(this IDbConnection dbConn, IDictionary<string, object> conditions)
+        public static List<T> SelectWhere<T>(this IDbConnection dbConn, IDictionary<string, object> conditions, string orderBy = "")
         {
             var provider = dbConn.GetCommandDialectProvider();
-            var cmd = provider.SelectWhere<T>(conditions);
+            var cmd = provider.SelectWhere<T>(conditions, orderBy);
             return SelectOriginal<T>(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
@@ -353,11 +355,12 @@ namespace Loogn.OrmLite
         /// <typeparam name="T"></typeparam>
         /// <param name="dbConn"></param>
         /// <param name="conditions">条件匿名字段</param>
+        /// <param name="orderBy">排序</param>
         /// <returns></returns>
-        public static List<T> SelectWhere<T>(this IDbConnection dbConn, object conditions)
+        public static List<T> SelectWhere<T>(this IDbConnection dbConn, object conditions, string orderBy = "")
         {
             var provider = dbConn.GetCommandDialectProvider();
-            var cmd = provider.SelectWhere<T>(conditions);
+            var cmd = provider.SelectWhere<T>(conditions, orderBy);
             return SelectOriginal<T>(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
@@ -507,7 +510,7 @@ namespace Loogn.OrmLite
             }
             //修改表名
             factor.TableName = l + factor.TableName + r;
-            
+
             StringBuilder sb = new StringBuilder(200);
 
             sb.AppendFormat("select count(0) from {0}", factor.TableName);
@@ -676,10 +679,11 @@ namespace Loogn.OrmLite
         /// <param name="dbConn"></param>
         /// <param name="name">字段名</param>
         /// <param name="value">字段值</param>
+        /// <param name="orderBy">排序</param>
         /// <returns></returns>
-        public static T SingleWhere<T>(this IDbConnection dbConn, string name, object value)
+        public static T SingleWhere<T>(this IDbConnection dbConn, string name, object value, string orderBy = "")
         {
-            var cmd = dbConn.GetCommandDialectProvider().SingleWhere<T>(name, value);
+            var cmd = dbConn.GetCommandDialectProvider().SingleWhere<T>(name, value, orderBy);
             return SingleOriginal<T>(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
@@ -689,10 +693,11 @@ namespace Loogn.OrmLite
         /// <typeparam name="T"></typeparam>
         /// <param name="dbConn"></param>
         /// <param name="conditions">字段字典</param>
+        /// <param name="orderBy">排序</param>
         /// <returns></returns>
-        public static T SingleWhere<T>(this IDbConnection dbConn, IDictionary<string, object> conditions)
+        public static T SingleWhere<T>(this IDbConnection dbConn, IDictionary<string, object> conditions, string orderBy = "")
         {
-            var cmd = dbConn.GetCommandDialectProvider().SingleWhere<T>(conditions);
+            var cmd = dbConn.GetCommandDialectProvider().SingleWhere<T>(conditions, orderBy);
             return SingleOriginal<T>(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
@@ -702,10 +707,11 @@ namespace Loogn.OrmLite
         /// <typeparam name="T"></typeparam>
         /// <param name="dbConn"></param>
         /// <param name="conditions">字段匿名对象</param>
+        /// <param name="orderBy">排序</param>
         /// <returns></returns>
-        public static T SingleWhere<T>(this IDbConnection dbConn, object conditions)
+        public static T SingleWhere<T>(this IDbConnection dbConn, object conditions, string orderBy = "")
         {
-            var cmd = dbConn.GetCommandDialectProvider().SingleWhere<T>(conditions);
+            var cmd = dbConn.GetCommandDialectProvider().SingleWhere<T>(conditions, orderBy);
             return SingleOriginal<T>(dbConn, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 

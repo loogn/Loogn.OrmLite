@@ -9,11 +9,11 @@
     <Copyright>Loogn 2015-2018</Copyright>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
     <PackageProjectUrl>http://git.oschina.net/loogn/Loogn.OrmLite</PackageProjectUrl>
-    <AssemblyVersion>3.0.2.0</AssemblyVersion>
-    <FileVersion>3.0.2.0</FileVersion>
-    <PackageReleaseNotes>支持.net4.0、.net45、.net46、于.net standard 2.0</PackageReleaseNotes>
+    <AssemblyVersion>3.0.3.0</AssemblyVersion>
+    <FileVersion>3.0.3.0</FileVersion>
+    <PackageReleaseNotes>SelectWhere和SingleWhere加入orderby</PackageReleaseNotes>
     <PackageTags>ORM Loogn Loogn.OrmLite OrmLite</PackageTags>
-    <Version>3.0.2</Version>
+    <Version>3.0.3</Version>
   </PropertyGroup>
 
 

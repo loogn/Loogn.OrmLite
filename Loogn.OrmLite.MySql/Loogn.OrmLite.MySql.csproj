@@ -3,15 +3,17 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.0.1</Version>
+    <Version>3.0.3</Version>
     <Authors>Loogn</Authors>
     <Company>Loogn</Company>
     <Description>Loogn.OrmLite是一个简单、高效的基于.NET的数据访问组件！,支持SqlServer、MySql和Sqlite3</Description>
     <Copyright>Loogn 2015-2018</Copyright>
     <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
     <PackageProjectUrl>http://git.oschina.net/loogn/Loogn.OrmLite</PackageProjectUrl>
-    <PackageReleaseNotes>更新mysql.data引用</PackageReleaseNotes>
+    <PackageReleaseNotes>SelectWhere和SingleWhere加入orderby</PackageReleaseNotes>
     <PackageTags>ORM Loogn Loogn.OrmLite OrmLite</PackageTags>
+    <AssemblyVersion>3.0.3.0</AssemblyVersion>
+    <FileVersion>3.0.3.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -19,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="8.0.11" />
+    <PackageReference Include="MySql.Data" Version="8.0.13" />
   </ItemGroup>
 
   <ItemGroup>

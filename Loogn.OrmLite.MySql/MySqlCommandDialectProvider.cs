@@ -91,7 +91,7 @@ case Is_Nullable when 'NO' then 0 else 1 end IsNullable
         public override CommandInfo Paged(OrmLitePageFactor factor)
         {
             StringBuilder sb = new StringBuilder(100);
-            
+
             sb.AppendFormat("select {0} from {1}", factor.Fields, factor.TableName);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
@@ -115,7 +115,7 @@ case Is_Nullable when 'NO' then 0 else 1 end IsNullable
             };
         }
 
-        public override CommandInfo SingleWhere<T>(IDictionary<string, object> conditions)
+        public override CommandInfo SingleWhere<T>(IDictionary<string, object> conditions, string orderBy)
         {
             StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = GetTableName<T>();
@@ -123,6 +123,10 @@ case Is_Nullable when 'NO' then 0 else 1 end IsNullable
 
             sqlbuilder.AppendFormat("SELECT * FROM `{0}`", tableName);
             ps = this.Dictionary2Params(conditions, sqlbuilder);
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sqlbuilder.Append(" order by ").Append(orderBy);
+            }
             sqlbuilder.Append(" limit 1");
             return new CommandInfo
             {
@@ -131,7 +135,7 @@ case Is_Nullable when 'NO' then 0 else 1 end IsNullable
             };
         }
 
-        public override CommandInfo SingleWhere<T>(object conditions)
+        public override CommandInfo SingleWhere<T>(object conditions, string orderBy)
         {
             StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = GetTableName<T>();
@@ -139,6 +143,10 @@ case Is_Nullable when 'NO' then 0 else 1 end IsNullable
 
             sqlbuilder.AppendFormat("SELECT * FROM `{0}`", tableName);
             ps = this.Object2Params(conditions, sqlbuilder);
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sqlbuilder.Append(" order by ").Append(orderBy);
+            }
             sqlbuilder.Append(" limit 1");
             return new CommandInfo
             {
@@ -147,15 +155,21 @@ case Is_Nullable when 'NO' then 0 else 1 end IsNullable
             };
         }
 
-        public override CommandInfo SingleWhere<T>(string name, object value)
+        public override CommandInfo SingleWhere<T>(string name, object value, string orderBy)
         {
-            var table = GetTableName<T>();
-            var p = CreateParameter("@" + name, value);
+            var tableName = GetTableName<T>();
+            var p = CreateParameter(name, value);
+            StringBuilder sqlbuilder = new StringBuilder(50);
+            sqlbuilder.AppendFormat("SELECT * FROM `{0}` WHERE `{1}`=@{1}", tableName, name);
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sqlbuilder.Append(" order by ").Append(orderBy);
+            }
+            sqlbuilder.Append(" limit 1");
 
-            var sql = string.Format("SELECT * FROM `{0}` WHERE `{1}`=@{1} limit 1 ", table, name);
             return new CommandInfo
             {
-                CommandText = sql,
+                CommandText = sqlbuilder.ToString(),
                 Params = new IDbDataParameter[] { p }
             };
         }

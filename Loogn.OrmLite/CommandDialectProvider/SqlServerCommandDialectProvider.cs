@@ -126,7 +126,7 @@ ORDER BY colorder ASC
             StringBuilder sb = new StringBuilder(100);
             sb.AppendFormat("select * from (");
 
-            
+
             sb.AppendFormat(" select top {0} {1},ROW_NUMBER() over(order by {2}) rowid from {3}", factor.PageIndex * factor.PageSize, factor.Fields, factor.OrderBy, factor.TableName);
             if (!string.IsNullOrEmpty(factor.Conditions))
             {
@@ -151,12 +151,16 @@ ORDER BY colorder ASC
             };
         }
 
-        public override CommandInfo SingleWhere<T>(IDictionary<string, object> conditions)
+        public override CommandInfo SingleWhere<T>(IDictionary<string, object> conditions, string orderBy)
         {
             StringBuilder sqlbuilder = new StringBuilder(50);
 
             sqlbuilder.AppendFormat("SELECT top 1 * FROM [{0}]", GetTableName<T>());
             var ps = this.Dictionary2Params(conditions, sqlbuilder);
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sqlbuilder.Append(" order by ").Append(orderBy);
+            }
             return new CommandInfo
             {
                 CommandText = sqlbuilder.ToString(),
@@ -164,13 +168,16 @@ ORDER BY colorder ASC
             };
         }
 
-        public override CommandInfo SingleWhere<T>(object conditions)
+        public override CommandInfo SingleWhere<T>(object conditions, string orderBy)
         {
             StringBuilder sqlbuilder = new StringBuilder(50);
 
             sqlbuilder.AppendFormat("SELECT top 1 * FROM [{0}]", GetTableName<T>());
             var ps = this.Object2Params(conditions, sqlbuilder);
-
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sqlbuilder.Append(" order by ").Append(orderBy);
+            }
             return new CommandInfo
             {
                 CommandText = sqlbuilder.ToString(),
@@ -178,11 +185,14 @@ ORDER BY colorder ASC
             };
         }
 
-        public override CommandInfo SingleWhere<T>(string name, object value)
+        public override CommandInfo SingleWhere<T>(string name, object value, string orderBy)
         {
             var p = CreateParameter(name, value);
             var sql = string.Format("SELECT top 1 * FROM [{0}] WHERE [{1}]=@{1} ", GetTableName<T>(), name);
-
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sql += " order by " + orderBy;
+            }
             return new CommandInfo
             {
                 CommandText = sql,

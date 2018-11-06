@@ -496,13 +496,16 @@ namespace Loogn.OrmLite
             }
         }
 
-        public CommandInfo SelectWhere<T>(object conditions)
+        public CommandInfo SelectWhere<T>(object conditions, string orderBy)
         {
             StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = GetTableName<T>();
             sqlbuilder.AppendFormat("SELECT * FROM {1}{0}{2}", tableName, OpenQuote, CloseQuote);
             var ps = TransformToParameters.ObjectToParams(this, conditions, sqlbuilder);
-
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sqlbuilder.Append(" order by ").Append(orderBy);
+            }
             return new CommandInfo
             {
                 CommandText = sqlbuilder.ToString(),
@@ -510,13 +513,16 @@ namespace Loogn.OrmLite
             };
         }
 
-        public CommandInfo SelectWhere<T>(IDictionary<string, object> conditions)
+        public CommandInfo SelectWhere<T>(IDictionary<string, object> conditions, string orderBy)
         {
             StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = GetTableName<T>();
             sqlbuilder.AppendFormat("SELECT * FROM {1}{0}{2}", tableName, OpenQuote, CloseQuote);
             var ps = TransformToParameters.DictionaryToParams(this, conditions, sqlbuilder);
-
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sqlbuilder.Append(" order by ").Append(orderBy);
+            }
             return new CommandInfo
             {
                 CommandText = sqlbuilder.ToString(),
@@ -524,25 +530,33 @@ namespace Loogn.OrmLite
             };
         }
 
-        public CommandInfo SelectWhere<T>(string name, object value)
+        public CommandInfo SelectWhere<T>(string name, object value, string orderBy)
         {
+
+            StringBuilder sqlbuilder = new StringBuilder(50);
             var tableName = GetTableName<T>();
+            sqlbuilder.AppendFormat("Select * from {2}{0}{3} where {2}{1}{3}=@{1}", tableName, name, OpenQuote, CloseQuote);
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                sqlbuilder.Append(" order by ").Append(orderBy);
+            }
+
             var p = CreateParameter(name, value);
-            var sql = string.Format("Select * from {2}{0}{3} where {2}{1}{3}=@{1}", tableName, name, OpenQuote, CloseQuote);
+
             return new CommandInfo
             {
-                CommandText = sql,
+                CommandText = sqlbuilder.ToString(),
                 Params = new IDbDataParameter[] { p }
             };
         }
 
         public abstract CommandInfo SingleById<T>(object idValue, string idField);
 
-        public abstract CommandInfo SingleWhere<T>(object conditions);
+        public abstract CommandInfo SingleWhere<T>(object conditions, string orderBy);
 
-        public abstract CommandInfo SingleWhere<T>(IDictionary<string, object> conditions);
+        public abstract CommandInfo SingleWhere<T>(IDictionary<string, object> conditions, string orderBy);
 
-        public abstract CommandInfo SingleWhere<T>(string name, object value);
+        public abstract CommandInfo SingleWhere<T>(string name, object value, string orderBy);
 
         public abstract CommandInfo TableMetaData(string dbName);
 

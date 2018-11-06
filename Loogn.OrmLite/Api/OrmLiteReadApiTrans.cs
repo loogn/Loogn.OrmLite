@@ -139,24 +139,24 @@ namespace Loogn.OrmLite
             return SelectOriginal(dbTrans, CommandType.Text, sql, provider.Object2Params(parameters));
         }
 
-        public static List<T> SelectWhere<T>(this IDbTransaction dbTrans, string name, object value)
+        public static List<T> SelectWhere<T>(this IDbTransaction dbTrans, string name, object value, string orderBy = "")
         {
             var provider = dbTrans.GetCommandDialectProvider();
-            var cmd = provider.SelectWhere<T>(name, value);
+            var cmd = provider.SelectWhere<T>(name, value, orderBy);
             return SelectOriginal<T>(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
-        public static List<T> SelectWhere<T>(this IDbTransaction dbTrans, IDictionary<string, object> conditions)
+        public static List<T> SelectWhere<T>(this IDbTransaction dbTrans, IDictionary<string, object> conditions, string orderBy = "")
         {
             var provider = dbTrans.GetCommandDialectProvider();
-            var cmd = provider.SelectWhere<T>(conditions);
+            var cmd = provider.SelectWhere<T>(conditions, orderBy);
             return SelectOriginal<T>(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
-        public static List<T> SelectWhere<T>(this IDbTransaction dbTrans, object conditions)
+        public static List<T> SelectWhere<T>(this IDbTransaction dbTrans, object conditions, string orderBy = "")
         {
             var provider = dbTrans.GetCommandDialectProvider();
-            var cmd = provider.SelectWhere<T>(conditions);
+            var cmd = provider.SelectWhere<T>(conditions, orderBy);
             return SelectOriginal<T>(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
@@ -358,24 +358,24 @@ namespace Loogn.OrmLite
             return SingleOriginal<T>(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
-        public static T SingleWhere<T>(this IDbTransaction dbTrans, string name, object value)
+        public static T SingleWhere<T>(this IDbTransaction dbTrans, string name, object value, string orderBy = "")
         {
             var provider = dbTrans.GetCommandDialectProvider();
-            var cmd = provider.SingleWhere<T>(name, value);
+            var cmd = provider.SingleWhere<T>(name, value, orderBy);
             return SingleOriginal<T>(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
-        public static T SingleWhere<T>(this IDbTransaction dbTrans, IDictionary<string, object> conditions)
+        public static T SingleWhere<T>(this IDbTransaction dbTrans, IDictionary<string, object> conditions, string orderBy = "")
         {
             var provider = dbTrans.GetCommandDialectProvider();
-            var cmd = provider.SingleWhere<T>(conditions);
+            var cmd = provider.SingleWhere<T>(conditions, orderBy);
             return SingleOriginal<T>(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 
-        public static T SingleWhere<T>(this IDbTransaction dbTrans, object conditions)
+        public static T SingleWhere<T>(this IDbTransaction dbTrans, object conditions, string orderBy = "")
         {
             var provider = dbTrans.GetCommandDialectProvider();
-            var cmd = provider.SingleWhere<T>(conditions);
+            var cmd = provider.SingleWhere<T>(conditions, orderBy);
             return SingleOriginal<T>(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
 

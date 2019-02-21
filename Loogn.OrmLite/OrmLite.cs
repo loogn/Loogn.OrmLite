@@ -27,10 +27,6 @@ namespace Loogn.OrmLite
                 CommandDialectProviderCache[connName] = provider;
             }
         }
-        static OrmLite()
-        {
-            RegisterProvider(SqlServerCommandDialectProvider.Instance);
-        }
 
         #region config
 
@@ -38,25 +34,14 @@ namespace Loogn.OrmLite
         /// 默认主键
         /// </summary>
         public const string KeyName = "ID";
-
-        private static string defaultKeyName = KeyName;
         /// <summary>
         /// 设置默认主键
         /// </summary>
-        public static string DefaultKeyName
-        {
-            get { return defaultKeyName; }
-            set { defaultKeyName = value; }
-        }
-
-        private static List<string> updateIgnoreFields = new List<string>() { "AddDate", "AddTime" };
+        public static string DefaultKeyName { get; set; } = KeyName;
         /// <summary>
         /// 整体修改时，默认忽略修改的字段集合，集合里默认有AddDate,AddTime
         /// </summary>
-        public static List<string> UpdateIgnoreFields
-        {
-            get { return updateIgnoreFields; }
-        }
+        public static List<string> UpdateIgnoreFields { get; } = new List<string>() { "AddDate", "AddTime" };
 
         #endregion
 

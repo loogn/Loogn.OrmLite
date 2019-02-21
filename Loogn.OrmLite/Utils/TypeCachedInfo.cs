@@ -14,13 +14,11 @@ namespace Loogn.OrmLite
     /// </summary>
     class TypeCachedInfo
     {
-        public Type Type;
         public string TableName;
         public Func<object> NewInvoker;
         public Dictionary<string, PropAccessor> PropInvokerDict;
         public TypeCachedInfo(Type type)
         {
-            Type = type;
             var tableAttr = type.GetCustomAttributes(Types.OrmLiteTable, true).FirstOrDefault() as OrmLiteTableAttribute;
             if (tableAttr != null && tableAttr.Name != null && tableAttr.Name.Length != 0)
             {
@@ -113,7 +111,6 @@ namespace Loogn.OrmLite
     /// <typeparam name="TObject"></typeparam>
     class TypeCachedInfo<TObject>
     {
-        public Type Type;
         public string TableName { get; set; }
 
         public Dictionary<string, Accessor> accessorDict;
@@ -121,7 +118,7 @@ namespace Loogn.OrmLite
         public Func<TObject> NewInvoker;
         public TypeCachedInfo(Type modelType)
         {
-            Type = modelType;
+
             var tableAttr = modelType.GetCustomAttributes(Types.OrmLiteTable, true).FirstOrDefault() as OrmLiteTableAttribute;
             if (tableAttr != null && tableAttr.Name != null && tableAttr.Name.Length != 0)
             {
@@ -133,12 +130,12 @@ namespace Loogn.OrmLite
             }
             //构造委托
             NewInvoker = DynamicMethodHelper.BuildConstructorInvoker<TObject>(modelType);
-            InitInfo();
+            InitInfo(modelType);
         }
 
-        private void InitInfo()
+        private void InitInfo(Type modelType)
         {
-            var Properties = Type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var Properties = modelType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             accessorDict = new Dictionary<string, Accessor>(Properties.Length);
 
             foreach (var prop in Properties)

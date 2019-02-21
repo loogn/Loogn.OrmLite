@@ -12,6 +12,12 @@ namespace Loogn.OrmLite
     {
 
         public static SqlServerCommandDialectProvider Instance = new SqlServerCommandDialectProvider();
+
+        static SqlServerCommandDialectProvider()
+        {
+            OrmLite.RegisterProvider(Instance);
+        }
+
         private SqlServerCommandDialectProvider() { }
         public override string CloseQuote
         {

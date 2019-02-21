@@ -11,6 +11,11 @@ namespace Loogn.OrmLite.Sqlite
     public class SqliteCommandDialectProvider : CommandDialectBaseProvider
     {
         public static SqliteCommandDialectProvider Instance = new SqliteCommandDialectProvider();
+
+        static SqliteCommandDialectProvider()
+        {
+            OrmLite.RegisterProvider(Instance);
+        }
         private SqliteCommandDialectProvider() { }
 
         public override string CloseQuote

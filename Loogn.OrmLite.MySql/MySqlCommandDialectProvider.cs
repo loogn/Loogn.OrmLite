@@ -11,6 +11,12 @@ namespace Loogn.OrmLite.MySql
     public class MySqlCommandDialectProvider : CommandDialectBaseProvider
     {
         public static MySqlCommandDialectProvider Instance = new MySqlCommandDialectProvider();
+
+        static MySqlCommandDialectProvider()
+        {
+            OrmLite.RegisterProvider(Instance);
+        }
+
         private MySqlCommandDialectProvider() { }
 
         public override string CloseQuote

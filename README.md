@@ -50,5 +50,5 @@
     }
 ```
 
-## [完整文档](http://www.loogn.net/orm/ "ormlite") 
+## [完整文档](http://www.loogn.net/orm "ormlite") 
 

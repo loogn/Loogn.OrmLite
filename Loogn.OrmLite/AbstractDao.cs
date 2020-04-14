@@ -62,7 +62,7 @@ namespace Loogn.OrmLite
         {
             using (var db = Open())
             {
-                return db.Update(objs);
+                return db.UpdateAll(objs);
             }
         }
 

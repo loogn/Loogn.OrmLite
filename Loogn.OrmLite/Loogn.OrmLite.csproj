@@ -2,19 +2,19 @@
 
   <PropertyGroup>
     <TargetFrameworks>net40;net45;net46;netstandard2.0</TargetFrameworks>
-    <Version>3.0.7</Version>
+    <Version>3.0.8</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageTags>ORM Loogn Loogn.OrmLite OrmLite</PackageTags>
-    <Copyright>Loogn 2015-2018</Copyright>
+    <Copyright>Loogn 2015-2019</Copyright>
     <PackageProjectUrl>http://git.oschina.net/loogn/Loogn.OrmLite</PackageProjectUrl>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</PackageLicenseUrl>
     <PackageIconUrl></PackageIconUrl>
     <Description>Loogn.OrmLite是一个超简单、超高效、超灵活的基于.net standard 2.0的数据访问组件，支持SqlServer、MySql和Sqlite3！</Description>
     <Authors>Loogn</Authors>
-    <PackageReleaseNotes>SelectWhere和SingleWhere加入orderby</PackageReleaseNotes>
-    <AssemblyVersion>3.0.7.0</AssemblyVersion>
-    <FileVersion>3.0.7.0</FileVersion>
+    <PackageReleaseNotes>添加AbstractDao</PackageReleaseNotes>
+    <AssemblyVersion>3.0.8.0</AssemblyVersion>
+    <FileVersion>3.0.8.0</FileVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">

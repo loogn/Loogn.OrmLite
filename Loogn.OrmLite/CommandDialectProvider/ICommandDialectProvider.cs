@@ -181,6 +181,11 @@ namespace Loogn.OrmLite
 
         CommandInfo TableMetaData(string dbName);
         CommandInfo ColumnMetaData(string dbName, string tableName);
-        
+
+        CommandInfo Truncate<T>();
+        CommandInfo Truncate(string tableName);
+
+
+
     }
 }

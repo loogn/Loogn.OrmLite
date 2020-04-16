@@ -122,6 +122,14 @@ namespace Loogn.OrmLite
             }
         }
 
+        public int DeleteAll()
+        {
+            using (var db = Open())
+            {
+                return db.Delete<TEntity>();
+            }
+        }
+
         public TEntity Single(string sql)
         {
             using (var db = Open())
@@ -226,7 +234,6 @@ namespace Loogn.OrmLite
             }
         }
 
-
         public OrmLitePageResult<TEntity> SelectPage(OrmLitePageFactor factor)
         {
             using (var db = Open())
@@ -288,6 +295,39 @@ namespace Loogn.OrmLite
             using (var db = Open())
             {
                 return db.CountWhere<TEntity>(conditions);
+            }
+        }
+
+        public T Scalar<T>(string sql)
+        {
+            using (var db = Open())
+            {
+                return db.Scalar<T>(sql);
+            }
+        }
+
+        public T Scalar<T>(string sql, IDictionary<string, object> parameters)
+        {
+            using (var db = Open())
+            {
+
+                return db.Scalar<T>(sql, parameters);
+            }
+        }
+
+        public T Scalar<T>(string sql, object parameters)
+        {
+            using (var db = Open())
+            {
+                return db.Scalar<T>(sql, parameters);
+            }
+        }
+
+        public int Truncate<T>()
+        {
+            using (var db = Open())
+            {
+                return db.Truncate<T>();
             }
         }
     }

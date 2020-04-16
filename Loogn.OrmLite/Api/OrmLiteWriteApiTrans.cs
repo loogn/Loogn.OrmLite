@@ -538,5 +538,20 @@ namespace Loogn.OrmLite
             var cmd = provider.DeleteWhere<T>(conditions);
             return ExecuteNonQuery(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
         }
+
+        public static int Truncate<T>(this IDbTransaction dbTrans)
+        {
+            var provider = dbTrans.GetCommandDialectProvider();
+            var cmd = provider.Truncate<T>();
+            return ExecuteNonQuery(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
+        }
+
+        public static int Truncate(this IDbTransaction dbTrans, string tableName)
+        {
+            var provider = dbTrans.GetCommandDialectProvider();
+            var cmd = provider.Truncate(tableName);
+            return ExecuteNonQuery(dbTrans, cmd.CommandType, cmd.CommandText, cmd.Params);
+        }
+
     }
 }

@@ -768,6 +768,17 @@ namespace Loogn.OrmLite
 
         public abstract IDbConnection CreateConnection();
 
+        public CommandInfo Truncate<T>()
+        {
+            return Truncate(GetTableName<T>());
+        }
 
+        public CommandInfo Truncate(string tableName)
+        {
+            return new CommandInfo
+            {
+                CommandText = $"TRUNCATE TABLE {OpenQuote}{tableName}{CloseQuote}"
+            };
+        }
     }
 }

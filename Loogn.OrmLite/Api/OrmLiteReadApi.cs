@@ -429,6 +429,10 @@ namespace Loogn.OrmLite
             {
                 factor.TableName = TypeCachedDict.GetTypeCachedInfo<T>().TableName;
             }
+            else
+            {
+                factor.TableName = factor.TableName.Trim();
+            }
             if (string.IsNullOrEmpty(factor.Fields))
             {
                 factor.Fields = "*";
@@ -489,6 +493,10 @@ namespace Loogn.OrmLite
             if (factor.TableName == null || factor.TableName.Length == 0)
             {
                 throw new ArgumentException("tableName参数不能为空或null");
+            }
+            else
+            {
+                factor.TableName = factor.TableName.Trim();
             }
             if (string.IsNullOrEmpty(factor.Fields))
             {

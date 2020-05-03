@@ -12,7 +12,7 @@ namespace Loogn.OrmLite
     /// </summary>
     public static class OrmLite
     {
-        internal static Dictionary<string, ICommandDialectProvider> CommandDialectProviderCache = new Dictionary<string, ICommandDialectProvider>();
+        internal static readonly Dictionary<string, ICommandDialectProvider> CommandDialectProviderCache = new Dictionary<string, ICommandDialectProvider>();
 
         /// <summary>
         /// 注册命令方言提供程序
@@ -41,7 +41,7 @@ namespace Loogn.OrmLite
         /// <summary>
         /// 整体修改时，默认忽略修改的字段集合，集合里默认有AddDate,AddTime
         /// </summary>
-        public static List<string> UpdateIgnoreFields { get; } = new List<string>() { "AddDate", "AddTime" };
+        public static SortedSet<string> UpdateIgnoreFields { get; } = new SortedSet<string> { "AddDate", "AddTime" };
 
         #endregion
 

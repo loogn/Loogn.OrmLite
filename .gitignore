@@ -156,3 +156,4 @@ Loogn.OrmLite.Sqlite*/
 *.nupkg
 
 .vs/
+.idea/

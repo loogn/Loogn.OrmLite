@@ -746,13 +746,17 @@ namespace Loogn.OrmLite
             {
                 if (OrmLite.UpdateIgnoreFields != null && OrmLite.UpdateIgnoreFields.Count > 0)
                 {
-                    foreach (var item in OrmLite.UpdateIgnoreFields)
+                    if (OrmLite.UpdateIgnoreFields.Contains(value))
                     {
-                        if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
-                        {
-                            return false;
-                        }
+                        return false;
                     }
+                    // foreach (var item in OrmLite.UpdateIgnoreFields)
+                    // {
+                    //     if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
+                    //     {
+                    //         return false;
+                    //     }
+                    // }
                 }
                 return true;
             }

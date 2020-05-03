@@ -38,10 +38,12 @@ namespace Loogn.OrmLite
         /// 设置默认主键
         /// </summary>
         public static string DefaultKeyName { get; set; } = KeyName;
+
         /// <summary>
         /// 整体修改时，默认忽略修改的字段集合，集合里默认有AddDate,AddTime
         /// </summary>
-        public static SortedSet<string> UpdateIgnoreFields { get; } = new SortedSet<string> { "AddDate", "AddTime" };
+        public static HashSet<string> UpdateIgnoreFields { get; } =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase) {"AddDate", "AddTime"};
 
         #endregion
 

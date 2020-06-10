@@ -32,6 +32,35 @@ namespace Loogn.OrmLite
         }
 
         /// <summary>
+        /// 执行sql命令，返回影响行数
+        /// </summary>
+        /// <param name="commandType">命令的类型</param>
+        /// <param name="commandText">命令文本</param>
+        /// <param name="parameters">参数</param>
+        /// <returns></returns>
+        public int ExecuteNonQuery(CommandType commandType, string commandText, IDictionary<string, object> parameters)
+        {
+            using (var db = Open())
+            {
+                return db.ExecuteNonQuery(commandType, commandText, parameters);
+            }
+        }
+        
+        /// <summary>
+        /// 执行sql命令，返回影响行数
+        /// </summary>
+        /// <param name="sql">命令文本</param>
+        /// <param name="parameters">参数</param>
+        /// <returns></returns>
+        public int ExecuteNonQuery(string sql, IDictionary<string, object> parameters)
+        {
+            using (var db = Open())
+            {
+                return db.ExecuteNonQuery(CommandType.Text,sql, parameters);
+            }
+        }
+        
+        /// <summary>
         /// 插入数据，可指定是否返回新增项产生的ID
         /// </summary>
         /// <param name="m">实体</param>
@@ -93,7 +122,8 @@ namespace Loogn.OrmLite
         /// <param name="conditions"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public int Update(IDictionary<string, object> updateFields, string conditions, IDictionary<string, object> parameters)
+        public int Update(IDictionary<string, object> updateFields, string conditions,
+            IDictionary<string, object> parameters)
         {
             using (var db = Open())
             {
@@ -249,7 +279,7 @@ namespace Loogn.OrmLite
                 return db.Single<TEntity>(sql, parameters);
             }
         }
-        
+
         /// <summary>
         /// 根据ID查询单条数据
         /// </summary>
@@ -276,6 +306,7 @@ namespace Loogn.OrmLite
                 return db.SingleWhere<TEntity>(conditions, orderBy);
             }
         }
+
         /// <summary>
         /// 指定一个条件字段查询单条数据
         /// </summary>
@@ -415,6 +446,19 @@ namespace Loogn.OrmLite
         }
 
         /// <summary>
+        /// 分页查询
+        /// </summary>
+        /// <param name="factor"></param>
+        /// <returns></returns>
+        public OrmLitePageResult<TCustomEntity> SelectPage<TCustomEntity>(OrmLitePageFactor factor)
+        {
+            using (var db = Open())
+            {
+                return db.SelectPage<TCustomEntity>(factor);
+            }
+        }
+
+        /// <summary>
         /// 获取整表数据量
         /// </summary>
         /// <returns></returns>
@@ -532,7 +576,6 @@ namespace Loogn.OrmLite
         {
             using (var db = Open())
             {
-
                 return db.Scalar<T>(sql, parameters);
             }
         }

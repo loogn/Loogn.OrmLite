@@ -73,8 +73,35 @@ namespace Loogn.OrmLite
             var parametersParameter = Expression.Parameter(typeof(object), "value");
             var instanceExpr = methodInfo.IsStatic ? null : Expression.Convert(instanceParameter, methodInfo.ReflectedType);
             var paramInfo = methodInfo.GetParameters().First();
-            var arrCase = Expression.Convert(parametersParameter, paramInfo.ParameterType);
-            var callExpr = Expression.Call(instanceExpr, methodInfo, arrCase);
+
+            Expression caseExp = null;
+            var underlyingType = Nullable.GetUnderlyingType(paramInfo.ParameterType);
+            if (underlyingType != null && underlyingType.IsEnum)
+            {
+                var case1 = Expression.Convert(parametersParameter, Enum.GetUnderlyingType(underlyingType));
+                caseExp = Expression.Convert(case1, paramInfo.ParameterType);
+            }
+            else
+            {
+                caseExp = Expression.Convert(parametersParameter, paramInfo.ParameterType);
+            }
+            var callExpr = Expression.Call(instanceExpr, methodInfo, caseExp);
+            var action = Expression.Lambda<Action<object, object>>(callExpr,
+                instanceParameter, parametersParameter).Compile();
+            return action;
+        }
+
+        public static Action<object, object> BuildEnumSetterInvoker(Type underlyingType, MethodInfo methodInfo)
+        {
+            if (methodInfo == null) return (obj, value) => {; };
+
+            var instanceParameter = Expression.Parameter(typeof(object), "instance");
+            var parametersParameter = Expression.Parameter(typeof(object), "value");
+            var instanceExpr = methodInfo.IsStatic ? null : Expression.Convert(instanceParameter, methodInfo.ReflectedType);
+            var paramInfo = methodInfo.GetParameters().First();
+            var arrCase = Expression.Convert(parametersParameter, underlyingType);
+            var arrCase1 = Expression.Convert(arrCase, paramInfo.ParameterType);
+            var callExpr = Expression.Call(instanceExpr, methodInfo, arrCase1);
             var action = Expression.Lambda<Action<object, object>>(callExpr,
                 instanceParameter, parametersParameter).Compile();
             return action;

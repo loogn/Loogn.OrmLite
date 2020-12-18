@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerformanceTesting", "PerformanceTesting\PerformanceTesting.csproj", "{43AC4ED8-95B3-4ECA-95BD-D342E12296DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loogn.OrmLite", "Loogn.OrmLite\Loogn.OrmLite.csproj", "{0865C953-3EBE-497A-AEEC-3225FE502537}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite", "Loogn.OrmLite\Loogn.OrmLite.csproj", "{0865C953-3EBE-497A-AEEC-3225FE502537}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loogn.OrmLite.Sqlite", "Loogn.OrmLite.Sqlite\Loogn.OrmLite.Sqlite.csproj", "{B5C3DA11-08AD-45DB-B927-325AE6CCE1AF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite.Sqlite", "Loogn.OrmLite.Sqlite\Loogn.OrmLite.Sqlite.csproj", "{B5C3DA11-08AD-45DB-B927-325AE6CCE1AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Loogn.OrmLite.MySql", "Loogn.OrmLite.MySql\Loogn.OrmLite.MySql.csproj", "{6D2D71A9-D225-48A9-8A95-41E768929D26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Loogn.OrmLite.MySql", "Loogn.OrmLite.MySql\Loogn.OrmLite.MySql.csproj", "{6D2D71A9-D225-48A9-8A95-41E768929D26}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrmLiteTester", "OrmLiteTester\OrmLiteTester.csproj", "{49EFD2ED-7133-463F-ABC1-40D1785FE198}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{43AC4ED8-95B3-4ECA-95BD-D342E12296DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43AC4ED8-95B3-4ECA-95BD-D342E12296DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43AC4ED8-95B3-4ECA-95BD-D342E12296DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43AC4ED8-95B3-4ECA-95BD-D342E12296DF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0865C953-3EBE-497A-AEEC-3225FE502537}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0865C953-3EBE-497A-AEEC-3225FE502537}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0865C953-3EBE-497A-AEEC-3225FE502537}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{6D2D71A9-D225-48A9-8A95-41E768929D26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D2D71A9-D225-48A9-8A95-41E768929D26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D2D71A9-D225-48A9-8A95-41E768929D26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49EFD2ED-7133-463F-ABC1-40D1785FE198}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49EFD2ED-7133-463F-ABC1-40D1785FE198}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49EFD2ED-7133-463F-ABC1-40D1785FE198}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49EFD2ED-7133-463F-ABC1-40D1785FE198}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

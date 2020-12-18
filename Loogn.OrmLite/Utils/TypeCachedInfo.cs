@@ -118,7 +118,6 @@ namespace Loogn.OrmLite
         public Func<TObject> NewInvoker;
         public TypeCachedInfo(Type modelType)
         {
-
             var tableAttr = modelType.GetCustomAttributes(Types.OrmLiteTable, true).FirstOrDefault() as OrmLiteTableAttribute;
             if (tableAttr != null && tableAttr.Name != null && tableAttr.Name.Length != 0)
             {
@@ -130,138 +129,17 @@ namespace Loogn.OrmLite
             }
             //构造委托
             NewInvoker = DynamicMethodHelper.BuildConstructorInvoker<TObject>(modelType);
-            InitInfo(modelType);
-        }
-
-        private void InitInfo(Type modelType)
-        {
             var Properties = modelType.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             accessorDict = new Dictionary<string, Accessor>(Properties.Length);
 
+            //var Fields = modelType.GetFields(BindingFlags.Instance | BindingFlags.Public);
+
             foreach (var prop in Properties)
             {
-                Accessor accessor = null;
-
                 string propName = prop.Name.ToUpper();
-                
-                var propType = prop.PropertyType;
-                //处理枚举类型
-                if (propType.IsEnum)
-                {
-                    propType = Enum.GetUnderlyingType(propType);
-                }
-
-                if (ReferenceEquals(Types.String, propType))
-                {
-                    accessor = new StringAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.Int32, propType))
-                {
-                    accessor = new IntAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableInt32, propType))
-                {
-                    accessor = new IntNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.DateTime, propType))
-                {
-                    accessor = new DateTimeAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableDateTime, propType))
-                {
-                    accessor = new DateTimeNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.Int64, propType))
-                {
-                    accessor = new LongAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableInt64, propType))
-                {
-                    accessor = new LongNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.Single, propType))
-                {
-                    accessor = new FloatAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableSingle, propType))
-                {
-                    accessor = new FloatNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.Double, propType))
-                {
-                    accessor = new DoubleAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableDouble, propType))
-                {
-                    accessor = new DoubleNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.Guid, propType))
-                {
-                    accessor = new GuidAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableGuid, propType))
-                {
-                    accessor = new GuidNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.Int16, propType))
-                {
-                    accessor = new ShortAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableInt16, propType))
-                {
-                    accessor = new ShortNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.Byte, propType))
-                {
-                    accessor = new ByteAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableByte, propType))
-                {
-                    accessor = new ByteNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.Char, propType))
-                {
-                    accessor = new CharAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableChar, propType))
-                {
-                    accessor = new CharNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.Decimal, propType))
-                {
-                    accessor = new DecimalAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableDecimal, propType))
-                {
-                    accessor = new DecimalNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.ByteArray, propType))
-                {
-                    accessor = new ByteArrayAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.Bool, propType))
-                {
-                    accessor = new BoolAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableBool, propType))
-                {
-                    accessor = new BoolNullableAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.TimeSpan, propType))
-                {
-                    accessor = new TimeSpanAccessor(prop);
-                }
-                else if (ReferenceEquals(Types.NullableTimeSpan, propType))
-                {
-                    accessor = new TimeSpanNullableAccessor(prop);
-                }
-                if (accessor != null)
-                {
-                    accessorDict[propName] = accessor;
-                }
+                accessorDict[propName] = new Accessor(prop);
             }
         }
-
 
         public Accessor GetAccessor(string fieldName)
         {
@@ -270,14 +148,16 @@ namespace Loogn.OrmLite
             {
                 return accessor;
             }
-            return new EmptyAccessor();
+            return new Accessor(null);
         }
 
-        public abstract class Accessor
+        public class Accessor
         {
             public bool CanSet;
             public bool CanGet;
-            public OrmLiteFieldAttribute OrmLiteField;
+            private Action<object, object> setter;
+            private Func<object, object> getter;
+            public OrmLiteFieldAttribute OrmLiteField { get; set; }
             public PropertyInfo prop;
             public Accessor(PropertyInfo prop)
             {
@@ -290,18 +170,31 @@ namespace Loogn.OrmLite
                     {
                         OrmLiteField = (OrmLiteFieldAttribute)customerAttributes[0];
                     }
+                    var setMethod = prop.GetSetMethod(true);
+                    if (setMethod != null)
+                    {
+                        CanSet = true;
+                        setter = DynamicMethodHelper.BuildSetterInvoker(setMethod);
+                    }
+                    var getMethod = prop.GetGetMethod(true);
+                    if (getMethod != null)
+                    {
+
+                        CanGet = true;
+                        getter = DynamicMethodHelper.BuildGetterInvoker(getMethod);
+                    }
                 }
             }
 
             public void Set(TObject obj, object value)
             {
-                if (value == null || value is DBNull)
+                if (value == null || value is DBNull || !CanSet)
                 {
                     return;
                 }
                 try
                 {
-                    DoSet(obj, value);
+                    setter(obj, value);
                 }
                 catch
                 {
@@ -311,486 +204,17 @@ namespace Loogn.OrmLite
 
             public object Get(TObject obj)
             {
-                return DoGet(obj);
-            }
-
-            protected abstract void DoSet(TObject obj, object value);
-            protected abstract object DoGet(TObject obj);
-
-        }
-
-        #region Accessor
-        public class EmptyAccessor : Accessor
-        {
-            public EmptyAccessor() : base(null) { }
-            protected override object DoGet(TObject obj)
-            {
-                return null;
-            }
-
-            protected override void DoSet(TObject obj, object value)
-            {
-                return;
-            }
-        }
-        public abstract class AccessorTpl<TValue> : Accessor
-        {
-            protected Action<TObject, TValue> setter;
-            protected Func<TObject, TValue> getter;
-            public AccessorTpl(PropertyInfo prop) : base(prop)
-            {
-                var setMethod = prop.GetSetMethod(true);
-                if (setMethod != null)
+                if (CanGet)
                 {
-                    CanSet = true;
-                    setter = (Action<TObject, TValue>)Delegate.CreateDelegate(typeof(Action<TObject, TValue>), setMethod);
+                    return getter(obj);
                 }
-                var getMethod = prop.GetGetMethod(true);
-                if (getMethod != null)
+                else
                 {
-
-                    CanGet = true;
-                    getter = (Func<TObject, TValue>)Delegate.CreateDelegate(typeof(Func<TObject, TValue>), getMethod);
+                    throw new Exception("获取属性失败");
                 }
             }
+
         }
-
-
-        public class StringAccessor : AccessorTpl<String>
-        {
-            public StringAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (string)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        public class IntAccessor : AccessorTpl<int>
-        {
-            public IntAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (int)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? 0 : getter(obj);
-            }
-        }
-
-        public class IntNullableAccessor : AccessorTpl<int?>
-        {
-            public IntNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (int)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? 0 : getter(obj);
-            }
-        }
-
-        public class DateTimeAccessor : AccessorTpl<DateTime>
-        {
-            public DateTimeAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (DateTime)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? DateTime.MinValue : getter(obj);
-            }
-        }
-
-        public class DateTimeNullableAccessor : AccessorTpl<DateTime?>
-        {
-            public DateTimeNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (DateTime?)value);
-            }
-
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        public class LongAccessor : AccessorTpl<long>
-        {
-            public LongAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (long)value);
-            }
-
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? 0 : getter(obj);
-            }
-        }
-
-        public class LongNullableAccessor : AccessorTpl<long?>
-        {
-            public LongNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (long)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        public class DoubleAccessor : AccessorTpl<double>
-        {
-            public DoubleAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (double)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? 0 : getter(obj);
-            }
-        }
-
-        public class DoubleNullableAccessor : AccessorTpl<double?>
-        {
-            public DoubleNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (double)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        public class FloatAccessor : AccessorTpl<float>
-        {
-            public FloatAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (float)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? 0 : getter(obj);
-            }
-        }
-
-        public class FloatNullableAccessor : AccessorTpl<float?>
-        {
-            public FloatNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (float)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        public class GuidAccessor : AccessorTpl<Guid>
-        {
-            public GuidAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (Guid)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? Guid.Empty : getter(obj);
-            }
-        }
-
-        public class GuidNullableAccessor : AccessorTpl<Guid?>
-        {
-            public GuidNullableAccessor(PropertyInfo prop)
-                : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (Guid)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        public class ByteAccessor : AccessorTpl<byte>
-        {
-            public ByteAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                if (setter != null)
-                {
-                    if (value is byte)
-                    {
-                        setter(obj, (byte)value);
-                    }
-                    else
-                    {
-                        setter(obj, Convert.ToByte(value));
-                    }
-                }
-
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? 0 : getter(obj);
-            }
-        }
-        public class ByteNullableAccessor : AccessorTpl<byte?>
-        {
-            public ByteNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                if (setter != null)
-                {
-                    if (value is byte)
-                    {
-                        setter(obj, (byte)value);
-                    }
-                    else
-                    {
-                        setter(obj, Convert.ToByte(value));
-                    }
-                }
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        public class ShortAccessor : AccessorTpl<short>
-        {
-            public ShortAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (short)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? 0 : getter(obj);
-            }
-        }
-        public class ShortNullableAccessor : AccessorTpl<short?>
-        {
-            public ShortNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (short)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? 0 : getter(obj);
-            }
-        }
-
-        public class CharAccessor : AccessorTpl<char>
-        {
-            public CharAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (char)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? char.MinValue : getter(obj);
-            }
-        }
-
-        public class CharNullableAccessor : AccessorTpl<char?>
-        {
-            public CharNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (char)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        public class BoolAccessor : AccessorTpl<bool>
-        {
-            public BoolAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                if (setter != null)
-                {
-                    if (value is bool)
-                    {
-                        setter(obj, (bool)value);
-                    }
-                    else
-                    {
-                        setter(obj, Convert.ToInt32(value) > 0);
-                    }
-                }
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? false : getter(obj);
-            }
-        }
-
-        public class BoolNullableAccessor : AccessorTpl<bool?>
-        {
-            public BoolNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                if (setter != null)
-                {
-                    if (value is bool)
-                    {
-                        setter(obj, (bool)value);
-                    }
-                    else
-                    {
-                        setter(obj, Convert.ToUInt16(value) > 0);
-                    }
-                }
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        public class TimeSpanAccessor : AccessorTpl<TimeSpan>
-        {
-            public TimeSpanAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (TimeSpan)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? TimeSpan.Zero : getter(obj);
-            }
-        }
-
-        public class TimeSpanNullableAccessor : AccessorTpl<TimeSpan?>
-        {
-            public TimeSpanNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (TimeSpan)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
- 
-        public class DecimalAccessor : AccessorTpl<decimal>
-        {
-            public DecimalAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (decimal)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? 0M : getter(obj);
-            }
-        }
-
-        public class DecimalNullableAccessor : AccessorTpl<decimal?>
-        {
-            public DecimalNullableAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (decimal)value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        public class ByteArrayAccessor : AccessorTpl<byte[]>
-        {
-            public ByteArrayAccessor(PropertyInfo prop) : base(prop)
-            {
-            }
-            protected override void DoSet(TObject obj, object value)
-            {
-                setter?.Invoke(obj, (byte[])value);
-            }
-            protected override object DoGet(TObject obj)
-            {
-                return !CanGet ? null : getter(obj);
-            }
-        }
-
-        #endregion
-
 
     }
 }

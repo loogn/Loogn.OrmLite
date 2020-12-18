@@ -8,7 +8,7 @@ namespace Loogn.OrmLite
 {
     static class Types
     {
-     
+
         public readonly static Type String = typeof(string);
 
         public readonly static Type Int32 = typeof(int);
@@ -51,5 +51,7 @@ namespace Loogn.OrmLite
 
         public readonly static Type OrmLiteField = typeof(OrmLiteFieldAttribute);
         public readonly static Type OrmLiteTable = typeof(OrmLiteTableAttribute);
+
+        public readonly static Type NullableType = typeof(Nullable<>);
     }
 }

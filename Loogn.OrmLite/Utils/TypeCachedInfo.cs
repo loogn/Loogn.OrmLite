@@ -143,7 +143,13 @@ namespace Loogn.OrmLite
                 Accessor accessor = null;
 
                 string propName = prop.Name.ToUpper();
+                
                 var propType = prop.PropertyType;
+                //处理枚举类型
+                if (propType.IsEnum)
+                {
+                    propType = Enum.GetUnderlyingType(propType);
+                }
 
                 if (ReferenceEquals(Types.String, propType))
                 {
@@ -737,7 +743,7 @@ namespace Loogn.OrmLite
                 return !CanGet ? null : getter(obj);
             }
         }
-
+ 
         public class DecimalAccessor : AccessorTpl<decimal>
         {
             public DecimalAccessor(PropertyInfo prop) : base(prop)

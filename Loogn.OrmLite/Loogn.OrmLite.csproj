@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net40;net45;net46;netstandard2.0</TargetFrameworks>
-    <Version>3.0.9</Version>
+    <Version>3.0.10</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageTags>ORM Loogn Loogn.OrmLite OrmLite</PackageTags>
     <Copyright>Loogn 2015-2020</Copyright>
@@ -10,9 +10,9 @@
     <PackageIconUrl></PackageIconUrl>
     <Description>Loogn.OrmLite是一个超简单、超高效、超灵活的基于.net standard 2.0的数据访问组件，支持SqlServer、MySql和Sqlite3！</Description>
     <Authors>Loogn</Authors>
-    <PackageReleaseNotes>添加AbstractDao</PackageReleaseNotes>
-    <AssemblyVersion>3.0.9.0</AssemblyVersion>
-    <FileVersion>3.0.9.0</FileVersion>
+    <PackageReleaseNotes>映射枚举类型</PackageReleaseNotes>
+    <AssemblyVersion>3.0.10.0</AssemblyVersion>
+    <FileVersion>3.0.10.0</FileVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>

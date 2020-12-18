@@ -12,7 +12,7 @@ namespace Loogn.OrmLite
     /// </summary>
     public static class OrmLite
     {
-        internal static Dictionary<string, ICommandDialectProvider> CommandDialectProviderCache = new Dictionary<string, ICommandDialectProvider>();
+        internal static readonly Dictionary<string, ICommandDialectProvider> CommandDialectProviderCache = new Dictionary<string, ICommandDialectProvider>();
 
         /// <summary>
         /// 注册命令方言提供程序
@@ -38,10 +38,12 @@ namespace Loogn.OrmLite
         /// 设置默认主键
         /// </summary>
         public static string DefaultKeyName { get; set; } = KeyName;
+
         /// <summary>
         /// 整体修改时，默认忽略修改的字段集合，集合里默认有AddDate,AddTime
         /// </summary>
-        public static List<string> UpdateIgnoreFields { get; } = new List<string>() { "AddDate", "AddTime" };
+        public static HashSet<string> UpdateIgnoreFields { get; } =
+            new HashSet<string>(StringComparer.OrdinalIgnoreCase) {"AddDate", "AddTime"};
 
         #endregion
 

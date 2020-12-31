@@ -53,5 +53,7 @@ namespace Loogn.OrmLite
         public readonly static Type OrmLiteTable = typeof(OrmLiteTableAttribute);
 
         public readonly static Type NullableType = typeof(Nullable<>);
+        public readonly static Type Object = typeof(object);
+        public readonly static Type Type = typeof(Type); 
     }
 }

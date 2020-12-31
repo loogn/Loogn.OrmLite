@@ -83,7 +83,19 @@ namespace Loogn.OrmLite
             }
             else
             {
-                caseExp = Expression.Convert(parametersParameter, paramInfo.ParameterType);
+                if (paramInfo.ParameterType == Types.Bool)
+                {
+                    var changeTypeMethod = typeof(Convert).GetMethod("ChangeType", new Type[] {Types.Object, Types.Type});
+                    caseExp = Expression.Convert(Expression.Call(null, changeTypeMethod, 
+                            parametersParameter,
+                            Expression.Constant(paramInfo.ParameterType)),
+                        paramInfo.ParameterType);
+                }
+                else
+                {
+                    caseExp = Expression.Convert(parametersParameter, paramInfo.ParameterType);    
+                }
+                
             }
             var callExpr = Expression.Call(instanceExpr, methodInfo, caseExp);
             var action = Expression.Lambda<Action<object, object>>(callExpr,
